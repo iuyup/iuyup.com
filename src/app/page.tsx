@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -15,16 +16,17 @@ const sectionVariants = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#F5F0EB] text-[#2C2C2C] selection:bg-[#D4856A]/30">
+    <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#F5F0EB]/80 backdrop-blur-sm border-b border-[#D5CEC7]">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className="font-caveat text-xl text-[#2C2C2C]">T.</span>
-          <div className="flex gap-6 text-sm text-[#6B6B6B]">
-            <a href="#about" className="hover:text-[#2C2C2C] transition-colors duration-300">About</a>
-            <a href="#projects" className="hover:text-[#2C2C2C] transition-colors duration-300">Projects</a>
-            <a href="#music" className="hover:text-[#2C2C2C] transition-colors duration-300">Music</a>
-            <Link href="/posts" className="hover:text-[#2C2C2C] transition-colors duration-300">Blog</Link>
+          <span className="font-caveat text-xl" style={{ color: 'var(--text)' }}>T.</span>
+          <div className="flex gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <a href="#about" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>About</a>
+            <a href="#projects" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>Projects</a>
+            <a href="#music" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>Music</a>
+            <Link href="/posts" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>Blog</Link>
+            <ThemeToggle />
           </div>
         </div>
       </nav>

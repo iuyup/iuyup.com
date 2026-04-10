@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import rehypePrettyCode from "rehype-pretty-code";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -11,29 +12,30 @@ export async function generateStaticParams() {
 
 const components = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="font-caveat text-4xl text-[#6B8DAE] mb-6 mt-12" {...props} />
+    <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="font-caveat text-3xl text-[#6B8DAE] mb-4 mt-10" {...props} />
+    <h2 className="font-caveat text-3xl mb-4 mt-10" style={{ color: 'var(--primary)' }} {...props} />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="font-medium text-lg text-[#2C2C2C] mb-3 mt-8" {...props} />
+    <h3 className="font-medium text-lg mb-3 mt-8" style={{ color: 'var(--text)' }} {...props} />
   ),
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="text-[#6B6B6B] leading-relaxed mb-4" {...props} />
+    <p className="leading-relaxed mb-4" style={{ color: 'var(--text-secondary)' }} {...props} />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc list-inside text-[#6B6B6B] mb-4 space-y-2" {...props} />
+    <ul className="list-disc list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
   ),
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal list-inside text-[#6B6B6B] mb-4 space-y-2" {...props} />
+    <ol className="list-decimal list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
   ),
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li className="text-[#6B6B6B]" {...props} />
+    <li style={{ color: 'var(--text-secondary)' }} {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
-      className="text-[#6B8DAE] hover:underline"
+      className="hover:underline"
+      style={{ color: 'var(--primary)' }}
       target="_blank"
       rel="noopener noreferrer"
       {...props}
@@ -41,7 +43,8 @@ const components = {
   ),
   blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
-      className="border-l-4 border-[#D4856A] pl-4 my-4 text-[#6B6B6B] italic"
+      className="border-l-4 pl-4 my-4 italic"
+      style={{ borderColor: 'var(--accent)', color: 'var(--text-secondary)' }}
       {...props}
     />
   ),
@@ -51,20 +54,21 @@ const components = {
       return <code {...rest}>{children}</code>;
     }
     return (
-      <code className="px-1.5 py-0.5 rounded bg-[#E8E2DA] text-[#D4856A] text-sm" {...rest}>
+      <code className="px-1.5 py-0.5 rounded text-sm" style={{ background: 'var(--surface)', color: 'var(--accent)' }} {...rest}>
         {children}
       </code>
     );
   },
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="bg-[#1a1a2e] rounded-lg p-4 overflow-x-auto mb-4 text-sm"
+      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm"
+      style={{ background: 'var(--code-bg)' }}
       {...props}
     />
   ),
-  hr: () => <hr className="border-[#D5CEC7] my-8" />,
+  hr: () => <hr style={{ borderColor: 'var(--border)' }} className="my-8" />,
   strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-medium text-[#2C2C2C]" {...props} />
+    <strong className="font-medium" style={{ color: 'var(--text)' }} {...props} />
   ),
 };
 
@@ -77,17 +81,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F0EB] text-[#2C2C2C] selection:bg-[#D4856A]/30">
+    <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#F5F0EB]/80 backdrop-blur-sm border-b border-[#D5CEC7]">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="font-caveat text-xl text-[#2C2C2C] hover:text-[#6B8DAE] transition-colors">
+          <Link href="/" className="font-caveat text-xl hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
           </Link>
-          <div className="flex gap-6 text-sm text-[#6B6B6B]">
-            <Link href="/#about" className="hover:text-[#2C2C2C] transition-colors">About</Link>
-            <Link href="/#projects" className="hover:text-[#2C2C2C] transition-colors">Projects</Link>
-            <Link href="/posts" className="hover:text-[#2C2C2C] transition-colors">Blog</Link>
+          <div className="flex gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <Link href="/#about" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>About</Link>
+            <Link href="/#projects" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Projects</Link>
+            <Link href="/posts" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Blog</Link>
+            <ThemeToggle />
           </div>
         </div>
       </nav>
@@ -99,24 +104,25 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <header className="mb-12">
             <Link
               href="/posts"
-              className="inline-flex items-center gap-2 text-sm text-[#6B6B6B] hover:text-[#6B8DAE] mb-8 transition-colors"
+              className="inline-flex items-center gap-2 text-sm mb-8 transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               返回博客
             </Link>
-            <time className="text-sm text-[#6B6B6B] block mb-4">
+            <time className="text-sm block mb-4" style={{ color: 'var(--text-secondary)' }}>
               {new Date(post.frontmatter.date).toLocaleDateString("zh-CN", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
             </time>
-            <h1 className="font-caveat text-5xl text-[#6B8DAE] mb-6">
+            <h1 className="font-caveat text-5xl mb-6" style={{ color: 'var(--primary)' }}>
               {post.frontmatter.title}
             </h1>
-            <p className="text-lg text-[#6B6B6B] leading-relaxed mb-6">
+            <p className="text-lg leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
               {post.frontmatter.summary}
             </p>
             {post.frontmatter.tags.length > 0 && (
@@ -124,7 +130,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 {post.frontmatter.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-3 py-1 rounded-full bg-[#E8E2DA] border border-[#D5CEC7] text-[#6B6B6B]"
+                    className="text-xs px-3 py-1 rounded-full border"
+                    style={{ background: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
                   >
                     {tag}
                   </span>
@@ -144,8 +151,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                     [
                       rehypePrettyCode,
                       {
-                        theme: "github-light",
-                        keepBackground: false,
+                        theme: {
+                          dark: "github-dark",
+                          light: "github-light",
+                        },
+                        defaultColorScheme: "auto",
                       },
                     ],
                   ],
@@ -157,14 +167,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </article>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-[#D5CEC7]">
-        <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm text-[#6B6B6B]">
+      <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>
+        <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm" style={{ color: 'var(--text-secondary)' }}>
           <span className="font-caveat text-base">T.</span>
           <div className="flex gap-4">
-            <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[#2C2C2C] transition-colors">
+            <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
               GitHub
             </a>
-            <a href="mailto:tyn2005315@gmail.com" className="hover:text-[#2C2C2C] transition-colors">
+            <a href="mailto:tyn2005315@gmail.com" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
               Email
             </a>
           </div>

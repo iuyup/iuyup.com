@@ -1,4 +1,38 @@
+"use client";
+
+import { useScroll, useTransform, motion } from "framer-motion";
+import { useRef } from "react";
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export default function Home() {
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: projectsRef,
+    offset: ["start end", "end end"],
+  });
+
+  // Projects card expansion animation
+  const cardWidth = useTransform(
+    scrollYProgress,
+    [0, 0.6],
+    ["calc(100% - 3rem)", "100vw"]
+  );
+  const cardX = useTransform(scrollYProgress, [0, 0.6], ["1.5rem", "0"]);
+  const cardBorderRadius = useTransform(
+    scrollYProgress,
+    [0, 0.6],
+    ["24px", "0"]
+  );
+
   return (
     <div className="min-h-screen bg-[#F5F0EB] text-[#2C2C2C] selection:bg-[#D4856A]/30">
       {/* Nav */}
@@ -15,7 +49,12 @@ export default function Home() {
 
       {/* Hero */}
       <section className="min-h-screen flex flex-col justify-center max-w-3xl mx-auto px-6">
-        <div className="space-y-6 animate-fade-in">
+        <motion.div
+          className="space-y-6"
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        >
           {/* Hand-drawn decorative element */}
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="mb-4 opacity-60">
             <circle cx="24" cy="24" r="20" stroke="#D4856A" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
@@ -36,16 +75,24 @@ export default function Home() {
 
           {/* Scroll hint */}
           <div className="pt-12">
-            <svg width="24" height="36" viewBox="0 0 24 36" className="animate-gentle-bounce opacity-40">
+            <svg width="24" height="36" viewBox="0 0 24 36" className="opacity-40">
               <rect x="1" y="1" width="22" height="34" rx="11" stroke="#6B6B6B" strokeWidth="1.5" fill="none" />
-              <circle cx="12" cy="10" r="2.5" fill="#6B6B6B" className="animate-scroll-dot" />
+              <circle cx="12" cy="10" r="2.5" fill="#6B6B6B" />
             </svg>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* About */}
-      <section id="about" className="py-24 border-t border-[#D5CEC7]">
+      <motion.section
+        id="about"
+        className="py-24 border-t border-[#D5CEC7]"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        variants={sectionVariants}
+      >
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">About</h2>
           <div className="grid sm:grid-cols-2 gap-8">
@@ -67,117 +114,155 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Projects */}
-      <section id="projects" className="py-24 border-t border-[#D5CEC7]">
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">Projects</h2>
-          <div className="space-y-6">
-            {[
-              {
-                title: "AgentFlow",
-                desc: "10+ 种多智能体设计模式，基于 LangGraph 构建",
-                tag: "Open Source",
-                color: "#6B8DAE",
-                href: "https://github.com/iuyup/AgentFlow",
-              },
-              {
-                title: "Auto-Tweet Agent",
-                desc: "LangGraph StateGraph 驱动的 7 节点多智能体系统，自动发布推文",
-                tag: "Agent",
-                color: "#D4856A",
-                href: "#",
-              },
-              {
-                title: "RAG 2.0",
-                desc: "混合 FAISS+BM25 检索，RRF 融合 + BGE-Reranker 二阶段重排",
-                tag: "Retrieval",
-                color: "#B8C5C4",
-                href: "#",
-              },
-            ].map((project) => (
-              <a
-                key={project.title}
-                href={project.href}
-                target={project.href.startsWith("http") ? "_blank" : undefined}
-                rel={project.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="block group"
-              >
-                <div className="p-6 rounded-xl bg-[#E8E2DA]/60 border border-[#D5CEC7] hover:bg-[#E8E2DA] transition-all duration-300">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-lg font-medium text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm text-[#6B6B6B] mt-1">{project.desc}</p>
-                    </div>
-                    <span
-                      className="shrink-0 text-xs px-3 py-1 rounded-full border"
-                      style={{ color: project.color, borderColor: project.color + "40" }}
-                    >
-                      {project.tag}
-                    </span>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
+      <section id="projects" className="py-24 border-t border-[#D5CEC7]" ref={projectsRef}>
+        <div className="max-w-3xl mx-auto px-6 relative z-10">
+          <motion.h2
+            className="font-caveat text-4xl mb-8 text-[#6B8DAE]"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            variants={sectionVariants}
+          >
+            Projects
+          </motion.h2>
         </div>
+
+        {/* Full-width scroll-driven card */}
+        <motion.div
+          className="bg-[#1a1a2e] overflow-hidden relative"
+          style={{
+            width: cardWidth,
+            x: cardX,
+            borderRadius: cardBorderRadius,
+          }}
+        >
+          <div className="max-w-3xl mx-auto px-6 py-12">
+            <div className="space-y-6">
+              {[
+                {
+                  title: "AgentFlow",
+                  desc: "10+ 种多智能体设计模式，基于 LangGraph 构建",
+                  tag: "Open Source",
+                  color: "#6B8DAE",
+                  href: "https://github.com/iuyup/AgentFlow",
+                },
+                {
+                  title: "Auto-Tweet Agent",
+                  desc: "LangGraph StateGraph 驱动的 10+ 节点多智能体系统，自动发布推文",
+                  tag: "Agent",
+                  color: "#D4856A",
+                  href: "https://github.com/iuyup/News-Tweet-Agent",
+                },
+                {
+                  title: "RAG 2.0",
+                  desc: "混合 FAISS+BM25 检索，RRF 融合 + BGE-Reranker 二阶段重排",
+                  tag: "Retrieval",
+                  color: "#B8C5C4",
+                  href: "https://github.com/iuyup/Enterprise-Rag-Agent",
+                },
+              ].map((project, i) => (
+                <motion.a
+                  key={project.title}
+                  href={project.href}
+                  target={project.href.startsWith("http") ? "_blank" : undefined}
+                  rel={project.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="block group"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.25, 0.1, 0.25, 1],
+                    delay: i * 0.1,
+                  }}
+                  variants={fadeInUp}
+                >
+                  <div className="p-6 rounded-xl bg-[#16213e] border border-[#D4856A]/20 hover:bg-[#1a2744] transition-all duration-300">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-lg font-medium text-[#E8E2DA] group-hover:text-[#6B8DAE] transition-colors duration-300">
+                          {project.title}
+                        </h3>
+                        <p className="text-sm text-[#B8C5C4] mt-1">{project.desc}</p>
+                      </div>
+                      <span
+                        className="shrink-0 text-xs px-3 py-1 rounded-full border"
+                        style={{ color: project.color, borderColor: project.color + "40" }}
+                      >
+                        {project.tag}
+                      </span>
+                    </div>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Music */}
-      <section id="music" className="py-24 border-t border-[#D5CEC7]">
+      <motion.section
+        id="music"
+        className="py-24 border-t border-[#D5CEC7]"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        variants={sectionVariants}
+      >
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">Music</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { 
-                title: "More Life",
-                artist: "Drake",
+              {
                 cover: "/albums/more-life.jpg",
                 url: "https://music.apple.com/cn/album/more-life/1440890708",
               },
-              { 
-                title: "Blonde",
-                artist: "Frank Ocean",
+              {
                 cover: "/albums/blond.jpg",
                 url: "https://music.apple.com/cn/album/blonde/1146195596",
               },
               {
-                title: "SOS",
-                artist: "SZA",
                 cover: "/albums/sos.jpg",
-                url: "https://embed.music.apple.com/cn/album/sos/1657869377",
+                url: "https://music.apple.com/cn/album/sos/1657869377",
               },
               {
-                title: "Never Enough",
-                artist: "Daniel Caesar",
                 cover: "/albums/never-enough.jpg",
                 url: "https://music.apple.com/cn/album/never-enough-bonus-version/1681322859",
               },
-            ].map((album) => (
-              <a
-                key={album.title}
+            ].map((album, i) => (
+              <motion.a
+                key={album.url}
                 href={album.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group block"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  delay: i * 0.08,
+                }}
+                variants={fadeInUp}
               >
                 <div className="aspect-square rounded-lg overflow-hidden bg-[#E8E2DA] border border-[#D5CEC7]">
                   <img
                     src={album.cover}
-                    alt={album.title}
+                    alt=""
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <p className="mt-2 text-sm font-medium text-[#2C2C2C] truncate">{album.title}</p>
-                <p className="text-xs text-[#6B6B6B] truncate">{album.artist}</p>
-              </a>
+              </motion.a>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Footer */}
       <footer className="py-12 border-t border-[#D5CEC7]">

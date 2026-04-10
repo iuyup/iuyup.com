@@ -36,7 +36,7 @@ export default function PostsPage() {
           {posts.map((post) => (
             <Link
               key={post.slug}
-              href={`/posts/${post.slug}`}
+              href={`/posts/${encodeURIComponent(post.slug)}`}
               className="block group"
             >
               <article className="p-6 rounded-xl border hover:opacity-90 transition-all duration-300" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>

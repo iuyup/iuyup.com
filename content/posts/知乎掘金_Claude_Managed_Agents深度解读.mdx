@@ -1,0 +1,239 @@
+---
+title: "Claude Managed Agents 深度解读：Agent 开发的范式转移来了"
+date: "2026-04-10"
+summary: "本文记录了 Claude Managed Agents 深度解读。"
+tags: ["AI Agent", "LangGraph", "Managed Agent"]
+---
+
+# Claude Managed Agents 深度解读：Agent 开发的范式转移来了
+
+> Anthropic 刚刚发布了 Claude Managed Agents（Public Beta），我是国内最早一批跑通的开发者。这篇文章带你从 0 到 1 理解它到底是什么、怎么用、以及为什么它可能改变整个 Agent 开发生态。
+
+## 一句话总结
+
+**Managed Agents = Anthropic 帮你把 Agent 的基础设施全包了。你只负责定义"Agent 做什么"，Anthropic 负责"Agent 怎么跑"。**
+
+如果你之前自己搭过 Agent 系统（LangGraph、CrewAI、AutoGen……），你一定经历过这些痛苦：
+
+- 写 agent loop（循环调用 LLM → 解析 tool call → 执行 → 返回）
+- 搭沙箱环境让 Agent 安全地跑代码
+- 处理上下文超长时的 context window 管理
+- 搞 tool 调用的错误恢复和重试
+- 部署到云端、做持久化、做监控……
+
+**这些事情，Managed Agents 全部帮你做了。**
+
+---
+
+## 核心架构：4 个概念搞懂一切
+
+Managed Agents 的设计围绕 4 个核心抽象：
+
+**Agent（智能体定义）**
+= model + system prompt + tools + MCP servers + skills
+相当于一份"配置清单"。创建一次，拿到 agent ID，后续所有 session 复用。
+
+**Environment（运行环境）**
+= 云端容器模板。预装 Python、Node.js、Go 等，配置网络规则和文件挂载。
+
+**Session（会话实例）**
+= Agent + Environment 的一次具体执行。有状态，可持久化，支持长时间运行。
+
+**Events（事件流）**
+= 你的应用和 Agent 之间的消息交换。通过 SSE（Server-Sent Events）实时流式传输。
+
+用一个类比：Agent 是"设计图"，Environment 是"工厂"，Session 是"一次生产过程"，Events 是"生产日志"。
+
+---
+
+## 最大亮点：Web 可视化调试 → 本地 SDK 无缝衔接
+
+**这是我觉得 Managed Agents 最牛的设计创新。**
+
+传统的 Agent 开发流程是这样的：
+1. 本地写代码 → 跑不通 → 改代码 → 跑不通 → 加日志 → 改代码……
+2. 调试全靠 print 和 verbose 日志
+
+Managed Agents 的流程完全不同：
+
+**第一步：在 Console（Web 界面）里可视化创建和测试**
+
+打开 Claude Console → Managed Agents → Quickstart，你能看到一个完整的向导：
+
+1. 选模板或自定义 Agent 配置
+2. 配置 Environment（选择网络策略）
+3. 启动 Session，直接在右侧面板看到实时执行过程
+
+右侧的 Debug 面板是杀手级功能——你能看到完整的执行链路：
+- **Thinking** → Claude 的推理过程
+- **Tool** → 调了什么工具、传了什么参数
+- **Result** → 工具返回结果
+- **Model** → token 用量（包括 cache read/write）
+- **Session idle** → 完成
+
+**第二步：确认 Agent 行为正确后，一键拿到 SDK 代码**
+
+Console 会直接生成可运行的 Python/TypeScript/Go 代码，包含你的 agent ID 和 environment ID。复制 → 粘贴 → 本地运行，完事。
+
+**这意味着什么？**
+
+你不再需要在本地反复调试 Agent 的行为逻辑。在 Web 上看到 Agent 跑得对了，再拿到本地集成。**调试成本直接砍掉 80%。**
+
+---
+
+## 实操：从 0 跑通 Managed Agents
+
+### 环境准备
+
+```bash
+pip install anthropic
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+```
+
+### Step 1：创建 Agent
+
+```python
+from anthropic import Anthropic
+
+client = Anthropic()
+
+agent = client.beta.agents.create(
+    name="Coding Assistant",
+    model="claude-sonnet-4-6",
+    system="You are a helpful coding assistant. Write clean, well-documented code.",
+    tools=[
+        {"type": "agent_toolset_20260401"},  # 全量内置工具
+    ],
+)
+print(f"Agent ID: {agent.id}")
+```
+
+`agent_toolset_20260401` 是一个"全家桶"工具类型，一次性启用 bash、文件操作、web search 等所有内置工具。
+
+### Step 2：创建 Environment
+
+```python
+environment = client.beta.environments.create(
+    name="quickstart-env",
+    config={
+        "type": "cloud",
+        "networking": {"type": "unrestricted"},
+    },
+)
+print(f"Environment ID: {environment.id}")
+```
+
+### Step 3：启动 Session
+
+```python
+session = client.beta.sessions.create(
+    agent=agent.id,
+    environment_id=environment.id,
+    title="Quickstart session",
+)
+print(f"Session ID: {session.id}")
+```
+
+### Step 4：发送消息 + 流式接收
+
+```python
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{
+            "type": "user.message",
+            "content": [{"type": "text", "text": "搜索最新的 Claude 新闻并总结"}],
+        }],
+    )
+
+    for event in stream:
+        match event.type:
+            case "agent.message":
+                for block in event.content:
+                    print(block.text, end="")
+            case "agent.tool_use":
+                print(f"\n[🔧 Using tool: {event.name}]")
+            case "session.status_idle":
+                print("\n\n✅ Agent finished.")
+                break
+```
+
+跑起来后你会看到类似这样的输出：
+
+```
+[🔧 Using tool: web_search]
+Here's a summary of the latest news about Claude and Anthropic:
+...（Agent 自主搜索网页、整理信息、输出结果）
+✅ Agent finished.
+```
+
+---
+
+## 它到底帮你省了什么？
+
+| 自己搭 Agent | 用 Managed Agents |
+|------------|------------------|
+| 自己写 agent loop | Anthropic 内置 harness |
+| 自己搭沙箱执行环境 | 云端容器，预装依赖 |
+| 自己做 context 管理 | 内置 prompt caching + compaction |
+| 自己做 tool 编排和错误恢复 | 内置 orchestration |
+| 自己接 LangSmith 做 tracing | Console 内置 session tracing |
+| 部署到服务器 | Anthropic 托管 |
+| 自己做权限和安全 | 内置 scoped permissions |
+
+---
+
+## 对 Agent 开发者意味着什么？
+
+**1. 基础设施层被平台吃掉了**
+
+以前你会 LangGraph 搭 agent loop 是一个技能。以后这不再是壁垒——Managed Agents 把这层标准化了。
+
+**2. 竞争焦点上移到业务逻辑层**
+
+未来 Agent 开发者的核心能力不是"怎么搭 agent loop"，而是：
+- 如何设计 system prompt 让 Agent 在复杂场景中表现得好
+- 如何选择和组合 tools/MCP servers
+- 如何定义 evaluation 标准
+- 如何设计 multi-agent 协作
+
+**3. 理解底层的人反而更有优势**
+
+不理解 agent loop、tool routing、context management 的人，连 Managed Agents 的配置都写不好。平台降低了门槛，但拉大了理解力的差距。
+
+---
+
+## 定价
+
+- 标准 token 费用（跟 Messages API 一样）
+- $0.08 / session-hour（按毫秒计费，idle 不收费）
+- Web search：$10 / 1000 次
+
+对于个人开发者来说，跑几次 quickstart 花不了多少钱。
+
+---
+
+## 还有什么在路上？
+
+三个功能目前在 Research Preview，需要单独申请：
+
+- **Outcomes（结果评估）**：定义成功标准，Claude 自动迭代
+- **Multiagent（多 Agent 协作）**：多个 Agent 协同工作
+- **Memory（记忆）**：跨 session 的记忆持久化
+
+这三个功能一旦 GA，Agent 的能力边界会再次扩大。
+
+---
+
+## 写在最后
+
+Managed Agents 不是一个简单的 API 封装。它是 Anthropic 从"模型提供商"向"Agent 平台"转型的标志性产品。
+
+对于我们开发者来说，最重要的不是焦虑"我的技能会不会被替代"，而是**尽快上手、尽快积累经验、尽快在新平台上建立优势**。
+
+工具在变，但理解 Agent 系统设计的能力不会贬值。
+
+---
+
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
+*GitHub: github.com/iuyup*

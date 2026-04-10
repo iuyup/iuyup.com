@@ -1,7 +1,7 @@
 "use client";
 
-import { useScroll, useTransform, motion } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -14,25 +14,6 @@ const sectionVariants = {
 };
 
 export default function Home() {
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: projectsRef,
-    offset: ["start end", "end end"],
-  });
-
-  // Projects card expansion animation
-  const cardWidth = useTransform(
-    scrollYProgress,
-    [0, 0.6],
-    ["calc(100% - 3rem)", "100vw"]
-  );
-  const cardX = useTransform(scrollYProgress, [0, 0.6], ["1.5rem", "0"]);
-  const cardBorderRadius = useTransform(
-    scrollYProgress,
-    [0, 0.6],
-    ["24px", "0"]
-  );
-
   return (
     <div className="min-h-screen bg-[#F5F0EB] text-[#2C2C2C] selection:bg-[#D4856A]/30">
       {/* Nav */}
@@ -43,18 +24,14 @@ export default function Home() {
             <a href="#about" className="hover:text-[#2C2C2C] transition-colors duration-300">About</a>
             <a href="#projects" className="hover:text-[#2C2C2C] transition-colors duration-300">Projects</a>
             <a href="#music" className="hover:text-[#2C2C2C] transition-colors duration-300">Music</a>
+            <Link href="/posts" className="hover:text-[#2C2C2C] transition-colors duration-300">Blog</Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
       <section className="min-h-screen flex flex-col justify-center max-w-3xl mx-auto px-6">
-        <motion.div
-          className="space-y-6"
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        >
+        <div className="space-y-6">
           {/* Hand-drawn decorative element */}
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="mb-4 opacity-60">
             <circle cx="24" cy="24" r="20" stroke="#D4856A" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
@@ -80,7 +57,7 @@ export default function Home() {
               <circle cx="12" cy="10" r="2.5" fill="#6B6B6B" />
             </svg>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* About */}
@@ -117,8 +94,8 @@ export default function Home() {
       </motion.section>
 
       {/* Projects */}
-      <section id="projects" className="py-24 border-t border-[#D5CEC7]" ref={projectsRef}>
-        <div className="max-w-3xl mx-auto px-6 relative z-10">
+      <section id="projects" className="py-24 border-t border-[#D5CEC7]">
+        <div className="max-w-3xl mx-auto px-6">
           <motion.h2
             className="font-caveat text-4xl mb-8 text-[#6B8DAE]"
             initial="hidden"
@@ -129,79 +106,67 @@ export default function Home() {
           >
             Projects
           </motion.h2>
-        </div>
 
-        {/* Full-width scroll-driven card */}
-        <motion.div
-          className="bg-[#1a1a2e] overflow-hidden relative"
-          style={{
-            width: cardWidth,
-            x: cardX,
-            borderRadius: cardBorderRadius,
-          }}
-        >
-          <div className="max-w-3xl mx-auto px-6 py-12">
-            <div className="space-y-6">
-              {[
-                {
-                  title: "AgentFlow",
-                  desc: "10+ 种多智能体设计模式，基于 LangGraph 构建",
-                  tag: "Open Source",
-                  color: "#6B8DAE",
-                  href: "https://github.com/iuyup/AgentFlow",
-                },
-                {
-                  title: "Auto-Tweet Agent",
-                  desc: "LangGraph StateGraph 驱动的 10+ 节点多智能体系统，自动发布推文",
-                  tag: "Agent",
-                  color: "#D4856A",
-                  href: "https://github.com/iuyup/News-Tweet-Agent",
-                },
-                {
-                  title: "RAG 2.0",
-                  desc: "混合 FAISS+BM25 检索，RRF 融合 + BGE-Reranker 二阶段重排",
-                  tag: "Retrieval",
-                  color: "#B8C5C4",
-                  href: "https://github.com/iuyup/Enterprise-Rag-Agent",
-                },
-              ].map((project, i) => (
-                <motion.a
-                  key={project.title}
-                  href={project.href}
-                  target={project.href.startsWith("http") ? "_blank" : undefined}
-                  rel={project.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="block group"
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.25, 0.1, 0.25, 1],
-                    delay: i * 0.1,
-                  }}
-                  variants={fadeInUp}
-                >
-                  <div className="p-6 rounded-xl bg-[#16213e] border border-[#D4856A]/20 hover:bg-[#1a2744] transition-all duration-300">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-lg font-medium text-[#E8E2DA] group-hover:text-[#6B8DAE] transition-colors duration-300">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm text-[#B8C5C4] mt-1">{project.desc}</p>
-                      </div>
-                      <span
-                        className="shrink-0 text-xs px-3 py-1 rounded-full border"
-                        style={{ color: project.color, borderColor: project.color + "40" }}
-                      >
-                        {project.tag}
-                      </span>
+          <div className="space-y-6">
+            {[
+              {
+                title: "AgentFlow",
+                desc: "10+ 种多智能体设计模式，基于 LangGraph 构建",
+                tag: "Open Source",
+                color: "#6B8DAE",
+                href: "https://github.com/iuyup/AgentFlow",
+              },
+              {
+                title: "Auto-Tweet Agent",
+                desc: "LangGraph StateGraph 驱动的 10+ 节点多智能体系统，自动发布推文",
+                tag: "Agent",
+                color: "#D4856A",
+                href: "https://github.com/iuyup/News-Tweet-Agent",
+              },
+              {
+                title: "RAG 2.0",
+                desc: "混合 FAISS+BM25 检索，RRF 融合 + BGE-Reranker 二阶段重排",
+                tag: "Retrieval",
+                color: "#B8C5C4",
+                href: "https://github.com/iuyup/Enterprise-Rag-Agent",
+              },
+            ].map((project, i) => (
+              <motion.a
+                key={project.title}
+                href={project.href}
+                target={project.href.startsWith("http") ? "_blank" : undefined}
+                rel={project.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="block group"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  delay: i * 0.1,
+                }}
+                variants={fadeInUp}
+              >
+                <div className="p-6 rounded-xl bg-[#E8E2DA] border border-[#D5CEC7] hover:bg-[#f0ebe3] transition-all duration-300">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-[#6B6B6B] mt-1">{project.desc}</p>
                     </div>
+                    <span
+                      className="shrink-0 text-xs px-3 py-1 rounded-full border"
+                      style={{ color: project.color, borderColor: project.color + "40" }}
+                    >
+                      {project.tag}
+                    </span>
                   </div>
-                </motion.a>
-              ))}
-            </div>
+                </div>
+              </motion.a>
+            ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Music */}

@@ -7,6 +7,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Comments from "@/components/Comments";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -261,6 +262,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </article>
+
+      <Comments />
 
       {/* Footer */}
       <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>

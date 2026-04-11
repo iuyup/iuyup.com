@@ -16,7 +16,12 @@ export interface Post extends PostFrontmatter {
 }
 
 export function getAllPosts(): Post[] {
-  const files = fs.readdirSync(postsDirectory);
+  let files: string[];
+  try {
+    files = fs.readdirSync(postsDirectory);
+  } catch {
+    return [];
+  }
 
   const posts = files
     .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))

@@ -54,7 +54,7 @@ export default function PostsPage() {
                   </time>
                 </div>
                 <p className="mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{post.summary}</p>
-                {post.tags.length > 0 && (
+                {post.tags && post.tags.length > 0 && (
                   <div className="flex gap-2 flex-wrap">
                     {post.tags.map((tag) => (
                       <span

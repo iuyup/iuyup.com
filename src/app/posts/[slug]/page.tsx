@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -15,6 +16,7 @@ export async function generateStaticParams() {
 // Filter out Obsidian wiki links like ![[note]] or [[note]]
 function filterObsidianSyntax(content: string): string {
   return content
+    .replace(/<!--[\s\S]*?-->/g, "") // Remove HTML comments
     .replace(/!\[\[([^\]]+)\]\]/g, "") // Remove ![[]] embeds
     .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2") // [[note|display]] -> display
     .replace(/\[\[([^\]]+)\]\]/g, "$1") // [[note]] -> note
@@ -62,18 +64,18 @@ const mdxComponents = {
   code: (props: React.HTMLAttributes<HTMLElement> & { "data-language"?: string }) => {
     const { "data-language": dataLanguage, children, ...rest } = props;
     if (dataLanguage) {
-      return <code {...rest}>{children}</code>;
+      return <code className="font-mono" {...rest}>{children}</code>;
     }
     return (
-      <code className="px-1.5 py-0.5 rounded text-sm" style={{ background: 'var(--surface)', color: 'var(--accent)' }} {...rest}>
+      <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: '#E8E2DA', color: 'var(--accent)' }} {...rest}>
         {children}
       </code>
     );
   },
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm"
-      style={{ background: 'var(--code-bg)' }}
+      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm font-mono"
+      style={{ background: '#2C2C2C', color: '#E8E2DA' }}
       {...props}
     />
   ),
@@ -121,13 +123,17 @@ const markdownComponents = {
       {...props}
     />
   ),
-  code: (props: React.HTMLAttributes<HTMLElement>) => (
-    <code className="px-1.5 py-0.5 rounded text-sm" style={{ background: 'var(--surface)', color: 'var(--accent)' }} {...props} />
-  ),
+  code: (props: React.HTMLAttributes<HTMLElement> & { className?: string }) => {
+    const isBlock = props.className?.includes('language-');
+    if (isBlock) {
+      return <code className="font-mono" {...props} />;
+    }
+    return <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: '#E8E2DA', color: 'var(--accent)' }} {...props} />;
+  },
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm"
-      style={{ background: 'var(--code-bg)' }}
+      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm font-mono"
+      style={{ background: '#2C2C2C', color: '#E8E2DA' }}
       {...props}
     />
   ),
@@ -246,6 +252,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             ) : (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
                 components={markdownComponents}
               >
                 {filteredContent}

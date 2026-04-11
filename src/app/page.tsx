@@ -290,7 +290,7 @@ export default function Home() {
                       </time>
                     </div>
                     <p className="text-sm text-[#6B6B6B] leading-relaxed mb-3">{post.summary}</p>
-                    {post.tags.length > 0 && (
+                    {post.tags && post.tags.length > 0 && (
                       <div className="flex gap-2 flex-wrap">
                         {post.tags.map((tag) => (
                           <span

@@ -40,6 +40,8 @@ export default function Chat() {
         body: JSON.stringify({ messages: [...messages, userMessage] }),
       });
 
+      // Skip the response.ok check here since we handle streaming
+
       if (!response.ok) throw new Error("Failed to fetch");
 
       const reader = response.body?.getReader();
@@ -134,13 +136,15 @@ export default function Chat() {
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className="max-w-[80%] px-3 py-2 rounded-xl text-sm"
+                  className="max-w-[80%] px-3 py-2 rounded-xl text-sm whitespace-pre-wrap"
                   style={{
                     background: msg.role === "user" ? "#6B8DAE" : "#E8E2DA",
                     color: msg.role === "user" ? "#F5F0EB" : "#2C2C2C",
                   }}
                 >
-                  {msg.content}
+                  {msg.role === "assistant"
+                    ? msg.content.replace(/\*\*/g, '').replace(/#{1,3}\s?/g, '').replace(/^- /gm, '')
+                    : msg.content}
                 </div>
               </div>
             ))}

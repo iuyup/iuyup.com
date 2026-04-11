@@ -212,9 +212,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <p className="text-lg leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
               {post.frontmatter.summary}
             </p>
-            {post.frontmatter.tags.length > 0 && (
+            {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
               <div className="flex gap-2 flex-wrap">
-                {post.frontmatter.tags.map((tag) => (
+                {post.frontmatter.tags?.map((tag) => (
                   <span
                     key={tag}
                     className="text-xs px-3 py-1 rounded-full border"

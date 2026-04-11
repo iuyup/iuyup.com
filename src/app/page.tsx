@@ -1,24 +1,38 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import FadeIn from "@/components/FadeIn";
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const sectionVariants = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
 };
 
 export default function Home() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
+      <nav
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-[#F5F0EB]/80 backdrop-blur-md border-b border-[#D5CEC7] shadow-sm"
+            : "bg-transparent border-b-0"
+        }`}
+        style={{ background: scrolled ? undefined : 'transparent', borderColor: scrolled ? '#D5CEC7' : 'transparent' }}
+      >
         <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
           <span className="font-caveat text-xl leading-none" style={{ color: 'var(--text)' }}>T.</span>
           <div className="flex gap-5 text-sm items-center self-center" style={{ color: 'var(--text-secondary)' }}>
@@ -63,14 +77,10 @@ export default function Home() {
       </section>
 
       {/* About */}
-      <motion.section
+      <FadeIn>
+      <section
         id="about"
         className="py-24 border-t border-[#D5CEC7]"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        variants={sectionVariants}
       >
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">About</h2>
@@ -93,21 +103,16 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
+      </FadeIn>
 
       {/* Projects */}
+      <FadeIn>
       <section id="projects" className="py-24 border-t border-[#D5CEC7]">
         <div className="max-w-3xl mx-auto px-6">
-          <motion.h2
-            className="font-caveat text-4xl mb-8 text-[#6B8DAE]"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            variants={sectionVariants}
-          >
+          <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">
             Projects
-          </motion.h2>
+          </h2>
 
           <div className="space-y-6">
             {[
@@ -147,7 +152,6 @@ export default function Home() {
                   ease: [0.25, 0.1, 0.25, 1],
                   delay: i * 0.1,
                 }}
-                variants={fadeInUp}
               >
                 <div className="p-6 rounded-xl bg-[#E8E2DA] border border-[#D5CEC7] hover:bg-[#f0ebe3] transition-all duration-300">
                   <div className="flex items-start justify-between gap-4">
@@ -170,16 +174,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </FadeIn>
 
       {/* Music */}
-      <motion.section
+      <FadeIn>
+      <section
         id="music"
         className="py-24 border-t border-[#D5CEC7]"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        variants={sectionVariants}
       >
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">Music</h2>
@@ -229,17 +230,14 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </motion.section>
+      </section>
+      </FadeIn>
 
       {/* Blog */}
-      <motion.section
+      <FadeIn>
+      <section
         id="blog"
         className="py-24 border-t border-[#D5CEC7]"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        variants={sectionVariants}
       >
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">Blog</h2>
@@ -270,7 +268,6 @@ export default function Home() {
                   ease: [0.25, 0.1, 0.25, 1],
                   delay: i * 0.1,
                 }}
-                variants={fadeInUp}
               >
                 <Link
                   href={`/posts/${encodeURIComponent(post.slug)}`}
@@ -317,7 +314,8 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </motion.section>
+      </section>
+      </FadeIn>
 
       {/* Footer */}
       <footer className="py-12 border-t border-[#D5CEC7]">

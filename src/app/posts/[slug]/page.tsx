@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllPosts, getPostBySlug } from "@/lib/posts";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
+import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export async function generateStaticParams() {
@@ -10,7 +12,16 @@ export async function generateStaticParams() {
   return posts.map((post) => ({ slug: encodeURIComponent(post.slug) }));
 }
 
-const components = {
+// Filter out Obsidian wiki links like ![[note]] or [[note]]
+function filterObsidianSyntax(content: string): string {
+  return content
+    .replace(/!\[\[([^\]]+)\]\]/g, "") // Remove ![[]] embeds
+    .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2") // [[note|display]] -> display
+    .replace(/\[\[([^\]]+)\]\]/g, "$1") // [[note]] -> note
+    .replace(/!\[\[([^\]]+)\|([^\]]+)\]\]/g, ""); // Remove ![[note|display]]
+}
+
+const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
   ),
@@ -72,6 +83,72 @@ const components = {
   ),
 };
 
+const markdownComponents = {
+  h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
+  ),
+  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h2 className="font-caveat text-3xl mb-4 mt-10" style={{ color: 'var(--primary)' }} {...props} />
+  ),
+  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h3 className="font-medium text-lg mb-3 mt-8" style={{ color: 'var(--text)' }} {...props} />
+  ),
+  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
+    <p className="leading-relaxed mb-4" style={{ color: 'var(--text-secondary)' }} {...props} />
+  ),
+  ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
+    <ul className="list-disc list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+  ),
+  ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
+    <ol className="list-decimal list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+  ),
+  li: (props: React.HTMLAttributes<HTMLLIElement>) => (
+    <li style={{ color: 'var(--text-secondary)' }} {...props} />
+  ),
+  a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a
+      className="hover:underline"
+      style={{ color: 'var(--primary)' }}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    />
+  ),
+  blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
+    <blockquote
+      className="border-l-4 pl-4 my-4 italic"
+      style={{ borderColor: 'var(--accent)', color: 'var(--text-secondary)' }}
+      {...props}
+    />
+  ),
+  code: (props: React.HTMLAttributes<HTMLElement>) => (
+    <code className="px-1.5 py-0.5 rounded text-sm" style={{ background: 'var(--surface)', color: 'var(--accent)' }} {...props} />
+  ),
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
+    <pre
+      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm"
+      style={{ background: 'var(--code-bg)' }}
+      {...props}
+    />
+  ),
+  hr: () => <hr style={{ borderColor: 'var(--border)' }} className="my-8" />,
+  strong: (props: React.HTMLAttributes<HTMLElement>) => (
+    <strong className="font-medium" style={{ color: 'var(--text)' }} {...props} />
+  ),
+  table: (props: React.HTMLAttributes<HTMLTableElement>) => (
+    <table className="w-full border-collapse mb-4" style={{ borderColor: 'var(--border)' }} {...props} />
+  ),
+  th: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <th className="border px-4 py-2 text-left" style={{ borderColor: 'var(--border)', background: 'var(--surface)' }} {...props} />
+  ),
+  td: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <td className="border px-4 py-2" style={{ borderColor: 'var(--border)' }} {...props} />
+  ),
+  del: (props: React.HTMLAttributes<HTMLModElement>) => (
+    <del className="line-through opacity-60" {...props} />
+  ),
+};
+
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
@@ -81,15 +158,17 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
+  const filteredContent = filterObsidianSyntax(post.content);
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="font-caveat text-xl hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
           </Link>
-          <div className="flex gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+          <div className="flex gap-5 text-sm items-center self-center" style={{ color: 'var(--text-secondary)' }}>
             <Link href="/#about" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>About</Link>
             <Link href="/#projects" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Projects</Link>
             <Link href="/posts" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Blog</Link>
@@ -143,26 +222,35 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
           {/* Content */}
           <div className="prose">
-            <MDXRemote
-              source={post.content}
-              components={components}
-              options={{
-                mdxOptions: {
-                  rehypePlugins: [
-                    [
-                      rehypePrettyCode,
-                      {
-                        theme: {
-                          dark: "github-dark",
-                          light: "github-light",
+            {post.isMDX ? (
+              <MDXRemote
+                source={filteredContent}
+                components={mdxComponents}
+                options={{
+                  mdxOptions: {
+                    rehypePlugins: [
+                      [
+                        rehypePrettyCode,
+                        {
+                          theme: {
+                            dark: "github-dark",
+                            light: "github-light",
+                          },
+                          defaultColorScheme: "auto",
                         },
-                        defaultColorScheme: "auto",
-                      },
+                      ],
                     ],
-                  ],
-                },
-              }}
-            />
+                  },
+                }}
+              />
+            ) : (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+              >
+                {filteredContent}
+              </ReactMarkdown>
+            )}
           </div>
         </div>
       </article>

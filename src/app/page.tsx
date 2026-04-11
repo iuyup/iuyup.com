@@ -62,8 +62,8 @@ export default function Home() {
             汕头大学 · 光电信息科学与工程
           </p>
           <p className="text-base text-[#6B6B6B] max-w-xl leading-relaxed">
-            对 AI Agent、开源和长期主义感兴趣。正在探索芯片与能源的交叉地带，
-            相信技术应该为人服务。
+            对 AI Agent、开源和长期主义感兴趣。正在学习 AI Agent并且不断跟踪 AI 前沿，
+            喜欢音乐。
           </p>
 
           {/* Scroll hint */}
@@ -87,18 +87,21 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 gap-8">
             <div className="space-y-4 text-[#6B6B6B] leading-relaxed">
               <p>
-                21 岁，大三在读。专业是光电，但大部分时间都在写 Agent 和拆开源项目的源码。
+                大家好哇，欢迎来到我的网站！
               </p>
               <p>
-                信奉「先做出来再说」—— 与其花三个月学理论，不如花三天跑通一个项目，再回头补知识。
+                现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。
+              </p>
+              <p>
+                现在在找 AI 开发相关的实习，真的好难找哇。
               </p>
             </div>
             <div className="space-y-4 text-[#6B6B6B] leading-relaxed">
               <p>
-                长期关注 AI → 算力 → 芯片 → 能源 这条主线。在构建一个跨越十年的认知复利系统。
+                喜欢听歌，喜欢 rnb、 喜欢 neosoul、喜欢jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）
               </p>
               <p>
-                喜欢《黑镜》，喜欢思考技术与人的关系。
+                对未来有明确规划，但是保密。
               </p>
             </div>
           </div>

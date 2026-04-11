@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import Chat from "@/components/Chat";
 
 export const metadata: Metadata = {
   title: "T — Builder & Explorer",
@@ -29,6 +30,7 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <Chat />
       </body>
     </html>
   );

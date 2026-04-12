@@ -79,17 +79,19 @@ export default function Chat() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-50"
-        style={{ background: "#6B8DAE" }}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-white border shadow-md flex items-center justify-center transition-all hover:scale-105 hover:bg-[#F5F0EB] z-50"
+        style={{ borderColor: "#D5CEC7" }}
         aria-label="Chat"
       >
         {isOpen ? (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5F0EB" strokeWidth="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4856A" strokeWidth="2">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5F0EB" strokeWidth="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+          <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="20" stroke="#D4856A" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
+            <circle cx="24" cy="24" r="8" fill="#D4856A" opacity="0.4" />
+            <path d="M24 4 C26 14, 34 22, 44 24 C34 26, 26 34, 24 44 C22 34, 14 26, 4 24 C14 22, 22 14, 24 4Z" stroke="#D4856A" strokeWidth="1.5" fill="none" opacity="0.3" />
           </svg>
         )}
       </button>

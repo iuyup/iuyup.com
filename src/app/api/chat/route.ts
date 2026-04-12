@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { NextRequest } from "next/server";
+import { buildRAGSystemPrompt } from "@/lib/rag";
 
 const client = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
@@ -28,10 +29,14 @@ export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json();
 
+    // 从用户消息中提取 query 用于 RAG 检索
+    const userMessage = messages.length > 0 ? messages[messages.length - 1].content : "";
+    const systemPrompt = buildRAGSystemPrompt(SYSTEM_PROMPT, userMessage);
+
     const stream = await client.chat.completions.create({
       model: process.env.DEEPSEEK_MODEL || "deepseek-chat",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         ...messages,
       ],
       stream: true,

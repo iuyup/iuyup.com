@@ -17,7 +17,7 @@ const projects = [
   },
   {
     title: "Auto-Tweet Agent",
-    desc: "LangGraph StateGraph 驱动的 10+ 节点多智能体系统，自动发布推文",
+    desc: "LangGraph StateGraph 驱动的 7 节点多智能体系统，自动发布推文",
     tag: "Agent",
     color: "#D4856A",
     href: "https://github.com/iuyup/News-Tweet-Agent",

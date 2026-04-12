@@ -9,6 +9,8 @@ import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Comments from "@/components/Comments";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: encodeURIComponent(post.slug) }));

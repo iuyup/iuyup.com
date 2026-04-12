@@ -177,7 +177,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
           </Link>
-          <div className="flex gap-5 text-sm items-center self-center" style={{ color: 'var(--text-secondary)' }}>
+          <div className="flex gap-5 text-sm items-center self-center font-serif" style={{ color: 'var(--text-secondary)' }}>
             <Link href="/#about" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>About</Link>
             <Link href="/#projects" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Projects</Link>
             <Link href="/posts" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Blog</Link>
@@ -219,7 +219,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 {post.frontmatter.tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-3 py-1 rounded-full border"
+                    className="text-xs px-3 py-1 rounded-full border font-sans"
                     style={{ background: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
                   >
                     {tag}
@@ -271,7 +271,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm" style={{ color: 'var(--text-secondary)' }}>
           <span className="font-caveat text-base">T.</span>
-          <div className="flex gap-4">
+          <div className="flex gap-4 font-serif">
             <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
               GitHub
             </a>

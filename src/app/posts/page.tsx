@@ -13,7 +13,7 @@ export default function PostsPage() {
           <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
           </Link>
-          <div className="flex gap-5 text-sm items-center self-center" style={{ color: 'var(--text-secondary)' }}>
+          <div className="flex gap-5 text-sm items-center self-center font-serif" style={{ color: 'var(--text-secondary)' }}>
             <Link href="/#about" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>About</Link>
             <Link href="/#projects" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Projects</Link>
             <Link href="/#music" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Music</Link>
@@ -42,7 +42,7 @@ export default function PostsPage() {
             >
               <article className="p-6 rounded-xl border hover:opacity-90 transition-all duration-300" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
                 <div className="flex items-start justify-between gap-4 mb-3">
-                  <h2 className="text-xl font-medium group-hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
+                  <h2 className="text-xl font-medium font-serif group-hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
                     {post.title}
                   </h2>
                   <time className="text-sm shrink-0" style={{ color: 'var(--text-secondary)' }}>
@@ -59,7 +59,7 @@ export default function PostsPage() {
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs px-2 py-1 rounded-full border"
+                        className="text-xs px-2 py-1 rounded-full border font-sans"
                         style={{ background: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
                       >
                         {tag}
@@ -77,7 +77,7 @@ export default function PostsPage() {
       <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm" style={{ color: 'var(--text-secondary)' }}>
           <span className="font-caveat text-base">T.</span>
-          <div className="flex gap-4">
+          <div className="flex gap-4 font-serif">
             <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
               GitHub
             </a>

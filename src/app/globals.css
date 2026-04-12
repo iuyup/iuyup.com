@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500&family=Source+Serif+4:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @import "tailwindcss";
 @import "highlight.js/styles/github-dark.css";
@@ -29,7 +29,7 @@
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-family: 'Source Serif 4', 'Noto Sans SC', ui-serif, Georgia, serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -37,6 +37,10 @@ body {
 
 .font-caveat {
   font-family: 'Caveat', cursive;
+}
+
+.font-serif {
+  font-family: 'Source Serif 4', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
 }
 
 html {

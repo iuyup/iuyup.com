@@ -52,13 +52,13 @@ export function Projects() {
               <div className="p-6 rounded-xl bg-[#E8E2DA] border border-[#D5CEC7] hover:bg-[#f0ebe3] transition-all duration-300">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-medium text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
+                    <h3 className="text-lg font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
                       {project.title}
                     </h3>
                     <p className="text-sm text-[#6B6B6B] mt-1">{project.desc}</p>
                   </div>
                   <span
-                    className="shrink-0 text-xs px-3 py-1 rounded-full border"
+                    className="shrink-0 text-xs px-3 py-1 rounded-full border font-sans"
                     style={{ color: project.color, borderColor: project.color + "40" }}
                   >
                     {project.tag}

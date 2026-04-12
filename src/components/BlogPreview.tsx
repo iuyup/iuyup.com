@@ -34,7 +34,7 @@ export default function BlogPreview({ posts }: BlogPreviewProps) {
           <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="block group">
             <div className="p-6 rounded-xl bg-[#E8E2DA] border border-[#D5CEC7] hover:bg-[#f0ebe3] transition-all duration-300">
               <div className="flex items-start justify-between gap-4 mb-3">
-                <h3 className="text-lg font-medium text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
+                <h3 className="text-lg font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors duration-300">
                   {post.title}
                 </h3>
                 <time className="text-sm shrink-0 text-[#6B6B6B]">
@@ -53,7 +53,7 @@ export default function BlogPreview({ posts }: BlogPreviewProps) {
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-xs px-2 py-1 rounded-full border text-[#6B6B6B]"
+                      className="text-xs px-2 py-1 rounded-full border text-[#6B6B6B] font-sans"
                       style={{ borderColor: '#D5CEC7' }}
                     >
                       {tag}

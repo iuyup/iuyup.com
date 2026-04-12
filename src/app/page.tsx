@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import BlogSection from "@/components/BlogSection";
 import { Projects, Music } from "@/components/ContentCards";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -23,13 +24,13 @@ export default function Home() {
             汕头大学 · 光电信息科学与工程
           </p>
 
-          <div className="flex justify-center items-center gap-6 pt-4">
-            <a href="#projects" className="bg-[#6B8DAE] text-white rounded-full px-6 py-3 hover:opacity-80 transition-opacity">
+          <div className="flex justify-center items-center gap-4 pt-4">
+            <a href="#projects" className="min-w-[180px] text-center bg-[#6B8DAE] text-white rounded-lg px-8 py-3.5 tracking-wider text-sm font-medium font-serif hover:opacity-80 transition-opacity">
               View Projects
             </a>
-            <a href="#about" className="text-[#2C2C2C] underline">
-              About Me
-            </a>
+            <Link href="/posts" className="min-w-[180px] text-center bg-transparent border-2 border-[#6B6B6B]/40 text-[#2C2C2C] rounded-lg px-8 py-3.5 tracking-wider text-sm font-medium font-serif hover:border-[#6B8DAE] transition-colors">
+              Read Blog
+            </Link>
           </div>
 
           <div className="mt-22 flex justify-center text-[#6B6B6B]">
@@ -66,7 +67,7 @@ export default function Home() {
       <footer className="py-12 border-t border-[#D5CEC7]">
         <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm text-[#6B6B6B]">
           <span className="font-caveat text-base">T.</span>
-          <div className="flex gap-4">
+          <div className="flex gap-4 font-serif">
             <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[#2C2C2C] transition-colors duration-300">
               GitHub
             </a>

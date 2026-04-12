@@ -7,8 +7,8 @@ const postsDirectory = path.join(process.cwd(), "content/posts");
 export interface PostFrontmatter {
   title: string;
   date: string;
-  summary?: string;
-  tags?: string[];
+  summary: string | undefined;
+  tags: string[] | undefined;
 }
 
 export interface Post extends PostFrontmatter {
@@ -53,11 +53,11 @@ export function getAllPosts(): Post[] {
         slug,
         title: data.title as string,
         date: data.date as string,
-        summary: (data.summary as string) || "",
-        tags: (data.tags as string[]) || [],
+        summary: data.summary as string | undefined,
+        tags: data.tags as string[] | undefined,
       };
     })
-    .filter((post): post is Post => post !== null);
+    .filter((post): post is Post => post !== null) as Post[];
 
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }

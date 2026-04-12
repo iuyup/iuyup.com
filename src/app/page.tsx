@@ -1,5 +1,4 @@
 import Nav from "@/components/Nav";
-import ScrollHint from "@/components/ScrollHint";
 import BlogSection from "@/components/BlogSection";
 import { Projects, Music } from "@/components/ContentCards";
 
@@ -8,33 +7,36 @@ export default function Home() {
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       <Nav />
 
-      {/* Monet Background - Fixed layer */}
+      {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">
-        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.5)', opacity: 0.6 }} />
+        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.5)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.3) 0%, rgba(245,240,235,0.3) 60%, rgba(245,240,235,0.85) 85%, #F5F0EB 100%)' }} />
       </div>
 
       {/* Hero Content */}
-      <section className="relative z-10 min-h-screen flex flex-col justify-center max-w-3xl mx-auto px-6">
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-6">
         <div className="space-y-6">
-          {/* Hand-drawn decorative element */}
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="mb-4 opacity-60">
-            <circle cx="24" cy="24" r="20" stroke="#D4856A" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
-            <circle cx="24" cy="24" r="8" fill="#D4856A" opacity="0.4" />
-            <path d="M24 4 C26 14, 34 22, 44 24 C34 26, 26 34, 24 44 C22 34, 14 26, 4 24 C14 22, 22 14, 24 4Z" stroke="#D4856A" strokeWidth="1.5" fill="none" opacity="0.3" />
-          </svg>
-
-          <h1 className="font-caveat text-6xl sm:text-7xl leading-tight">
+          <h1 className="font-caveat text-6xl md:text-8xl leading-tight">
             Hey, I&apos;m <span className="text-[#6B8DAE]">T</span>
           </h1>
-          <p className="text-lg sm:text-xl text-[#6B6B6B] max-w-xl leading-relaxed">
+          <p className="text-lg text-[#2C2C2C]">
             汕头大学 · 光电信息科学与工程
           </p>
-          <p className="text-base text-[#6B6B6B] max-w-xl leading-relaxed">
-            对 AI Agent、开源和长期主义感兴趣。正在学习 AI Agent并且不断跟踪 AI 前沿，
-            喜欢音乐。
-          </p>
 
-          <ScrollHint />
+          <div className="flex justify-center items-center gap-6 pt-4">
+            <a href="#projects" className="bg-[#6B8DAE] text-white rounded-full px-6 py-3 hover:opacity-80 transition-opacity">
+              View Projects
+            </a>
+            <a href="#about" className="text-[#2C2C2C] underline">
+              About Me
+            </a>
+          </div>
+
+          <div className="mt-22 flex justify-center text-[#6B6B6B]">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" className="animate-bounce">
+              <path d="M8 2v12M2 8l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
         </div>
       </section>
 

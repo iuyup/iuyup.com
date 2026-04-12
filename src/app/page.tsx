@@ -50,7 +50,7 @@ export default function Home() {
                 <p>现在在找 AI 开发相关的实习，真的好难找哇。</p>
               </div>
               <div className="space-y-4 text-[#6B6B6B] leading-relaxed">
-                <p>喜欢听歌，喜欢 rnb、 喜欢 neosoul、喜欢jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）</p>
+                <p>喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）</p>
                 <p>对未来有明确规划，但是保密。</p>
               </div>
             </div>

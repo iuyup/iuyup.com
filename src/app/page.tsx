@@ -1,4 +1,3 @@
-import Nav from "@/components/layout/Nav";
 import HeroSection from "@/components/layout/HeroSection";
 import BentoGrid from "@/components/BentoGrid";
 import { getAllPosts } from "@/lib/posts";
@@ -8,8 +7,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
-      <Nav />
-
       {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">
         <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.5)' }} />

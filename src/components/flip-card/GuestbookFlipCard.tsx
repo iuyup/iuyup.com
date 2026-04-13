@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]';
 
@@ -12,13 +12,24 @@ interface GuestbookMessage {
   likes: number;
 }
 
+const DEFAULT_MESSAGES: GuestbookMessage[] = [
+  { id: '1', name: 'Alice', text: '网站做得真好看！', date: '2026-04-10', likes: 3 },
+  { id: '2', name: 'Bob', text: '期待更多内容！', date: '2026-04-08', likes: 1 },
+  { id: '3', name: 'Carol', text: '手绘风格太赞了', date: '2026-04-05', likes: 7 },
+];
+
+const STORAGE_KEY = 'guestbook-messages';
+
 export function GuestbookFlipCard() {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [messages, setMessages] = useState<GuestbookMessage[]>([
-    { id: '1', name: 'Alice', text: '网站做得真好看！', date: '2026-04-10', likes: 3 },
-    { id: '2', name: 'Bob', text: '期待更多内容！', date: '2026-04-08', likes: 1 },
-    { id: '3', name: 'Carol', text: '手绘风格太赞了', date: '2026-04-05', likes: 7 },
-  ]);
+  const [messages, setMessages] = useState<GuestbookMessage[]>(DEFAULT_MESSAGES);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setMessages(JSON.parse(saved));
+    }
+  }, []);
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [nameInput, setNameInput] = useState('');
   const [msgInput, setMsgInput] = useState('');
@@ -27,9 +38,11 @@ export function GuestbookFlipCard() {
     e.stopPropagation();
     const currentlyLiked = liked[id];
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, likes: currentlyLiked ? m.likes - 1 : m.likes + 1 } : m))
-    );
+    setMessages((prev) => {
+      const updated = prev.map((m) => (m.id === id ? { ...m, likes: currentlyLiked ? m.likes - 1 : m.likes + 1 } : m));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleSubmit = (e: React.MouseEvent) => {
@@ -42,7 +55,11 @@ export function GuestbookFlipCard() {
       date: new Date().toISOString().split('T')[0],
       likes: 0,
     };
-    setMessages((prev) => [newMsg, ...prev]);
+    setMessages((prev) => {
+      const updated = [newMsg, ...prev];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
     setNameInput('');
     setMsgInput('');
     setTimeout(() => setIsFlipped(false), 500);

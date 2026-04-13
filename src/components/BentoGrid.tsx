@@ -70,26 +70,31 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   };
 
   return (
-    <section className="relative z-10 max-w-5xl mx-auto px-4 py-12">
+    <section className="relative z-10 max-w-6xl mx-auto px-4 py-12">
       <motion.div
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {/* About — full width */}
-        <motion.div variants={cardFade} className="md:col-span-2">
-          <div className={`${cardCls} p-8 md:p-10`}>
-            <h2 className="font-caveat text-4xl text-[#6B8DAE] mb-6">About</h2>
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
-                <p>大家好哇，欢迎来到我的网站！</p>
-                <p>现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。</p>
-                <p>现在在找 AI 开发相关的实习，真的好难找哇。</p>
+        <motion.div variants={cardFade} className="col-span-1 md:col-span-2 lg:col-span-3">
+          <div className={`${cardCls} p-10 md:p-12`}>
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-48 shrink-0">
+                <h2 className="font-caveat text-4xl text-[#6B8DAE] mb-3">About</h2>
+                <p className="text-sm text-[#6B6B6B] leading-relaxed">21岁，大三在读，光电专业。</p>
               </div>
-              <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
-                <p>喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）</p>
-                <p>对未来有明确规划，但是保密。</p>
+              <div className="grid sm:grid-cols-2 gap-6 flex-1">
+                <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
+                  <p>大家好哇，欢迎来到我的网站！</p>
+                  <p>现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。</p>
+                  <p>现在在找 AI 开发相关的实习，真的好难找哇。</p>
+                </div>
+                <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
+                  <p>喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）</p>
+                  <p>对未来有明确规划，但是保密。</p>
+                </div>
               </div>
             </div>
           </div>
@@ -97,96 +102,94 @@ export default function BentoGrid({ posts }: BentoGridProps) {
 
         {/* AgentFlow */}
         <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-8 md:p-10 h-full`}>
-            <a href={projects[0].href} target="_blank" rel="noopener noreferrer" className="group block h-full">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h3 className="text-2xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors">
-                  {projects[0].title}
-                </h3>
-                <span
-                  className="shrink-0 text-sm px-3 py-1 rounded-full border"
-                  style={{ color: projects[0].color, borderColor: projects[0].color + '40' }}
-                >
-                  {projects[0].tag}
-                </span>
-              </div>
-              <p className="text-base text-[#6B6B6B] leading-relaxed">{projects[0].desc}</p>
+          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
+            <a href={projects[0].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
+              <span
+                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
+                style={{ backgroundColor: projects[0].color + '25', color: projects[0].color }}
+              >
+                {projects[0].tag}
+              </span>
+              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+                {projects[0].title}
+              </h3>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[0].desc}</p>
             </a>
           </div>
         </motion.div>
 
         {/* Auto-Tweet Agent */}
         <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-8 md:p-10 h-full`}>
-            <a href={projects[1].href} target="_blank" rel="noopener noreferrer" className="group block h-full">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h3 className="text-2xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors">
-                  {projects[1].title}
-                </h3>
-                <span
-                  className="shrink-0 text-sm px-3 py-1 rounded-full border"
-                  style={{ color: projects[1].color, borderColor: projects[1].color + '40' }}
-                >
-                  {projects[1].tag}
-                </span>
-              </div>
-              <p className="text-base text-[#6B6B6B] leading-relaxed">{projects[1].desc}</p>
-            </a>
-          </div>
-        </motion.div>
-
-        {/* RAG 2.0 */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-8 md:p-10 h-[400px]`}>
-            <a href={projects[2].href} target="_blank" rel="noopener noreferrer" className="group block h-full">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h3 className="text-2xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors">
-                  {projects[2].title}
-                </h3>
-                <span
-                  className="shrink-0 text-sm px-3 py-1 rounded-full border"
-                  style={{ color: projects[2].color, borderColor: projects[2].color + '40' }}
-                >
-                  {projects[2].tag}
-                </span>
-              </div>
-              <p className="text-base text-[#6B6B6B] leading-relaxed">{projects[2].desc}</p>
+          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
+            <a href={projects[1].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
+              <span
+                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
+                style={{ backgroundColor: projects[1].color + '25', color: projects[1].color }}
+              >
+                {projects[1].tag}
+              </span>
+              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+                {projects[1].title}
+              </h3>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[1].desc}</p>
             </a>
           </div>
         </motion.div>
 
         {/* Chat with T — flip card */}
-        <motion.div variants={cardFade} className="h-[500px]">
+        <motion.div variants={cardFade} className="lg:col-span-1">
           <ChatFlipCard />
         </motion.div>
 
         {/* Guestbook — flip card */}
-        <motion.div variants={cardFade} className="h-[500px]">
+        <motion.div variants={cardFade} className="lg:col-span-1">
           <GuestbookFlipCard />
         </motion.div>
 
+        {/* RAG 2.0 */}
+        <motion.div variants={cardFade}>
+          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
+            <a href={projects[2].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
+              <span
+                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
+                style={{ backgroundColor: projects[2].color + '25', color: projects[2].color }}
+              >
+                {projects[2].tag}
+              </span>
+              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+                {projects[2].title}
+              </h3>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[2].desc}</p>
+            </a>
+          </div>
+        </motion.div>
+
         {/* Music — full width */}
-        <motion.div variants={cardFade} className="md:col-span-2">
-          <div className={`${cardCls} p-8 md:p-10`}>
-            <h2 className="font-caveat text-4xl text-[#6B8DAE] mb-6">Music</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {albums.map((album) => (
-                <a
-                  key={album.url}
-                  href={album.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block"
-                >
-                  <div className="aspect-square rounded-xl overflow-hidden bg-[#E8E2DA] border border-white/20">
-                    <img
-                      src={album.cover}
-                      alt=""
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                </a>
-              ))}
+        <motion.div variants={cardFade} className="col-span-1 md:col-span-2 lg:col-span-3">
+          <div className={`${cardCls} p-10 md:p-12`}>
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
+              <div className="lg:w-48 shrink-0">
+                <h2 className="font-caveat text-4xl text-[#6B8DAE]">Music</h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 flex-1">
+                {albums.map((album) => (
+                  <a
+                    key={album.url}
+                    href={album.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block"
+                  >
+                    <div className="aspect-square rounded-xl overflow-hidden bg-[#E8E2DA] border border-white/20">
+                      <img
+                        src={album.cover}
+                        alt=""
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>
@@ -194,7 +197,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         {/* Blog posts */}
         {posts.slice(0, 2).map((post) => (
           <motion.div key={post.slug} variants={cardFade}>
-            <div className={`${cardCls} p-8 md:p-10 h-full`}>
+            <div className={`${cardCls} p-10 md:p-12 h-full`}>
               <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group block h-full">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <h3 className="text-xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors">
@@ -221,7 +224,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
 
         {/* Theme Toggle */}
         <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-8 md:p-10 flex flex-col items-center justify-center min-h-[140px]`}>
+          <div className={`${cardCls} p-10 md:p-12 flex flex-col items-center justify-center min-h-[140px]`}>
             <ThemeToggle />
             <span className="text-sm text-[#6B6B6B] mt-3 font-serif">切换主题</span>
           </div>
@@ -229,7 +232,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
 
         {/* Footer */}
         <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-8 md:p-10 flex flex-col items-center justify-center min-h-[140px]`}>
+          <div className={`${cardCls} p-10 md:p-12 flex flex-col items-center justify-center min-h-[140px]`}>
             <span className="font-caveat text-2xl mb-3 text-[#2C2C2C]">T.</span>
             <div className="flex gap-6 font-serif text-sm text-[#6B6B6B]">
               <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[#2C2C2C] transition-colors">
@@ -340,17 +343,17 @@ function GuestbookFlipCard() {
 
         {/* Back */}
         <div
-          className="flip-card-back flip-card-face flex flex-col p-8 gap-3 w-full h-full overflow-hidden"
+          className="flip-card-back flip-card-face flex flex-col relative p-5 gap-3 w-full h-full overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-            className="text-sm text-[#6B6B6B] hover:text-[#2C2C2C] mb-1 flex-shrink-0 text-left"
+            className="absolute top-5 left-5 text-sm text-[#6B6B6B] hover:text-[#2C2C2C] flex-shrink-0"
           >
             ← Back
           </button>
 
-          <span className="font-caveat text-xl text-[#2C2C2C] pl-2 text-left w-full overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0">Leave a message</span>
+          <span className="font-caveat text-xl text-[#2C2C2C] pr-5 text-center w-full overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 mt-1">Leave a message</span>
 
           <input
             type="text"
@@ -438,13 +441,13 @@ function ChatFlipCard() {
 
   return (
     <div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-full`}
+      className={`${cardCls} flip-card flip-card-inner-base w-full h-[500px]`}
       onClick={() => !isFlipped && setIsFlipped(true)}
       style={{ isolation: 'isolate' }}
     >
       <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d', transition: 'transform 0.5s ease' }}>
         {/* Front */}
-        <div className="flip-card-front flip-card-face">
+        <div className="flip-card-front flip-card-face w-full h-full overflow-hidden">
           <div className="w-14 h-14 rounded-full bg-[#6B8DAE]/20 flex items-center justify-center mb-4">
             <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
               <circle cx="24" cy="24" r="20" stroke="#6B8DAE" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
@@ -455,14 +458,14 @@ function ChatFlipCard() {
           <span className="text-sm text-[#6B6B6B] mt-1">和 AI 版的我聊聊</span>
         </div>
 
-        {/* Back — full chat UI, click empty area to flip back */}
+        {/* Back — full chat UI */}
         <div
-          className="flip-card-back flip-card-face flex flex-col h-full cursor-default"
+          className="flip-card-back flip-card-face flex flex-col w-full h-full overflow-hidden cursor-default"
           onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
         >
-          {/* Header — no back button, click header also flips */}
+          {/* Header */}
           <div
-            className="flex items-center gap-3 pt-4 pb-2 mb-3 border-b border-white/20 cursor-pointer"
+            className="flex items-center gap-3 pt-5 pb-2 mb-3 border-b border-white/20 cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="font-caveat text-2xl text-[#F5F0EB]">T&apos;s AI</span>
@@ -504,7 +507,7 @@ function ChatFlipCard() {
           {/* Input */}
           <form
             onSubmit={handleSubmit}
-            className="flex gap-2 px-4 pb-4 mt-auto"
+            className="flex gap-2 px-5 pb-5 mt-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <input

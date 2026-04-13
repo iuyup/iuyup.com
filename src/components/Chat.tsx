@@ -21,6 +21,12 @@ export default function Chat() {
   }, [isOpen]);
 
   useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('chat:open', handler);
+    return () => window.removeEventListener('chat:open', handler);
+  }, []);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 

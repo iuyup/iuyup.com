@@ -62,7 +62,7 @@ interface BentoGridProps {
   posts: Post[];
 }
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] border border-white shadow-[12px_17px_51px_rgba(0,0,0,0.22)] backdrop-blur-md rounded-[17px] p-8 md:p-10 cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 active:rotate-[1.7deg]';
+const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-3xl p-10 md:p-12 cursor-pointer transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]';
 
 export default function BentoGrid({ posts }: BentoGridProps) {
   const openChat = () => {
@@ -75,7 +75,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-5"
       >
         {/* About — full width */}
         <motion.div variants={cardFade} className="md:col-span-2">
@@ -321,14 +321,14 @@ function ChatFlipCard() {
         >
           {/* Header — no back button, click header also flips */}
           <div
-            className="flex items-center gap-3 mb-3 pb-3 border-b border-white/20 cursor-pointer"
+            className="flex items-center gap-3 pt-4 pb-2 mb-3 border-b border-white/20 cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="font-caveat text-2xl text-[#F5F0EB]">T&apos;s AI</span>
           </div>
 
           {/* Messages — only empty area background click flips back */}
-          <div className="flex-1 overflow-y-auto space-y-3 mb-3 cursor-default">
+          <div className="flex-1 overflow-y-auto space-y-3 mb-3 cursor-default px-3 chat-messages">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -336,7 +336,11 @@ function ChatFlipCard() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div
-                  className="max-w-[85%] px-3 py-2 rounded-xl text-sm whitespace-pre-wrap"
+                  className={`max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap ${
+                    msg.role === 'user'
+                      ? 'rounded-2xl rounded-tr-sm'
+                      : 'rounded-2xl rounded-tl-sm'
+                  }`}
                   style={{
                     background: msg.role === 'user' ? '#6B8DAE' : 'rgba(255,255,255,0.15)',
                     color: '#F5F0EB',
@@ -348,7 +352,7 @@ function ChatFlipCard() {
             ))}
             {isLoading && (
               <div className="flex justify-start" onClick={(e) => e.stopPropagation()}>
-                <div className="px-3 py-2 rounded-xl text-sm bg-white/10 text-[#F5F0EB]/60">
+                <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-sm bg-white/10 text-[#F5F0EB]/60">
                   思考中...
                 </div>
               </div>

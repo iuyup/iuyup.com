@@ -6,8 +6,8 @@ import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import Comments from "@/components/Comments";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import Comments from "@/components/ui/Comments";
 
 export const dynamic = "force-dynamic";
 

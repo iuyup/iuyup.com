@@ -1,5 +1,5 @@
-import Nav from "@/components/Nav";
-import HeroSection from "@/components/HeroSection";
+import Nav from "@/components/layout/Nav";
+import HeroSection from "@/components/layout/HeroSection";
 import BentoGrid from "@/components/BentoGrid";
 import { getAllPosts } from "@/lib/posts";
 

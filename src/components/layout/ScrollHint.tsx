@@ -2,16 +2,12 @@
 
 import { motion } from "framer-motion";
 import { useScroll, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function ScrollHint() {
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(() => typeof window !== "undefined");
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     return (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import Chat from "@/components/Chat";
+import { ThemeProvider } from "@/components/ui/ThemeProvider";
+import Chat from "@/components/chat/Chat";
 
 export const metadata: Metadata = {
   title: "T — Builder & Explorer",

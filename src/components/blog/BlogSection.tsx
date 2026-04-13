@@ -1,5 +1,5 @@
 import { getAllPosts } from "@/lib/posts";
-import BlogPreview from "./BlogPreview";
+import BlogPreview from "@/components/blog/BlogPreview";
 import Link from "next/link";
 
 export default function BlogSection() {

@@ -46,8 +46,6 @@ export default function Chat() {
         body: JSON.stringify({ messages: [...messages, userMessage] }),
       });
 
-      // Skip the response.ok check here since we handle streaming
-
       if (!response.ok) throw new Error("Failed to fetch");
 
       const reader = response.body?.getReader();

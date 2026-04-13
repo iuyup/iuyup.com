@@ -15,11 +15,6 @@ interface BlogPreviewProps {
   posts: Post[];
 }
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
-
 export default function BlogPreview({ posts }: BlogPreviewProps) {
   return (
     <div className="space-y-6">

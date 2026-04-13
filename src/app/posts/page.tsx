@@ -40,7 +40,7 @@ export default function PostsPage() {
               href={`/posts/${encodeURIComponent(post.slug)}`}
               className="block group"
             >
-              <article className="p-6 rounded-xl border hover:opacity-90 transition-all duration-300" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+              <section className="p-6 rounded-xl border hover:opacity-90 transition-all duration-300" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <h2 className="text-xl font-medium font-serif group-hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
                     {post.title}
@@ -67,7 +67,7 @@ export default function PostsPage() {
                     ))}
                   </div>
                 )}
-              </article>
+              </section>
             </Link>
           ))}
         </div>

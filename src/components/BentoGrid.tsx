@@ -4,7 +4,7 @@ import { motion, type Variants } from 'framer-motion';
 import { AboutCard } from '@/components/cards/AboutCard';
 import { ProjectCard } from '@/components/cards/ProjectCard';
 import { MusicCard } from '@/components/cards/MusicCard';
-import { BlogCard } from '@/components/cards/BlogCard';
+import { BlogCard, BlogLinkCard } from '@/components/cards/BlogCard';
 import { ThemeToggleCard } from '@/components/cards/ThemeToggleCard';
 import { FooterCard } from '@/components/cards/FooterCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
@@ -61,6 +61,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <ChatFlipCard />
           <ProjectCard index={2} />
           <MusicCard />
+          <BlogLinkCard />
           {posts[1] && <BlogCard post={posts[1]} />}
         </div>
       </motion.div>

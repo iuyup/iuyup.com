@@ -186,7 +186,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         </div>
       </nav>
 
-      {/* Article */}
+      {/* Blog */}
       <article className="pt-32 pb-16">
         <div className="max-w-3xl mx-auto px-6">
           {/* Header */}

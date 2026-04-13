@@ -62,7 +62,7 @@ interface BentoGridProps {
   posts: Post[];
 }
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-3xl p-10 md:p-12 cursor-pointer transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]';
+const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]';
 
 export default function BentoGrid({ posts }: BentoGridProps) {
   const openChat = () => {
@@ -70,121 +70,139 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   };
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-4 py-12">
+    <section className="relative z-10 max-w-[1400px] mx-auto px-6 py-12">
       <motion.div
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="columns-1 md:columns-2 lg:columns-3 gap-8 md:gap-10"
       >
-        {/* About — full width */}
-        <motion.div variants={cardFade} className="col-span-1 md:col-span-2 lg:col-span-3">
-          <div className={`${cardCls} p-10 md:p-12`}>
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className="lg:w-48 shrink-0">
-                <h2 className="font-caveat text-4xl text-[#6B8DAE] mb-3">About</h2>
-                <p className="text-sm text-[#6B6B6B] leading-relaxed">21岁，大三在读，光电专业。</p>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-6 flex-1">
-                <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
-                  <p>大家好哇，欢迎来到我的网站！</p>
-                  <p>现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。</p>
-                  <p>现在在找 AI 开发相关的实习，真的好难找哇。</p>
-                </div>
-                <div className="space-y-3 text-[#6B6B6B] leading-relaxed">
-                  <p>喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）</p>
-                  <p>对未来有明确规划，但是保密。</p>
-                </div>
-              </div>
+        {/* About */}
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
+            <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
+              About
+            </span>
+            <div className="flex flex-col gap-6 w-full">
+              <p className="text-base text-[#6B6B6B] leading-[1.8] whitespace-normal text-left">
+                大家好哇，欢迎来到我的网站！
+              </p>
+              <p className="text-base text-[#6B6B6B] leading-[1.8] whitespace-normal text-left">
+                现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。现在在找 AI 开发相关的实习，真的好难找哇。
+              </p>
+              <p className="text-base text-[#6B6B6B] leading-[1.8] whitespace-normal text-left">
+                喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）。
+              </p>
+              <p className="text-base text-[#6B6B6B] leading-[1.8] whitespace-normal text-left">
+                对未来有明确规划，但是保密。
+              </p>
+            </div>
+            <div className="mt-auto pt-6 w-full text-left">
+              <p className="text-xs text-[#6B6B6B]">21岁 · 大三在读 · 光电专业</p>
             </div>
           </div>
         </motion.div>
 
         {/* AgentFlow */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
-            <a href={projects[0].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
-              <span
-                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
-                style={{ backgroundColor: projects[0].color + '25', color: projects[0].color }}
-              >
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
+            <a href={projects[0].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full justify-between">
+              <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
                 {projects[0].tag}
               </span>
-              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+              <h3 className="text-3xl lg:text-4xl leading-tight text-[#2C2C2C] mb-8 font-serif">
                 {projects[0].title}
               </h3>
-              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[0].desc}</p>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-[90%] mb-8">
+                {projects[0].desc}
+              </p>
+              <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all">
+                Read More
+              </span>
             </a>
           </div>
         </motion.div>
 
         {/* Auto-Tweet Agent */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
-            <a href={projects[1].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
-              <span
-                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
-                style={{ backgroundColor: projects[1].color + '25', color: projects[1].color }}
-              >
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
+            <a href={projects[1].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full justify-between">
+              <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
                 {projects[1].tag}
               </span>
-              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+              <h3 className="text-3xl lg:text-4xl leading-tight text-[#2C2C2C] mb-8 font-serif">
                 {projects[1].title}
               </h3>
-              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[1].desc}</p>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-[90%] mb-8">
+                {projects[1].desc}
+              </p>
+              <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all">
+                Read More
+              </span>
             </a>
           </div>
         </motion.div>
 
         {/* Chat with T — flip card */}
-        <motion.div variants={cardFade} className="lg:col-span-1">
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
           <ChatFlipCard />
         </motion.div>
 
         {/* Guestbook — flip card */}
-        <motion.div variants={cardFade} className="lg:col-span-1">
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
           <GuestbookFlipCard />
         </motion.div>
 
         {/* RAG 2.0 */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-10 md:p-12 h-full flex flex-col items-center text-center`}>
-            <a href={projects[2].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full">
-              <span
-                className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6"
-                style={{ backgroundColor: projects[2].color + '25', color: projects[2].color }}
-              >
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
+            <a href={projects[2].href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center text-center w-full h-full justify-between">
+              <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
                 {projects[2].tag}
               </span>
-              <h3 className="text-3xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors mb-4">
+              <h3 className="text-3xl lg:text-4xl leading-tight text-[#2C2C2C] mb-8 font-serif">
                 {projects[2].title}
               </h3>
-              <p className="text-sm text-[#6B6B6B] leading-relaxed mt-auto">{projects[2].desc}</p>
+              <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-[90%] mb-8">
+                {projects[2].desc}
+              </p>
+              <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all">
+                Read More
+              </span>
             </a>
           </div>
         </motion.div>
 
-        {/* Music — full width */}
-        <motion.div variants={cardFade} className="col-span-1 md:col-span-2 lg:col-span-3">
-          <div className={`${cardCls} p-10 md:p-12`}>
-            <div className="flex flex-col lg:flex-row gap-8 items-start">
-              <div className="lg:w-48 shrink-0">
-                <h2 className="font-caveat text-4xl text-[#6B8DAE]">Music</h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 flex-1">
-                {albums.map((album) => (
+        {/* Music */}
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
+            <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
+              Music
+            </span>
+            <div className="flex flex-col gap-4 w-full">
+              <a href={albums[0].url} target="_blank" rel="noopener noreferrer" className="group block w-full">
+                <div className="w-full aspect-video rounded-2xl overflow-hidden bg-[#E8E2DA]">
+                  <img
+                    src={albums[0].cover}
+                    alt=""
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  />
+                </div>
+              </a>
+              <div className="flex gap-3">
+                {albums.slice(1).map((album) => (
                   <a
                     key={album.url}
                     href={album.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group block"
+                    className="group block flex-1"
                   >
-                    <div className="aspect-square rounded-xl overflow-hidden bg-[#E8E2DA] border border-white/20">
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-[#E8E2DA]">
                       <img
                         src={album.cover}
                         alt=""
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                       />
                     </div>
                   </a>
@@ -196,20 +214,23 @@ export default function BentoGrid({ posts }: BentoGridProps) {
 
         {/* Blog posts */}
         {posts.slice(0, 2).map((post) => (
-          <motion.div key={post.slug} variants={cardFade}>
-            <div className={`${cardCls} p-10 md:p-12 h-full`}>
-              <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group block h-full">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <h3 className="text-xl font-medium font-serif text-[#2C2C2C] group-hover:text-[#6B8DAE] transition-colors">
-                    {post.title}
-                  </h3>
-                  <time className="text-sm shrink-0 text-[#6B6B6B]">
-                    {new Date(post.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
-                  </time>
-                </div>
-                <p className="text-[#6B6B6B] mb-4 leading-relaxed line-clamp-3">{post.summary}</p>
+          <motion.div key={post.slug} variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+            <div className={`${cardCls} items-center text-center`}>
+              <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col items-center text-center w-full h-full justify-between">
+                <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
+                  Article
+                </span>
+                <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] mb-4 font-serif break-words">
+                  {post.title}
+                </h3>
+                <time className="text-xs text-[#6B6B6B] mb-4">
+                  {new Date(post.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
+                <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-[90%] mb-6">
+                  {post.summary}
+                </p>
                 {post.tags && post.tags.length > 0 && (
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 flex-wrap justify-center mb-8">
                     {post.tags.slice(0, 3).map((tag) => (
                       <span key={tag} className="text-xs px-2 py-0.5 rounded-full border text-[#6B6B6B]" style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
                         {tag}
@@ -217,22 +238,25 @@ export default function BentoGrid({ posts }: BentoGridProps) {
                     ))}
                   </div>
                 )}
+                <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all">
+                  Read More
+                </span>
               </Link>
             </div>
           </motion.div>
         ))}
 
         {/* Theme Toggle */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-10 md:p-12 flex flex-col items-center justify-center min-h-[140px]`}>
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
             <ThemeToggle />
             <span className="text-sm text-[#6B6B6B] mt-3 font-serif">切换主题</span>
           </div>
         </motion.div>
 
         {/* Footer */}
-        <motion.div variants={cardFade}>
-          <div className={`${cardCls} p-10 md:p-12 flex flex-col items-center justify-center min-h-[140px]`}>
+        <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+          <div className={`${cardCls} items-center text-center`}>
             <span className="font-caveat text-2xl mb-3 text-[#2C2C2C]">T.</span>
             <div className="flex gap-6 font-serif text-sm text-[#6B6B6B]">
               <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[#2C2C2C] transition-colors">
@@ -285,7 +309,7 @@ function GuestbookFlipCard() {
 
   return (
     <div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-[500px]`}
+      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px]`}
       onClick={() => !isFlipped && setIsFlipped(true)}
       style={{ isolation: 'isolate' }}
     >
@@ -304,15 +328,15 @@ function GuestbookFlipCard() {
           <span className="text-sm text-[#6B6B6B] mt-0.5 flex-shrink-0">Click to leave a message</span>
 
           {/* Messages list */}
-          <div className="flex-1 w-full mt-4 overflow-y-auto guestbook-messages">
+          <div className="flex-1 w-full mt-4 overflow-y-auto guestbook-messages space-y-3">
             {messages.map(msg => {
               const isLiked = !!liked[msg.id];
               return (
-                <div key={msg.id} className="bg-white/50 rounded-xl p-3 mb-2">
-                  <div className="flex items-start justify-between gap-2">
+                <div key={msg.id} className="bg-white/50 rounded-xl p-5 w-full">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-[#2C2C2C] truncate">{msg.name}</p>
-                      <p className="text-xs text-[#6B6B6B] mt-0.5 break-words">{msg.text}</p>
+                      <p className="font-medium text-base text-[#2C2C2C] truncate">{msg.name}</p>
+                      <p className="text-sm text-[#6B6B6B] mt-1 break-words">{msg.text}</p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button
@@ -329,10 +353,10 @@ function GuestbookFlipCard() {
                           </svg>
                         </div>
                       </button>
-                      <span className="text-xs text-[#999] ml-1">{msg.likes}</span>
+                      <span className="text-sm text-[#999] ml-1">{msg.likes}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-[#999] mt-1">{msg.date}</p>
+                  <p className="text-xs text-[#999] mt-2">{msg.date}</p>
                 </div>
               );
             })}
@@ -441,7 +465,7 @@ function ChatFlipCard() {
 
   return (
     <div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-[500px]`}
+      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px]`}
       onClick={() => !isFlipped && setIsFlipped(true)}
       style={{ isolation: 'isolate' }}
     >
@@ -472,15 +496,15 @@ function ChatFlipCard() {
           </div>
 
           {/* Messages — only empty area background click flips back */}
-          <div className="flex-1 overflow-y-auto space-y-3 mb-3 cursor-default px-3 chat-messages">
+          <div className="flex-1 w-full overflow-y-auto space-y-4 mb-4 cursor-default px-4 chat-messages">
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div
-                  className={`max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap ${
+                  className={`max-w-[85%] px-4 py-3 text-base whitespace-pre-wrap ${
                     msg.role === 'user'
                       ? 'rounded-2xl rounded-tr-sm'
                       : 'rounded-2xl rounded-tl-sm'
@@ -496,7 +520,7 @@ function ChatFlipCard() {
             ))}
             {isLoading && (
               <div className="flex justify-start" onClick={(e) => e.stopPropagation()}>
-                <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-sm bg-white/10 text-[#F5F0EB]/60">
+                <div className="px-4 py-3 rounded-2xl rounded-tl-sm text-base bg-white/10 text-[#F5F0EB]/60">
                   思考中...
                 </div>
               </div>
@@ -507,7 +531,7 @@ function ChatFlipCard() {
           {/* Input */}
           <form
             onSubmit={handleSubmit}
-            className="flex gap-2 px-5 pb-5 mt-auto"
+            className="flex gap-3 px-4 pb-5 pt-2 mt-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <input
@@ -515,14 +539,14 @@ function ChatFlipCard() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="输入消息..."
-              className="flex-1 px-3 py-2 rounded-lg text-sm bg-white/20 text-[#F5F0EB] placeholder-[#F5F0EB]/40 outline-none border border-white/20 focus:border-white/50 transition-colors"
+              className="flex-1 px-4 py-4 rounded-lg text-base bg-white/20 text-[#F5F0EB] placeholder-[#F5F0EB]/40 outline-none border border-white/20 focus:border-white/50 transition-colors"
               disabled={isLoading}
               onClick={(e) => e.stopPropagation()}
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#F5F0EB]/20 text-[#F5F0EB] hover:bg-[#F5F0EB]/30 border border-white/20 transition-colors disabled:opacity-50"
+              className="px-5 py-4 rounded-lg text-sm font-medium bg-[#F5F0EB]/20 text-[#F5F0EB] hover:bg-[#F5F0EB]/30 border border-white/20 transition-colors disabled:opacity-50"
               onClick={(e) => e.stopPropagation()}
             >
               发送

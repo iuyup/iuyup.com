@@ -11,7 +11,7 @@ const cardFade: Variants = {
 };
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 25, mass: 0.5 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
 
 export function ThemeToggleCard() {
   return (

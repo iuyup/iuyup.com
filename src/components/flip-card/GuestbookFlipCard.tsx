@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 25, mass: 0.5 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
 
 interface GuestbookMessage {
   id: string;
@@ -71,7 +71,7 @@ export function GuestbookFlipCard() {
 
   return (
     <motion.div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px]`}
+      className={`${cardCls} flip-card flip-card-inner-base w-full h-[750px]`}
       onClick={() => !isFlipped && setIsFlipped(true)}
       whileHover={hoverSpring}
       transition={springTransition}

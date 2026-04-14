@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { projects } from '@/lib/data';
+import { projectBg } from '@/lib/colors';
 
 const cardFade: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -22,16 +23,16 @@ export function ProjectCard({ index }: ProjectCardProps) {
   return (
     <motion.div
       variants={cardFade}
-      className="mb-6"
+      className="mb-6 rounded-[2rem]"
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none' }}
+      style={{ boxShadow: 'none', background: projectBg(project.color) }}
     >
       <a
         href={project.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group block bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[320px] flex flex-col justify-between transition-all duration-500 active:scale-[0.98]"
+        className="group block backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[320px] flex flex-col justify-between transition-all duration-500 active:scale-[0.98]"
       >
         <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
           {project.tag}
@@ -39,7 +40,7 @@ export function ProjectCard({ index }: ProjectCardProps) {
         <h3 className="text-3xl lg:text-4xl leading-tight text-[#2C2C2C] mb-4 font-serif">
           {project.title}
         </h3>
-        <p className="text-sm text-[#6B6B6B] leading-relaxed">
+        <p className="text-sm leading-relaxed" style={{ color: '#5a5a5a' }}>
           {project.desc}
         </p>
         <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-start mt-8">

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
@@ -24,7 +25,12 @@ const DEFAULT_MESSAGES: GuestbookMessage[] = [
 
 const STORAGE_KEY = 'guestbook-messages';
 
-export function GuestbookFlipCard() {
+interface GuestbookFlipCardProps {
+  tag?: CardVariant;
+}
+
+export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
+  const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   const [isFlipped, setIsFlipped] = useState(false);
   const [messages, setMessages] = useState<GuestbookMessage[]>(DEFAULT_MESSAGES);
 
@@ -75,7 +81,7 @@ export function GuestbookFlipCard() {
       onClick={() => !isFlipped && setIsFlipped(true)}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', isolation: 'isolate' }}
+      style={{ boxShadow: 'none', background: variant.bg, isolation: 'isolate' }}
     >
       <div
         className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}
@@ -89,7 +95,7 @@ export function GuestbookFlipCard() {
             </svg>
           </div>
           <span className="font-caveat text-xl text-[#2C2C2C] flex-shrink-0">Guestbook</span>
-          <span className="text-sm text-[#6B6B6B] mt-0.5 flex-shrink-0">Click to leave a message</span>
+          <span className="text-sm mt-0.5 flex-shrink-0" style={{ color: variant.textSecondary }}>Click to leave a message</span>
 
           {/* Messages list */}
           <div className="flex-1 w-full mt-4 overflow-y-auto guestbook-messages space-y-3">
@@ -100,7 +106,7 @@ export function GuestbookFlipCard() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-base text-[#2C2C2C] truncate">{msg.name}</p>
-                      <p className="text-sm text-[#6B6B6B] mt-1 break-words">{msg.text}</p>
+                      <p className="text-sm mt-1 break-words" style={{ color: variant.textSecondary }}>{msg.text}</p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button
@@ -117,16 +123,16 @@ export function GuestbookFlipCard() {
                           </svg>
                         </div>
                       </button>
-                      <span className="text-sm text-[#999] ml-1">{msg.likes}</span>
+                      <span className="text-sm ml-1" style={{ color: variant.textSecondary }}>{msg.likes}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-[#999] mt-2">{msg.date}</p>
+                  <p className="text-xs mt-2" style={{ color: variant.textSecondary }}>{msg.date}</p>
                 </div>
               );
             })}
           </div>
 
-          <p className="text-xs text-[#6B8DAE] mt-2 flex-shrink-0">{messages.length} messages total</p>
+          <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages total</p>
         </div>
 
         {/* Back */}
@@ -136,7 +142,8 @@ export function GuestbookFlipCard() {
         >
           <button
             onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-            className="absolute top-5 left-5 text-sm text-[#6B6B6B] hover:text-[#2C2C2C] flex-shrink-0"
+            className="absolute top-5 left-5 text-sm hover:text-[#2C2C2C] flex-shrink-0"
+            style={{ color: variant.textSecondary }}
           >
             ← Back
           </button>

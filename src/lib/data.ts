@@ -3,14 +3,14 @@ export const projects = [
     title: 'AgentFlow',
     desc: '10+ 种多智能体设计模式，基于 LangGraph 构建',
     tag: 'Project',
-    color: '#6B8DAE',
+    color: '#B8C5C4',
     href: 'https://github.com/iuyup/AgentFlow',
   },
   {
     title: 'Auto-Tweet Agent',
     desc: 'LangGraph StateGraph 驱动的 7 节点多智能体系统，自动发布推文',
     tag: 'Project',
-    color: '#D4856A',
+    color: '#B8C5C4',
     href: 'https://github.com/iuyup/News-Tweet-Agent',
   },
   {

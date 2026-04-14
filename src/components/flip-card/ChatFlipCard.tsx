@@ -2,13 +2,19 @@
 
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
 
-export function ChatFlipCard() {
+interface ChatFlipCardProps {
+  tag?: CardVariant;
+}
+
+export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
+  const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   const [isFlipped, setIsFlipped] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +74,7 @@ export function ChatFlipCard() {
       onClick={() => !isFlipped && setIsFlipped(true)}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', isolation: 'isolate' }}
+      style={{ boxShadow: 'none', background: variant.bg, isolation: 'isolate' }}
     >
       <div
         className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}
@@ -83,7 +89,7 @@ export function ChatFlipCard() {
             </svg>
           </div>
           <span className="text-xl font-serif text-[#2C2C2C]">Chat with T</span>
-          <span className="text-sm text-[#6B6B6B] mt-1">和 AI 版的我聊聊</span>
+          <span className="text-sm mt-1" style={{ color: variant.textSecondary }}>和 AI 版的我聊聊</span>
         </div>
 
         {/* Back — full chat UI */}
@@ -99,7 +105,7 @@ export function ChatFlipCard() {
             <span className="font-caveat text-2xl text-[#F5F0EB]">T&apos;s AI</span>
           </div>
 
-          {/* Messages — only empty area background click flips back */}
+          {/* Messages */}
           <div className="flex-1 w-full overflow-y-auto space-y-4 mb-4 cursor-default px-4 chat-messages">
             {messages.map((msg, i) => (
               <div

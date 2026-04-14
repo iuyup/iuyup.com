@@ -2,8 +2,9 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { albums } from '@/lib/data';
+import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const cardFade: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -13,13 +14,18 @@ const cardFade: Variants = {
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
 
-export function MusicCard() {
+interface MusicCardProps {
+  tag?: CardVariant;
+}
+
+export function MusicCard({ tag = 'default' }: MusicCardProps) {
+  const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
       <motion.div
         whileHover={hoverSpring}
         transition={springTransition}
-        style={{ boxShadow: 'none' }}
+        style={{ boxShadow: 'none', background: variant.bg }}
         className={`${cardCls} items-center text-center`}
       >
         <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">

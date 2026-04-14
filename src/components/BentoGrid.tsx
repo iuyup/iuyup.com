@@ -45,24 +45,24 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         <div className="flex-1 flex flex-col gap-8 w-full">
           <AboutCard />
           <ProjectCard index={0} />
-          {posts[0] && <BlogCard post={posts[0]} />}
+          {posts[0] && <BlogCard post={posts[0]} tag="blog" />}
           <FooterCard />
         </div>
 
         {/* Column 2: Guestbook + items at index 2, 5, 8... */}
         <div className="flex-1 flex flex-col gap-8 w-full">
-          <GuestbookFlipCard />
+          <GuestbookFlipCard tag="Guestbook" />
           <ProjectCard index={1} />
           <ThemeToggleCard />
         </div>
 
         {/* Column 3: Chat + items at index 3, 6, 9... */}
         <div className="flex-1 flex flex-col gap-8 w-full">
-          <ChatFlipCard />
+          <ChatFlipCard tag="Chat" />
           <ProjectCard index={2} />
           <MusicCard />
-          <BlogLinkCard />
-          {posts[1] && <BlogCard post={posts[1]} />}
+          <BlogLinkCard tag="blog" />
+          {posts[1] && <BlogCard post={posts[1]} tag="blog" />}
         </div>
       </motion.div>
     </section>

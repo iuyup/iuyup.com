@@ -3,7 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/30 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const cardFade: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -45,7 +45,7 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
           </p>
         </div>
         <div className="mt-auto pt-6 w-full text-left">
-          <p className="text-xs" style={{ color: variant.textSecondary }}>21岁 · 大三在读 · 光电专业</p>
+          <p className="text-xs" style={{ color: variant.textSecondary }}>Think in decades, act in days.</p>
         </div>
       </motion.div>
     </motion.div>

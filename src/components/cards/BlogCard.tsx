@@ -35,7 +35,7 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
       transition={springTransition}
       style={{ boxShadow: 'none', background: variant.bg }}
     >
-      <div className="backdrop-blur-md py-10 px-8 min-h-[280px] flex flex-col justify-between">
+      <div className="backdrop-blur-2xl rounded-3xl border border-white/30 py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col h-full justify-between">
           <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
             Blog
@@ -80,7 +80,7 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
       transition={springTransition}
       style={{ boxShadow: 'none', background: variant.bg }}
     >
-      <div className="backdrop-blur-md py-10 px-8 min-h-[280px] flex flex-col justify-between">
+      <div className="backdrop-blur-2xl rounded-3xl border border-white/30 py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href="/posts" className="group flex flex-col h-full justify-between">
           <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
             Blog

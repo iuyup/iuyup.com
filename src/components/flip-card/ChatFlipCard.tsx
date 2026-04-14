@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'backdrop-blur-md rounded-[2rem] py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/30 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };

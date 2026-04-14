@@ -8,6 +8,9 @@ const cardFade: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
+const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 25, mass: 0.5 };
+
 interface Post {
   slug: string;
   title: string;
@@ -22,8 +25,14 @@ interface BlogCardProps {
 
 export function BlogCard({ post }: BlogCardProps) {
   return (
-    <motion.div variants={cardFade} className="mb-6">
-      <div className="bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-10 px-8 min-h-[280px] flex flex-col justify-between transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]">
+    <motion.div
+      variants={cardFade}
+      className="mb-6"
+      whileHover={hoverSpring}
+      transition={springTransition}
+      style={{ boxShadow: 'none' }}
+    >
+      <div className="bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col h-full justify-between">
           <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
             Blog
@@ -56,8 +65,13 @@ export function BlogCard({ post }: BlogCardProps) {
 
 export function BlogLinkCard() {
   return (
-    <motion.div variants={cardFade}>
-      <div className="bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-10 px-8 min-h-[280px] flex flex-col justify-between transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]">
+    <motion.div
+      variants={cardFade}
+      whileHover={hoverSpring}
+      transition={springTransition}
+      style={{ boxShadow: 'none' }}
+    >
+      <div className="bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href="/posts" className="group flex flex-col h-full justify-between">
           <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
             Blog

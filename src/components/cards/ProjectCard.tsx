@@ -8,6 +8,9 @@ const cardFade: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
+const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 25, mass: 0.5 };
+
 interface ProjectCardProps {
   index: number;
 }
@@ -17,12 +20,18 @@ export function ProjectCard({ index }: ProjectCardProps) {
   if (!project) return null;
 
   return (
-    <motion.div variants={cardFade} className="mb-6">
+    <motion.div
+      variants={cardFade}
+      className="mb-6"
+      whileHover={hoverSpring}
+      transition={springTransition}
+      style={{ boxShadow: 'none' }}
+    >
       <a
         href={project.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group block bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[320px] flex flex-col justify-between transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]"
+        className="group block bg-[rgba(217,217,217,0.58)] backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[320px] flex flex-col justify-between transition-all duration-500 active:scale-[0.98]"
       >
         <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
           {project.tag}

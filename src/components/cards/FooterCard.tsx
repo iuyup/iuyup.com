@@ -3,7 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/30 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const cardFade: Variants = {
   hidden: { opacity: 0, y: 20 },

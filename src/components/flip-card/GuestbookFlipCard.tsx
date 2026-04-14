@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/30 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
@@ -155,7 +155,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             value={nameInput}
             onChange={(e) => setNameInput(e.target.value)}
             placeholder="Name"
-            className="bg-white/40 border border-white/30 rounded-xl px-4 py-2.5 text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 flex-shrink-0"
+            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 flex-shrink-0"
             onClick={(e) => e.stopPropagation()}
           />
 
@@ -163,7 +163,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             value={msgInput}
             onChange={(e) => setMsgInput(e.target.value)}
             placeholder="Your message..."
-            className="bg-white/40 border border-white/30 rounded-xl px-4 py-2.5 flex-1 min-h-[140px] text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 resize-none"
+            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 flex-1 min-h-[140px] text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 resize-none"
             onClick={(e) => e.stopPropagation()}
           />
 

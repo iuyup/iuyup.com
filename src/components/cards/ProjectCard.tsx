@@ -23,7 +23,7 @@ export function ProjectCard({ index }: ProjectCardProps) {
   return (
     <motion.div
       variants={cardFade}
-      className="mb-6 rounded-3xl border border-white/30"
+      className="mb-6 rounded-3xl border border-white/60"
       whileHover={hoverSpring}
       transition={springTransition}
       style={{ boxShadow: 'none', background: projectBg(project.color) }}

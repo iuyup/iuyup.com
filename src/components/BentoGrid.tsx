@@ -3,21 +3,13 @@
 import { motion, type Variants } from 'framer-motion';
 import { AboutCard } from '@/components/cards/AboutCard';
 import { ProjectCard } from '@/components/cards/ProjectCard';
-import { MusicCard } from '@/components/cards/MusicCard';
+import { AlbumCard } from '@/components/cards/MusicCard';
+import { albums, projects } from '@/lib/data';
 import { BlogCard, BlogLinkCard } from '@/components/cards/BlogCard';
 import { ThemeToggleCard } from '@/components/cards/ThemeToggleCard';
 import { FooterCard } from '@/components/cards/FooterCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
 import { ChatFlipCard } from '@/components/flip-card/ChatFlipCard';
-
-const stagger: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
 
 interface Post {
   slug: string;
@@ -28,54 +20,88 @@ interface Post {
   image: string | undefined;
 }
 
+interface UnifiedItem {
+  type: 'post' | 'project' | 'album';
+  slug: string;
+  title: string;
+  date: string;
+  summary: string | undefined;
+  tags: string[] | undefined;
+  image: string | undefined;
+  href?: string;
+  desc?: string;
+  color?: string;
+  cover?: string;
+  artist?: string;
+}
+
 interface BentoGridProps {
   posts: Post[];
 }
 
 export default function BentoGrid({ posts }: BentoGridProps) {
-  const col1Posts = posts.filter((_, i) => i % 3 === 0 && i > 0); // indices 3,6,9...
-  const col2Posts = posts.filter((_, i) => i % 3 === 1);           // indices 1,4,7...
-  const col3Posts = posts.filter((_, i) => i % 3 === 2);           // indices 2,5,8...
+  const topPost = posts[0];
+  const restPosts = posts.slice(1);
+
+  const projectItems: UnifiedItem[] = projects.map((p) => ({ ...p, type: 'project', slug: p.href, date: '', summary: p.desc, tags: [p.tag], image: undefined }));
+  const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
+  const postItems: UnifiedItem[] = restPosts.map((p) => ({ ...p, type: 'post' }));
+
+  const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems];
+
+  const col1Items = allItems.filter((_, i) => i % 3 === 0);
+  const col2Items = allItems.filter((_, i) => i % 3 === 1);
+  const col3Items = allItems.filter((_, i) => i % 3 === 2);
+
+  const stagger: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   return (
     <section className="relative z-10 max-w-[1400px] mx-auto px-6 py-12">
-      {/* True masonry with 3 physical columns */}
       <motion.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="flex flex-col lg:flex-row gap-8 items-start w-full"
       >
-        {/* Column 1: About + items at index 1, 4, 7... */}
+        {/* Column 1: About + fixed items */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <AboutCard />
-          <ProjectCard index={0} />
-          {posts[0] && <BlogCard post={posts[0]} tag="blog" />}
+          {topPost && <BlogCard post={topPost} tag="blog" />}
           <FooterCard />
-          {col1Posts.map((post) => (
-            <BlogCard key={post.slug} post={post} tag="blog" />
-          ))}
+          {col1Items.map((item) => {
+            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
+            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
+            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
+          })}
         </div>
 
-        {/* Column 2: Guestbook + items at index 2, 5, 8... */}
+        {/* Column 2: Guestbook + fixed items */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <GuestbookFlipCard tag="Guestbook" />
-          <ProjectCard index={1} />
           <ThemeToggleCard />
-          {col2Posts.map((post) => (
-            <BlogCard key={post.slug} post={post} tag="blog" />
-          ))}
+          {col2Items.map((item) => {
+            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
+            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
+            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
+          })}
         </div>
 
-        {/* Column 3: Chat + items at index 3, 6, 9... */}
+        {/* Column 3: Chat + fixed items */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <ChatFlipCard tag="Chat" />
-          <ProjectCard index={2} />
-          <MusicCard />
           <BlogLinkCard tag="blog" />
-          {col3Posts.map((post) => (
-            <BlogCard key={post.slug} post={post} tag="blog" />
-          ))}
+          {col3Items.map((item) => {
+            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
+            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
+            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
+          })}
         </div>
       </motion.div>
     </section>

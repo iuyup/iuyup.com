@@ -23,8 +23,8 @@ export const projects = [
 ];
 
 export const albums = [
-  { cover: '/albums/more-life.jpg', url: 'https://music.apple.com/cn/album/more-life/1440890708' },
-  { cover: '/albums/blond.jpg', url: 'https://music.apple.com/cn/album/blonde/1146195596' },
-  { cover: '/albums/sos.jpg', url: 'https://music.apple.com/cn/album/sos/1657869377' },
-  { cover: '/albums/never-enough.jpg', url: 'https://music.apple.com/cn/album/never-enough-bonus-version/1681322859' },
+  { cover: '/albums/more-life.jpg', url: 'https://music.apple.com/cn/album/more-life/1440890708', name: 'More Life', artist: 'Drake' },
+  { cover: '/albums/blond.jpg', url: 'https://music.apple.com/cn/album/blonde/1146195596', name: 'Blonde', artist: 'Frank Ocean' },
+  { cover: '/albums/sos.jpg', url: 'https://music.apple.com/cn/album/sos/1657869377', name: 'SOS', artist: 'SZA' },
+  { cover: '/albums/never-enough.jpg', url: 'https://music.apple.com/cn/album/never-enough-bonus-version/1681322859', name: 'Never Enough', artist: 'Daniel Caesar' },
 ];

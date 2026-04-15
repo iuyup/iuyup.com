@@ -2,10 +2,9 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { useState } from 'react';
-import { albums } from '@/lib/data';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
-const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
+const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col items-center text-center cursor-pointer';
 
 const cardFade: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -14,11 +13,19 @@ const cardFade: Variants = {
 
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
-interface MusicCardProps {
+interface Album {
+  cover: string;
+  url: string;
+  name: string;
+  artist: string;
+}
+
+interface AlbumCardProps {
+  album: Album;
   tag?: CardVariant;
 }
 
-export function MusicCard({ tag = 'default' }: MusicCardProps) {
+export function AlbumCard({ album, tag = 'default' }: AlbumCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
@@ -27,12 +34,12 @@ export function MusicCard({ tag = 'default' }: MusicCardProps) {
         whileHover={{ scale: 1.02 }}
         transition={springTransition}
         style={{ background: variant.bg }}
-        className={`${cardCls} items-center text-center card-hover`}
+        className={`${cardCls} card-hover`}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
       >
         <motion.span
-          className="relative inline-block mb-8"
+          className="relative inline-block mb-6"
           style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
           animate={{ rotateX: isHovered ? -180 : 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -53,35 +60,18 @@ export function MusicCard({ tag = 'default' }: MusicCardProps) {
             Music
           </motion.span>
         </motion.span>
-        <div className="flex flex-col gap-4 w-full">
-          <a href={albums[0].url} target="_blank" rel="noopener noreferrer" className="group block w-full">
-            <div className="w-full aspect-video rounded-2xl overflow-hidden bg-[#E8E2DA]">
-              <img
-                src={albums[0].cover}
-                alt=""
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-              />
-            </div>
-          </a>
-          <div className="flex gap-3">
-            {albums.slice(1).map((album) => (
-              <a
-                key={album.url}
-                href={album.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block flex-1"
-              >
-                <div className="aspect-square rounded-2xl overflow-hidden bg-[#E8E2DA]">
-                  <img
-                    src={album.cover}
-                    alt=""
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                  />
-                </div>
-              </a>
-            ))}
+        <a href={album.url} target="_blank" rel="noopener noreferrer" className="group block w-full">
+          <div className="w-full aspect-square rounded-2xl overflow-hidden bg-[#E8E2DA] mb-4">
+            <img
+              src={album.cover}
+              alt={album.name}
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+            />
           </div>
+        </a>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-[#2C2C2C]">{album.name}</span>
+          <span className="text-xs text-[#6B6B6B]">{album.artist}</span>
         </div>
       </motion.div>
     </motion.div>

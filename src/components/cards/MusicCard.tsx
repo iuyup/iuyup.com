@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import { useState } from 'react';
 import { albums } from '@/lib/data';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -18,6 +19,7 @@ interface MusicCardProps {
 }
 
 export function MusicCard({ tag = 'default' }: MusicCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
@@ -26,10 +28,31 @@ export function MusicCard({ tag = 'default' }: MusicCardProps) {
         transition={springTransition}
         style={{ background: variant.bg }}
         className={`${cardCls} items-center text-center card-hover`}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
       >
-        <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
-          Music
-        </span>
+        <motion.span
+          className="relative inline-block mb-8"
+          style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
+          animate={{ rotateX: isHovered ? -180 : 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <motion.span
+            className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            animate={{ opacity: isHovered ? 0 : 1 }}
+            transition={{ duration: 0.15 }}
+          >
+            Music
+          </motion.span>
+          <motion.span
+            className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            style={{ transform: 'rotateX(180deg)' }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            Music
+          </motion.span>
+        </motion.span>
         <div className="flex flex-col gap-4 w-full">
           <a href={albums[0].url} target="_blank" rel="noopener noreferrer" className="group block w-full">
             <div className="w-full aspect-video rounded-2xl overflow-hidden bg-[#E8E2DA]">

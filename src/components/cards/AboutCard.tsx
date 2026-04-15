@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import { useState } from 'react';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
@@ -17,6 +18,7 @@ interface AboutCardProps {
 }
 
 export function AboutCard({ tag = 'default' }: AboutCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
@@ -25,10 +27,31 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
         transition={springTransition}
         style={{ background: variant.bg }}
         className={`${cardCls} items-center text-center card-hover`}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
       >
-        <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm mb-8">
-          About
-        </span>
+        <motion.span
+          className="relative inline-block mb-8"
+          style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
+          animate={{ rotateX: isHovered ? -180 : 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <motion.span
+            className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            animate={{ opacity: isHovered ? 0 : 1 }}
+            transition={{ duration: 0.15 }}
+          >
+            About
+          </motion.span>
+          <motion.span
+            className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            style={{ transform: 'rotateX(180deg)' }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            About
+          </motion.span>
+        </motion.span>
         <div className="flex flex-col gap-6 w-full">
           <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
             大家好哇，欢迎来到我的网站！

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import { useState } from 'react';
 import Link from 'next/link';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -26,6 +27,7 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div
@@ -34,12 +36,33 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
       whileHover={{ scale: 1.02 }}
       transition={springTransition}
       style={{ background: variant.bg }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col overflow-hidden">
         <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col justify-start gap-4">
-          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center mt-6">
-            Blog
-          </span>
+          <motion.span
+            className="relative inline-block self-center mt-6"
+            style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
+            animate={{ rotateX: isHovered ? -180 : 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <motion.span
+              className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+              animate={{ opacity: isHovered ? 0 : 1 }}
+              transition={{ duration: 0.15 }}
+            >
+              Blog
+            </motion.span>
+            <motion.span
+              className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+              style={{ transform: 'rotateX(180deg)' }}
+              animate={{ opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              Blog
+            </motion.span>
+          </motion.span>
           <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4 text-center">
             {post.title}
           </h3>
@@ -66,6 +89,7 @@ interface BlogLinkCardProps {
 }
 
 export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div
@@ -74,12 +98,33 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
       whileHover={{ scale: 1.02 }}
       transition={springTransition}
       style={{ background: variant.bg }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href="/posts" className="group flex flex-col h-full justify-between">
-          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center">
-            Blog
-          </span>
+          <motion.span
+            className="relative inline-block self-center"
+            style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
+            animate={{ rotateX: isHovered ? -180 : 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <motion.span
+              className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+              animate={{ opacity: isHovered ? 0 : 1 }}
+              transition={{ duration: 0.15 }}
+            >
+              Blog
+            </motion.span>
+            <motion.span
+              className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+              style={{ transform: 'rotateX(180deg)' }}
+              animate={{ opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              Blog
+            </motion.span>
+          </motion.span>
           <div className="my-6">
             <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words">
               所有文章

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import { useState } from 'react';
 import { projects } from '@/lib/data';
 import { projectBg } from '@/lib/colors';
 
@@ -17,6 +18,8 @@ interface ProjectCardProps {
 
 export function ProjectCard({ index }: ProjectCardProps) {
   const project = projects[index];
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!project) return null;
 
   return (
@@ -26,6 +29,8 @@ export function ProjectCard({ index }: ProjectCardProps) {
       whileHover={{ scale: 1.02 }}
       transition={springTransition}
       style={{ background: projectBg(project.color) }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
     >
       <a
         href={project.href}
@@ -33,9 +38,28 @@ export function ProjectCard({ index }: ProjectCardProps) {
         rel="noopener noreferrer"
         className="group relative block backdrop-blur-md rounded-[2rem] py-14 px-10 min-h-[430px] flex flex-col justify-between transition-all duration-500 active:scale-[0.98]"
       >
-        <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center">
-          {project.tag}
-        </span>
+        <motion.span
+          className="relative inline-block self-center"
+          style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
+          animate={{ rotateX: isHovered ? -180 : 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <motion.span
+            className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            animate={{ opacity: isHovered ? 0 : 1 }}
+            transition={{ duration: 0.15 }}
+          >
+            {project.tag}
+          </motion.span>
+          <motion.span
+            className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
+            style={{ transform: 'rotateX(180deg)' }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {project.tag}
+          </motion.span>
+        </motion.span>
         <h3 className="mt-8 text-3xl lg:text-4xl leading-tight text-[#2C2C2C] font-serif text-center">
           {project.title}
         </h3>

@@ -36,24 +36,24 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
       transition={springTransition}
       style={{ boxShadow: 'none', background: variant.bg }}
     >
-      <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[700px] flex flex-col ">
-        <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col h-full justify-center gap-4">
-          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center">
+      <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col overflow-hidden">
+        <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col justify-start gap-4">
+          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center mt-6">
             Blog
           </span>
           <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4">
             {post.title}
           </h3>
-          <img src={post.image || "/blog-placeholder.png"} alt="" className="w-full h-auto object-cover rounded-xl mt-4" />
+          <img src={post.image || "/blog-placeholder.png"} alt="" className="w-full h-auto object-cover rounded-xl mt-4 shadow-md" />
           <time className="text-xs mt-4 text-center" style={{ color: variant.textSecondary }}>
             {new Date(post.date).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
           </time>
           {post.summary && (
-            <p className="text-sm mt-3 leading-relaxed line-clamp-2" style={{ color: variant.textSecondary }}>
+            <p className="text-sm mt-3 leading-relaxed" style={{ color: variant.textSecondary }}>
               {post.summary}
             </p>
           )}
-          <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">
+          <span className="mt-auto mb-2 border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">
             Read More
           </span>
         </Link>

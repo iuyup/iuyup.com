@@ -1,7 +1,7 @@
 ---
 title: Claude_Managed_Agents深度解读
 date: 2026-04-10
-summary: Claude_Managed_Agents深度解读
+summary: Anthropic 刚发布的 Agent 托管平台，从架构到实操全拆解。基础设施被平台吃掉后，Agent 开发者的竞争焦点正在上移。
 image: /picture/claude-managed-agents.png
 tags:
   - Claude

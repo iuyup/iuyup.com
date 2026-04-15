@@ -1,21 +1,21 @@
 export const projects = [
   {
     title: 'AgentFlow',
-    desc: '10+ 种多智能体设计模式，基于 LangGraph 构建',
+    desc: '基于 LangGraph StateGraph 的多智能体设计模式集合，涵盖 Supervisor、Hierarchical、Parallel、Debate 等 10+ 种架构范式。每个 Pattern 均提供完整可运行代码与架构图解，帮助开发者快速选型和落地 Multi-Agent 系统。',
     tag: 'Project',
     color: '#B8C5C4',
     href: 'https://github.com/iuyup/AgentFlow',
   },
   {
     title: 'Auto-Tweet Agent',
-    desc: 'LangGraph StateGraph 驱动的 7 节点多智能体系统，自动发布推文',
+    desc: '基于 LangGraph 的 7 节点自动化推文 Agent，实现 新闻抓取 → AI 摘要 → 风格改写 → 自动发推 全流程。涵盖条件路由、人机协作节点与异常兜底机制，是 AgentFlow Supervisor 模式的真实应用案例。',
     tag: 'Project',
     color: '#B8C5C4',
     href: 'https://github.com/iuyup/News-Tweet-Agent',
   },
   {
     title: 'RAG 2.0',
-    desc: '混合 FAISS+BM25 检索，RRF 融合 + BGE-Reranker 二阶段重排',
+    desc: '企业级 RAG 检索增强系统，采用 FAISS 语义检索 + BM25 关键词检索的双路召回架构，通过 Reciprocal Rank Fusion (RRF) 融合排序，再经 BGE-Reranker 二阶段精排，显著提升检索准确率。支持多文档类型解析与分块策略配置。',
     tag: 'Project',
     color: '#B8C5C4',
     href: 'https://github.com/iuyup/Enterprise-Rag-Agent',

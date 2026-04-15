@@ -10,7 +10,7 @@ const cardFade: Variants = {
 };
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
 interface ProjectCardProps {
   index: number;
@@ -24,9 +24,11 @@ export function ProjectCard({ index }: ProjectCardProps) {
     <motion.div
       variants={cardFade}
       className="mb-6 rounded-3xl border border-white/60"
+      initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
+      animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', background: projectBg(project.color) }}
+      style={{ background: projectBg(project.color) }}
     >
       <a
         href={project.href}

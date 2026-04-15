@@ -12,7 +12,7 @@ const cardFade: Variants = {
 };
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
 interface ThemeToggleCardProps {
   tag?: CardVariant;
@@ -23,9 +23,11 @@ export function ThemeToggleCard({ tag = 'default' }: ThemeToggleCardProps) {
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
       <motion.div
+        initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
+        animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
         whileHover={hoverSpring}
         transition={springTransition}
-        style={{ boxShadow: 'none', background: variant.bg }}
+        style={{ background: variant.bg }}
         className={`${cardCls} items-center text-center`}
       >
         <ThemeToggle />

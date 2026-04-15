@@ -72,9 +72,11 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
     <motion.div
       className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px]`}
       onClick={() => !isFlipped && setIsFlipped(true)}
+      initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
+      animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', background: variant.bg, isolation: 'isolate' }}
+      style={{ background: variant.bg, isolation: 'isolate' }}
     >
       <div
         className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}

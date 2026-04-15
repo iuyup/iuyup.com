@@ -33,6 +33,10 @@ interface BentoGridProps {
 }
 
 export default function BentoGrid({ posts }: BentoGridProps) {
+  const col1Posts = posts.filter((_, i) => i % 3 === 0 && i > 0); // indices 3,6,9...
+  const col2Posts = posts.filter((_, i) => i % 3 === 1);           // indices 1,4,7...
+  const col3Posts = posts.filter((_, i) => i % 3 === 2);           // indices 2,5,8...
+
   return (
     <section className="relative z-10 max-w-[1400px] mx-auto px-6 py-12">
       {/* True masonry with 3 physical columns */}
@@ -48,6 +52,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <ProjectCard index={0} />
           {posts[0] && <BlogCard post={posts[0]} tag="blog" />}
           <FooterCard />
+          {col1Posts.map((post) => (
+            <BlogCard key={post.slug} post={post} tag="blog" />
+          ))}
         </div>
 
         {/* Column 2: Guestbook + items at index 2, 5, 8... */}
@@ -55,6 +62,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <GuestbookFlipCard tag="Guestbook" />
           <ProjectCard index={1} />
           <ThemeToggleCard />
+          {col2Posts.map((post) => (
+            <BlogCard key={post.slug} post={post} tag="blog" />
+          ))}
         </div>
 
         {/* Column 3: Chat + items at index 3, 6, 9... */}
@@ -63,8 +73,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <ProjectCard index={2} />
           <MusicCard />
           <BlogLinkCard tag="blog" />
-          {posts[1] && <BlogCard post={posts[1]} tag="blog" />}
-          {posts[2] && <BlogCard post={posts[2]} tag="blog" />}
+          {col3Posts.map((post) => (
+            <BlogCard key={post.slug} post={post} tag="blog" />
+          ))}
         </div>
       </motion.div>
     </section>

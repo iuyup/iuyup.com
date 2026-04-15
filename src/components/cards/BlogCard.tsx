@@ -10,7 +10,7 @@ const cardFade: Variants = {
 };
 
 const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
 interface Post {
   slug: string;
@@ -32,9 +32,11 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
     <motion.div
       variants={cardFade}
       className="mb-6 rounded-[2rem] overflow-hidden"
+      initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
+      animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', background: variant.bg }}
+      style={{ background: variant.bg }}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col overflow-hidden">
         <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col justify-start gap-4">
@@ -72,9 +74,11 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
     <motion.div
       variants={cardFade}
       className="rounded-[2rem] overflow-hidden"
+      initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
+      animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
       whileHover={hoverSpring}
       transition={springTransition}
-      style={{ boxShadow: 'none', background: variant.bg }}
+      style={{ background: variant.bg }}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href="/posts" className="group flex flex-col h-full justify-between">

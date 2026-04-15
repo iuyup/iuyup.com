@@ -2,6 +2,7 @@
 title: "拆完 Dify RAG 源码后的思考"
 date: "2026-04-10"
 summary: "Dify RAG Pipeline 源码分析"
+image: /picture/Dify-RAG.png
 tags: ["Dify", "RAG"]
 ---
 

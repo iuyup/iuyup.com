@@ -3,7 +3,7 @@ import BentoGrid from "@/components/BentoGrid";
 import { getAllPosts } from "@/lib/posts";
 
 export default function Home() {
-  const posts = getAllPosts().slice(0, 2);
+  const posts = getAllPosts();
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>

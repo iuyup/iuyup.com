@@ -2,6 +2,7 @@
 title: Claude_Managed_Agents深度解读
 date: 2026-04-10
 summary: Claude_Managed_Agents深度解读
+image: /picture/claude-managed-agents.png
 tags:
   - Claude
   - Agent

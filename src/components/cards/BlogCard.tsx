@@ -18,6 +18,7 @@ interface Post {
   date: string;
   summary: string | undefined;
   tags: string[] | undefined;
+  image: string | undefined;
 }
 
 interface BlogCardProps {
@@ -35,31 +36,26 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
       transition={springTransition}
       style={{ boxShadow: 'none', background: variant.bg }}
     >
-      <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[280px] flex flex-col justify-between">
-        <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col h-full justify-between">
-          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
+      <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[700px] flex flex-col ">
+        <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col h-full justify-center gap-4">
+          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center">
             Blog
           </span>
-          <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words my-6">
+          <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4">
             {post.title}
           </h3>
-          <div className="mt-auto">
-            <time className="text-xs block mb-3" style={{ color: variant.textSecondary }}>
-              {new Date(post.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
-            </time>
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex gap-2 flex-wrap mb-4">
-                {post.tags.slice(0, 3).map((t) => (
-                  <span key={t} className="text-xs px-2 py-0.5 rounded-full border" style={{ borderColor: 'rgba(255,255,255,0.3)', color: variant.textSecondary }}>
-                    {t}
-                  </span>
-                ))}
-              </div>
-            )}
-            <span className="border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all inline-block">
-              Read More
-            </span>
-          </div>
+          <img src={post.image || "/blog-placeholder.png"} alt="" className="w-full h-auto object-cover rounded-xl mt-4" />
+          <time className="text-xs mt-4 text-center" style={{ color: variant.textSecondary }}>
+            {new Date(post.date).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+          </time>
+          {post.summary && (
+            <p className="text-sm mt-3 leading-relaxed line-clamp-2" style={{ color: variant.textSecondary }}>
+              {post.summary}
+            </p>
+          )}
+          <span className="mt-auto border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">
+            Read More
+          </span>
         </Link>
       </div>
     </motion.div>
@@ -82,7 +78,7 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[280px] flex flex-col justify-between">
         <Link href="/posts" className="group flex flex-col h-full justify-between">
-          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-start">
+          <span className="text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm self-center">
             Blog
           </span>
           <div className="my-6">

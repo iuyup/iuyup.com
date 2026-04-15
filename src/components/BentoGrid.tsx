@@ -63,6 +63,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <MusicCard />
           <BlogLinkCard tag="blog" />
           {posts[1] && <BlogCard post={posts[1]} tag="blog" />}
+          {posts[2] && <BlogCard post={posts[2]} tag="blog" />}
         </div>
       </motion.div>
     </section>

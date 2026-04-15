@@ -9,6 +9,7 @@ export interface PostFrontmatter {
   date: string;
   summary: string | undefined;
   tags: string[] | undefined;
+  image: string | undefined;
 }
 
 export interface Post extends PostFrontmatter {
@@ -55,6 +56,7 @@ export function getAllPosts(): Post[] {
         date: data.date as string,
         summary: data.summary as string | undefined,
         tags: data.tags as string[] | undefined,
+        image: data.image as string | undefined,
       };
     })
     .filter((post): post is Post => post !== null) as Post[];
@@ -89,6 +91,7 @@ export function getPostBySlug(slug: string): { frontmatter: PostFrontmatter; con
       date: data.date as string,
       summary: (data.summary as string) || "",
       tags: (data.tags as string[]) || [],
+      image: (data.image as string) || undefined,
     },
     content,
     isMDX,

@@ -2,6 +2,7 @@
 title: 拆解 Dify 的 Agent 模块
 date: 2026-04-10
 summary: Dify Agent 源码分析
+image: /picture/Dify-Agent.png
 tags:
   - Dify
   - Agent

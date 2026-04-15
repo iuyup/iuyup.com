@@ -11,7 +11,6 @@ const cardFade: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
-const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
 interface ThemeToggleCardProps {
@@ -23,12 +22,10 @@ export function ThemeToggleCard({ tag = 'default' }: ThemeToggleCardProps) {
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
       <motion.div
-        initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
-        animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
-        whileHover={hoverSpring}
+        whileHover={{ scale: 1.02 }}
         transition={springTransition}
         style={{ background: variant.bg }}
-        className={`${cardCls} items-center text-center`}
+        className={`${cardCls} items-center text-center card-hover`}
       >
         <ThemeToggle />
         <span className="text-sm mt-3 font-serif" style={{ color: variant.textSecondary }}>切换主题</span>

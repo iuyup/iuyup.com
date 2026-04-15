@@ -6,7 +6,7 @@ import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
-const hoverSpring = { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' };
+const hoverSpring = { scale: 1.02 };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
 
 interface ChatFlipCardProps {
@@ -70,10 +70,8 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
 
   return (
     <motion.div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px]`}
+      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px] card-hover`}
       onClick={() => !isFlipped && setIsFlipped(true)}
-      initial={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
-      animate={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
       whileHover={hoverSpring}
       transition={springTransition}
       style={{ background: variant.bg, isolation: 'isolate' }}

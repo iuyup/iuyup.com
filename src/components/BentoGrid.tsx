@@ -25,6 +25,7 @@ interface Post {
   date: string;
   summary: string | undefined;
   tags: string[] | undefined;
+  image: string | undefined;
 }
 
 interface BentoGridProps {

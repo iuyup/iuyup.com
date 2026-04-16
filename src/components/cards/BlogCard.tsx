@@ -66,7 +66,7 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
           <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4 text-center">
             {post.title}
           </h3>
-          <img src={post.image || "/blog-placeholder.png"} alt="" className="w-full h-auto object-cover rounded-xl mt-4 shadow-md" />
+          <img src={post.image || "/blog-placeholder.svg"} alt="" className="w-full h-auto object-cover rounded-xl mt-4 shadow-md" />
           <time className="text-base mt-4 text-center" style={{ color: variant.textSecondary }}>
             {new Date(post.date).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
           </time>

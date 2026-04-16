@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -22,6 +22,11 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
     { role: 'assistant', content: '你好！有什么想了解的？' },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef(messages);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,7 +47,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({ messages: [...messagesRef.current, userMsg] }),
       });
       if (!res.ok) throw new Error();
       const reader = res.body?.getReader();

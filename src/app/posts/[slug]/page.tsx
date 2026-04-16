@@ -6,7 +6,6 @@ import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import Comments from "@/components/ui/Comments";
 
 export const dynamic = "force-dynamic";
@@ -173,16 +172,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center">
           <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
           </Link>
-          <div className="flex gap-5 text-sm items-center self-center font-serif" style={{ color: 'var(--text-secondary)' }}>
-            <Link href="/#about" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>About</Link>
-            <Link href="/#projects" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Projects</Link>
-            <Link href="/posts" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>Blog</Link>
-            <ThemeToggle />
-          </div>
         </div>
       </nav>
 

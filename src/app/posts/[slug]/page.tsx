@@ -169,9 +169,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const filteredContent = filterObsidianSyntax(post.content);
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
+    <div style={{ minHeight: '100vh', backgroundAttachment: 'fixed', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: 'url(/monet.jpg)', position: 'relative' }}>
+      {/* Nav - fixed, outside the middle band */}
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center">
           <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
             T.
@@ -179,9 +179,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         </div>
       </nav>
 
-      {/* Blog */}
-      <article className="pt-32 pb-16">
-        <div className="max-w-3xl mx-auto px-6">
+      {/* Bottom background band - wider than content, centered */}
+      <div style={{ background: 'var(--bg)', maxWidth: '900px', margin: '0 auto', color: 'var(--text)' }}>
+        {/* Blog */}
+        <article className="pt-32 pb-16">
+          <div className="max-w-3xl mx-auto px-6">
           {/* Header */}
           <header className="mb-12">
             <Link
@@ -274,6 +276,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

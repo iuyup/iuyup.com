@@ -1,10 +1,44 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
+
+export const metadata: Metadata = {
+  title: "博客",
+  description: "关于 AI Agent、开源与技术思考",
+  openGraph: {
+    title: "博客 | T",
+    description: "关于 AI Agent、开源与技术思考",
+    type: "website",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "博客" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "博客 | T",
+    description: "关于 AI Agent、开源与技术思考",
+  },
+};
 
 export default function PostsPage() {
   const posts = getAllPosts();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "博客列表",
+    description: "关于 AI Agent、开源与技术思考",
+    itemListElement: posts.map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://iuyup.com/posts/${encodeURIComponent(post.slug)}`,
+    })),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div style={{ minHeight: '100vh', backgroundAttachment: 'fixed', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: 'url(/monet.jpg)', position: 'relative' }}>
       {/* Nav - fixed, outside the middle band */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
@@ -82,5 +116,6 @@ export default function PostsPage() {
         </footer>
       </div>
     </div>
+    </>
   );
 }

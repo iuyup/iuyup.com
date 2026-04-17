@@ -5,7 +5,19 @@ import { getAllPosts } from "@/lib/posts";
 export default function Home() {
   const posts = getAllPosts();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "T's Site",
+    url: "https://iuyup.com",
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">
@@ -19,5 +31,6 @@ export default function Home() {
       {/* Bento Grid */}
       <BentoGrid posts={posts} />
     </div>
+    </>
   );
 }

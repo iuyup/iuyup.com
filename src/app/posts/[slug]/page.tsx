@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -13,6 +14,36 @@ export const dynamic = "force-dynamic";
 export async function generateStaticParams() {
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: encodeURIComponent(post.slug) }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+  const post = getPostBySlug(decodedSlug);
+
+  if (!post) {
+    return { title: "未找到" };
+  }
+
+  const description = post.frontmatter.summary || post.content.slice(0, 160);
+  const image = post.frontmatter.image || "/og-image.svg";
+
+  return {
+    title: post.frontmatter.title,
+    description,
+    openGraph: {
+      type: "article",
+      publishedTime: post.frontmatter.date,
+      authors: ["T"],
+      images: [{ url: image, width: 1200, height: 630, alt: post.frontmatter.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.frontmatter.title,
+      description,
+      images: [image],
+    },
+  };
 }
 
 // Filter out Obsidian wiki links like ![[note]] or [[note]]
@@ -168,7 +199,32 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const filteredContent = filterObsidianSyntax(post.content);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.frontmatter.title,
+    description: post.frontmatter.summary || post.content.slice(0, 160),
+    author: {
+      "@type": "Person",
+      name: "T",
+      url: "https://iuyup.com",
+    },
+    datePublished: post.frontmatter.date,
+    dateModified: post.frontmatter.date,
+    image: post.frontmatter.image || "/og-image.svg",
+    url: `https://iuyup.com/posts/${encodeURIComponent(decodedSlug)}`,
+    publisher: {
+      "@type": "Person",
+      name: "T",
+    },
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div style={{ minHeight: '100vh', backgroundAttachment: 'fixed', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: 'url(/monet.jpg)', position: 'relative' }}>
       {/* Nav - fixed, outside the middle band */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
@@ -278,5 +334,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </footer>
       </div>
     </div>
+    </>
   );
 }

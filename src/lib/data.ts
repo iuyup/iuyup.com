@@ -27,4 +27,5 @@ export const albums = [
   { cover: '/albums/blond.jpg', url: 'https://music.apple.com/cn/album/blonde/1146195596', name: 'Blonde', artist: 'Frank Ocean' },
   { cover: '/albums/sos.jpg', url: 'https://music.apple.com/cn/album/sos/1657869377', name: 'SOS', artist: 'SZA' },
   { cover: '/albums/never-enough.jpg', url: 'https://music.apple.com/cn/album/never-enough-bonus-version/1681322859', name: 'Never Enough', artist: 'Daniel Caesar' },
+  { cover: '/albums/CHROMAKOPIA.jpg', url: 'https://music.apple.com/cn/album/chromakopia/1776500452', name: 'CHROMAKOPIA', artist: 'Tyler, The Creator' },
 ];

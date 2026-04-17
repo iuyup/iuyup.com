@@ -47,8 +47,10 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
   const postItems: UnifiedItem[] = restPosts.map((p) => ({ ...p, type: 'post' }));
 
+  // Build all remaining items in order: post → project → album
   const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems];
 
+  // Round-robin distribute across 3 columns
   const col1Items = allItems.filter((_, i) => i % 3 === 0);
   const col2Items = allItems.filter((_, i) => i % 3 === 1);
   const col3Items = allItems.filter((_, i) => i % 3 === 2);
@@ -70,11 +72,10 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         animate="visible"
         className="flex flex-col lg:flex-row gap-8 items-start w-full"
       >
-        {/* Column 1: About + fixed items */}
+        {/* Column 1: About + topPost */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <AboutCard />
           {topPost && <BlogCard post={topPost} tag="blog" />}
-          <FooterCard />
           {col1Items.map((item) => {
             if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
             if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
@@ -82,7 +83,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           })}
         </div>
 
-        {/* Column 2: Guestbook + fixed items */}
+        {/* Column 2: Guestbook + ThemeToggle */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <GuestbookFlipCard tag="Guestbook" />
           <ThemeToggleCard />
@@ -93,7 +94,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           })}
         </div>
 
-        {/* Column 3: Chat + fixed items */}
+        {/* Column 3: Chat + BlogLinkCard */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <ChatFlipCard tag="Chat" />
           <BlogLinkCard tag="blog" />

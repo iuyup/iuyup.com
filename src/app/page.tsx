@@ -21,8 +21,8 @@ export default function Home() {
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">
-        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.5)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.3) 0%, rgba(245,240,235,0.3) 60%, rgba(245,240,235,0.85) 85%, #F5F0EB 100%)' }} />
+        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.7)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.15) 0%, rgba(245,240,235,0.15) 50%, rgba(245,240,235,0.7) 85%, #F5F0EB 100%)' }} />
       </div>
 
       {/* Hero Content */}

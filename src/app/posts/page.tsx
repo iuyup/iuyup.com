@@ -39,7 +39,16 @@ export default function PostsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    <div style={{ minHeight: '100vh', backgroundAttachment: 'fixed', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: 'url(/monet.jpg)', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', position: 'relative' }}>
+      {/* Monet Background - Fixed layer with gradient overlay */}
+      <div className="fixed inset-0 z-0">
+        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.7)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.15) 0%, rgba(245,240,235,0.15) 50%, rgba(245,240,235,0.7) 85%, #F5F0EB 100%)' }} />
+      </div>
+
+      {/* Content wrapper */}
+      <div className="relative z-10">
+
       {/* Nav - fixed, outside the middle band */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center">
@@ -114,6 +123,9 @@ export default function PostsPage() {
             </div>
           </div>
         </footer>
+      </div>
+
+      {/* End content wrapper */}
       </div>
     </div>
     </>

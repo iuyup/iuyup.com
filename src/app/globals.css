@@ -245,3 +245,32 @@ code:not([class*='language-']) {
 .flip-card.flip-card-inner-base:active {
   transform: scale(0.95) rotate(1.7deg);
 }
+
+/* Scroll tilt card animation */
+.scroll-tilt-perspective {
+  transform-style: preserve-3d;
+}
+
+.scroll-tilt-target {
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+/* Enter from bottom - initial state when scrolled into view */
+.scroll-tilt-enter {
+  transform: rotateX(0deg) scale(1);
+  opacity: 1;
+}
+
+/* Leave from top - going up */
+.scroll-tilt-leave-top {
+  transform: rotateX(-60deg) scale(0.95);
+  opacity: 0;
+}
+
+/* Leave from bottom - going down */
+.scroll-tilt-leave-bottom {
+  transform: rotateX(60deg) scale(0.95);
+  opacity: 0;
+}

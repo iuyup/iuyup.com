@@ -1,14 +1,9 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
-
-const cardFade: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
-};
 
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
@@ -31,7 +26,6 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div
-      variants={cardFade}
       className="mb-6 rounded-[2rem] overflow-hidden card-hover"
       whileHover={{ scale: 1.02 }}
       transition={springTransition}
@@ -93,7 +87,6 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div
-      variants={cardFade}
       className="rounded-[2rem] overflow-hidden card-hover"
       whileHover={{ scale: 1.02 }}
       transition={springTransition}

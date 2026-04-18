@@ -1,15 +1,14 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
 import { AboutCard } from '@/components/cards/AboutCard';
 import { ProjectCard } from '@/components/cards/ProjectCard';
 import { AlbumCard } from '@/components/cards/MusicCard';
 import { albums, projects } from '@/lib/data';
 import { BlogCard, BlogLinkCard } from '@/components/cards/BlogCard';
 import { ThemeToggleCard } from '@/components/cards/ThemeToggleCard';
-import { FooterCard } from '@/components/cards/FooterCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
 import { ChatFlipCard } from '@/components/flip-card/ChatFlipCard';
+import ScrollTiltCard from '@/components/ScrollTiltCard';
 
 interface Post {
   slug: string;
@@ -55,56 +54,66 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   const col2Items = allItems.filter((_, i) => i % 3 === 1);
   const col3Items = allItems.filter((_, i) => i % 3 === 2);
 
-  const stagger: Variants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
+  function renderItem(item: UnifiedItem) {
+    if (item.type === 'project') {
+      return (
+        <ScrollTiltCard key={item.slug}>
+          <ProjectCard project={item as any} />
+        </ScrollTiltCard>
+      );
+    }
+    if (item.type === 'album') {
+      return (
+        <ScrollTiltCard key={item.slug}>
+          <AlbumCard album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />
+        </ScrollTiltCard>
+      );
+    }
+    return (
+      <ScrollTiltCard key={item.slug}>
+        <BlogCard post={item as Post} tag="blog" />
+      </ScrollTiltCard>
+    );
+  }
 
   return (
     <section className="relative z-10 max-w-[1400px] mx-auto px-6 py-12">
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate="visible"
-        className="flex flex-col lg:flex-row gap-8 items-start w-full"
-      >
+      <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
         {/* Column 1: About + topPost */}
         <div className="flex-1 flex flex-col gap-8 w-full">
-          <AboutCard />
-          {topPost && <BlogCard post={topPost} tag="blog" />}
-          {col1Items.map((item) => {
-            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
-            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
-            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
-          })}
+          <ScrollTiltCard>
+            <AboutCard />
+          </ScrollTiltCard>
+          {topPost && (
+            <ScrollTiltCard>
+              <BlogCard post={topPost} tag="blog" />
+            </ScrollTiltCard>
+          )}
+          {col1Items.map(renderItem)}
         </div>
 
         {/* Column 2: Guestbook + ThemeToggle */}
         <div className="flex-1 flex flex-col gap-8 w-full">
-          <GuestbookFlipCard tag="Guestbook" />
-          <ThemeToggleCard />
-          {col2Items.map((item) => {
-            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
-            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
-            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
-          })}
+          <ScrollTiltCard>
+            <GuestbookFlipCard tag="Guestbook" />
+          </ScrollTiltCard>
+          <ScrollTiltCard>
+            <ThemeToggleCard />
+          </ScrollTiltCard>
+          {col2Items.map(renderItem)}
         </div>
 
         {/* Column 3: Chat + BlogLinkCard */}
         <div className="flex-1 flex flex-col gap-8 w-full">
-          <ChatFlipCard tag="Chat" />
-          <BlogLinkCard tag="blog" />
-          {col3Items.map((item) => {
-            if (item.type === 'project') return <ProjectCard key={item.slug} project={item as any} />;
-            if (item.type === 'album') return <AlbumCard key={item.slug} album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />;
-            return <BlogCard key={item.slug} post={item as Post} tag="blog" />;
-          })}
+          <ScrollTiltCard>
+            <ChatFlipCard tag="Chat" />
+          </ScrollTiltCard>
+          <ScrollTiltCard>
+            <BlogLinkCard tag="blog" />
+          </ScrollTiltCard>
+          {col3Items.map(renderItem)}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

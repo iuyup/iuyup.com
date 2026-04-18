@@ -265,12 +265,12 @@ code:not([class*='language-']) {
 
 /* Leave from top - going up */
 .scroll-tilt-leave-top {
-  transform: rotateX(-60deg) scale(0.95);
+  transform: rotateX(-30deg) scale(0.95);
   opacity: 0;
 }
 
 /* Leave from bottom - going down */
 .scroll-tilt-leave-bottom {
-  transform: rotateX(60deg) scale(0.95);
+  transform: rotateX(30deg) scale(0.95);
   opacity: 0;
 }

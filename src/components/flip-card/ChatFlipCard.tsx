@@ -29,7 +29,12 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (!container) return;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+    if (isAtBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

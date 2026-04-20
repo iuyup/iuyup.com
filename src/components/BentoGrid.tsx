@@ -111,6 +111,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <ScrollTiltCard>
             <BlogLinkCard tag="blog" />
           </ScrollTiltCard>
+          <ScrollTiltCard>
+            <WeatherCard city="New York" />
+          </ScrollTiltCard>
           {col3Items.map(renderItem)}
         </div>
       </div>

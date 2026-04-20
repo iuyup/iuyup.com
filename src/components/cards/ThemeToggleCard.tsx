@@ -52,7 +52,7 @@ function setCachedWeather(data: WeatherData) {
   localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
 }
 
-async function fetchWeather(city: string = 'New York'): Promise<WeatherData> {
+async function fetchWeather(city: string): Promise<WeatherData> {
   const apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
   if (!apiKey) {
     return getMockWeather();
@@ -213,9 +213,10 @@ function getWeatherIcon(condition: string): React.ReactNode {
 // ===================
 interface WeatherCardProps {
   tag?: CardVariant;
+  city?: string;
 }
 
-export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
+export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const bgRef = useRef<HTMLDivElement>(null);
@@ -229,7 +230,7 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
 
   // Fetch weather on mount
   useEffect(() => {
-    fetchWeather().then((data) => {
+    fetchWeather(city).then((data) => {
       setWeather(data);
       const night = isNightTime(data);
       const key = getWeatherTheme(data.condition, night, data.windSpeed);

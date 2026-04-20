@@ -40,7 +40,7 @@ export const weatherThemes: Record<WeatherCondition, WeatherThemeKey> = {
 };
 
 export const themeColors: Record<WeatherThemeKey, WeatherTheme> = {
-  sunny: { startColor: 'rgb(230, 180, 120)', endColor: 'rgb(200, 140, 80)', startPct: 0 },
+  sunny: { startColor: 'rgb(135, 180, 220)', endColor: 'rgb(95, 145, 185)', startPct: 0 },
   'clear-night': { startColor: 'rgb(60, 50, 100)', endColor: 'rgb(30, 25, 60)', startPct: 0 },
   clouds: { startColor: 'rgb(131, 138, 148)', endColor: 'rgb(57, 64, 74)', startPct: 0 },
   rainy: { startColor: 'rgb(100, 130, 160)', endColor: 'rgb(50, 70, 100)', startPct: 0 },

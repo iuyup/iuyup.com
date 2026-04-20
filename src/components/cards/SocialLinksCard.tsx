@@ -171,7 +171,7 @@ export function SocialLinksCard({ tag = 'default' }: SocialLinksCardProps) {
         {/* Social links */}
         <ul className="flex flex-col gap-2 items-center">
           <SocialItem href="https://github.com/iuyup" label="GitHub" icon={<GitHubIcon />} />
-          <SocialItem href="mailto:tyn2005315@gmail.com" label="Email" icon={<EmailIcon />} />
+          <SocialItem href="mailto:23yntong@stu.edu.cn" label="Email" icon={<EmailIcon />} />
           <SocialItem href="https://www.zhihu.com/people/ding-wen-xuan-86-64" label="知乎" icon={<ZhihuIcon />} />
           <SocialItem href="https://juejin.cn/user/3317694868761003" label="掘金" icon={<JuejinIcon />} />
         </ul>

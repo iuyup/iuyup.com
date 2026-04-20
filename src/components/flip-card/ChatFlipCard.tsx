@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -28,14 +28,15 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
     messagesRef.current = messages;
   }, [messages]);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     const container = messagesEndRef.current?.parentElement;
     if (!container) return;
-    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
-    if (isAtBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-    }
-  };
+    container.scrollTop = container.scrollHeight;
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [scrollToBottom, messages, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,6 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
-    setTimeout(scrollToBottom, 0);
 
     try {
       const res = await fetch('/api/chat', {
@@ -68,13 +68,11 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
           next[next.length - 1] = { role: 'assistant', content: assistantMsg };
           return next;
         });
-        setTimeout(scrollToBottom, 0);
       }
     } catch {
       setMessages((prev) => [...prev, { role: 'assistant', content: '抱歉，出了点问题。' }]);
     } finally {
       setIsLoading(false);
-      setTimeout(scrollToBottom, 0);
     }
   };
 

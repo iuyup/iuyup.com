@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 import { getWeatherTheme, themeColors, type WeatherThemeKey } from '@/lib/weatherThemes';
+
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
 // ===================
 // Data Layer
@@ -254,7 +257,7 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
       anim.startPctPhase = (anim.startPctPhase + (dt / 8) * Math.PI * 2) % (Math.PI * 2);
 
       const radius = (Math.sin(anim.radiusPhase) + 1) / 2;
-      const startPct = 25 + 10 * Math.sin(anim.startPctPhase);
+      const startPct = (25 + 10 * Math.sin(anim.startPctPhase)) * anim.currentInfluence;
 
       // Radius offset
       const baseRadius = 20;
@@ -304,7 +307,11 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
   }, []);
 
   return (
-    <div className="break-inside-avoid mb-6 md:mb-8">
+    <motion.div
+      className="break-inside-avoid mb-6 md:mb-8 card-hover"
+      whileHover={{ scale: 1.02 }}
+      transition={springTransition}
+    >
       <div
         ref={bgRef}
         onMouseMove={handleMouseMove}
@@ -341,6 +348,6 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
           {weather ? `${weather.condition.toUpperCase()} ${weather.temp}°C` : ''}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -225,8 +225,16 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
   const animRef = useRef<AnimatedState>({ angle: 0, radiusPhase: 0, startPctPhase: 0, mouseX: 0, mouseY: 0, currentInfluence: 0 });
   const mouseTargetRef = useRef({ x: 0.5, y: 0.5 });
 
+  // Use refs for animation loop to avoid restarting on state changes
+  const isHoveredRef = useRef(false);
+  const themeKeyRef = useRef<WeatherThemeKey>('clouds');
+
   // Theme key
   const [themeKey, setThemeKey] = useState<WeatherThemeKey>('clouds');
+  useEffect(() => {
+    themeKeyRef.current = themeKey;
+    isHoveredRef.current = isHovered;
+  }, [themeKey, isHovered]);
 
   // Fetch weather on mount
   useEffect(() => {
@@ -265,11 +273,11 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
       const radiusOffset = baseRadius * radius;
 
       // Lerp mouse position
-      anim.mouseX = lerp(anim.mouseX, mouseTargetRef.current.x, isHovered ? 0.12 : 0.06);
-      anim.mouseY = lerp(anim.mouseY, mouseTargetRef.current.y, isHovered ? 0.12 : 0.06);
+      anim.mouseX = lerp(anim.mouseX, mouseTargetRef.current.x, isHoveredRef.current ? 0.12 : 0.06);
+      anim.mouseY = lerp(anim.mouseY, mouseTargetRef.current.y, isHoveredRef.current ? 0.12 : 0.06);
 
       // Smooth influence transition: hover -> 0.95, leave -> 0
-      const targetInfluence = isHovered ? 0.95 : 0;
+      const targetInfluence = isHoveredRef.current ? 0.95 : 0;
       anim.currentInfluence += (targetInfluence - anim.currentInfluence) * dt * 3;
 
       // Compute gradient center: fixed center + mouse influence
@@ -279,7 +287,7 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
       const clampedX = Math.max(20, Math.min(80, cx));
       const clampedY = Math.max(20, Math.min(80, cy));
 
-      const theme = themeColors[themeKey];
+      const theme = themeColors[themeKeyRef.current];
       if (bgRef.current) {
         bgRef.current.style.background =
           `radial-gradient(circle at ${clampedX.toFixed(1)}% ${clampedY.toFixed(1)}%, ${theme.startColor} ${startPct.toFixed(0)}%, ${theme.endColor} 100%)`;
@@ -290,7 +298,7 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [isHovered, themeKey]);
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

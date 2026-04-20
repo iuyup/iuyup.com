@@ -47,12 +47,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name and text are required" }, { status: 400 });
     }
 
+    if (name.trim().length > 50) {
+      return NextResponse.json({ error: "Name must be 50 characters or less" }, { status: 400 });
+    }
+
     if (text.trim().length > 500) {
       return NextResponse.json({ error: "Text must be 500 characters or less" }, { status: 400 });
     }
 
     const newMessage: GuestbookMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: name.trim(),
       text: text.trim(),
       date: new Date().toISOString().split("T")[0],
@@ -84,7 +88,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     messages[messageIndex].likes += 1;
-    await redis.lset(GUESTBOOK_KEY, messageIndex, messages[messageIndex]);
+    await redis.lset(GUESTBOOK_KEY, messageIndex, JSON.stringify(messages[messageIndex]));
 
     return NextResponse.json(messages[messageIndex]);
   } catch (error) {

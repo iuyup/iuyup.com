@@ -32,7 +32,6 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [messages, setMessages] = useState<GuestbookMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMessages();
@@ -135,10 +134,6 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             {loading ? (
               <div className="flex items-center justify-center h-full" style={{ color: variant.textSecondary }}>
                 Loading...
-              </div>
-            ) : error ? (
-              <div className="flex items-center justify-center h-full" style={{ color: variant.textSecondary }}>
-                {error}
               </div>
             ) : (
               messages.map((msg) => {

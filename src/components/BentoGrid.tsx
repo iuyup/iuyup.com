@@ -10,6 +10,8 @@ import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
 import { ChatFlipCard } from '@/components/flip-card/ChatFlipCard';
 import ScrollTiltCard from '@/components/ScrollTiltCard';
 
+const SECOND_WEATHER_CITY = 'New York';
+
 interface Post {
   slug: string;
   title: string;
@@ -117,7 +119,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           </ScrollTiltCard>
           {col3Items.map(renderItem)}
           <ScrollTiltCard>
-            <WeatherCard city="New York" />
+            <WeatherCard city={SECOND_WEATHER_CITY} />
           </ScrollTiltCard>
         </div>
       </div>

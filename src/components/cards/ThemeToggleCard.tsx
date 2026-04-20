@@ -320,7 +320,7 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
           borderRadius: '1.5rem',
           overflow: 'hidden',
           padding: '3.5rem 2.5rem',
-          minHeight: '480px',
+          minHeight: '650px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

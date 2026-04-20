@@ -46,8 +46,12 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
   const postItems: UnifiedItem[] = restPosts.map((p) => ({ ...p, type: 'post' }));
 
-  // Build all remaining items in order: post → project → album
+  // Build all remaining items and shuffle to mix types
   const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems];
+  for (let i = allItems.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allItems[i], allItems[j]] = [allItems[j], allItems[i]];
+  }
 
   // Round-robin distribute across 3 columns
   const col1Items = allItems.filter((_, i) => i % 3 === 0);
@@ -111,10 +115,10 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <ScrollTiltCard>
             <BlogLinkCard tag="blog" />
           </ScrollTiltCard>
+          {col3Items.map(renderItem)}
           <ScrollTiltCard>
             <WeatherCard city="New York" />
           </ScrollTiltCard>
-          {col3Items.map(renderItem)}
         </div>
       </div>
     </section>

@@ -29,7 +29,7 @@ export function AlbumCard({ album, tag = 'default' }: AlbumCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
-    <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
+    <motion.div variants={cardFade} className="break-inside-avoid">
       <motion.div
         whileHover={{ scale: 1.02 }}
         transition={springTransition}

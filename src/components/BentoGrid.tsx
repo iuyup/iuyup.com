@@ -8,6 +8,7 @@ import { BlogCard, BlogLinkCard } from '@/components/cards/BlogCard';
 import { WeatherCard } from '@/components/cards/ThemeToggleCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
 import { ChatFlipCard } from '@/components/flip-card/ChatFlipCard';
+import { SocialLinksCard } from '@/components/cards/SocialLinksCard';
 import ScrollTiltCard from '@/components/ScrollTiltCard';
 
 const SECOND_WEATHER_CITY = 'New York';
@@ -116,6 +117,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           </ScrollTiltCard>
           <ScrollTiltCard>
             <BlogLinkCard tag="blog" />
+          </ScrollTiltCard>
+          <ScrollTiltCard>
+            <SocialLinksCard />
           </ScrollTiltCard>
           {col3Items.map(renderItem)}
           <ScrollTiltCard>

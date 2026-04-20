@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
+import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "博客",
@@ -35,10 +36,7 @@ export default function PostsPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
     <div style={{ minHeight: '100vh', position: 'relative' }}>
       {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">

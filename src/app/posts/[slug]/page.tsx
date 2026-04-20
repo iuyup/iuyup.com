@@ -8,6 +8,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import Comments from "@/components/ui/Comments";
+import JsonLd from "@/components/JsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -221,10 +222,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
     <div style={{ minHeight: '100vh', position: 'relative' }}>
       {/* Monet Background - Fixed layer with gradient overlay */}
       <div className="fixed inset-0 z-0">

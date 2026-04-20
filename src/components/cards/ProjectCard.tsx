@@ -28,7 +28,7 @@ export function ProjectCard({ index, project }: ProjectCardProps) {
 
   return (
     <motion.div
-      className="mb-6 rounded-3xl border border-white/60 card-hover"
+      className="rounded-3xl border border-white/60 card-hover"
       whileHover={{ scale: 1.02 }}
       transition={springTransition}
       style={{ background: projectBg(resolved.color) }}

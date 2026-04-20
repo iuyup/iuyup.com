@@ -31,13 +31,13 @@ interface OpenWeatherResponse {
   timezone: number;
 }
 
-const CACHE_KEY = 'weather_cache';
+const CACHE_KEY_PREFIX = 'weather_cache_';
 const CACHE_TTL = 10 * 60 * 1000;
 
-function getCachedWeather(): WeatherData | null {
+function getCachedWeather(city: string): WeatherData | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(CACHE_KEY_PREFIX + city);
     if (!raw) return null;
     const { data, timestamp } = JSON.parse(raw);
     if (Date.now() - timestamp > CACHE_TTL) return null;
@@ -47,15 +47,15 @@ function getCachedWeather(): WeatherData | null {
   }
 }
 
-function setCachedWeather(data: WeatherData) {
+function setCachedWeather(city: string, data: WeatherData) {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+  localStorage.setItem(CACHE_KEY_PREFIX + city, JSON.stringify({ data, timestamp: Date.now() }));
 }
 
 async function fetchWeather(city: string): Promise<WeatherData> {
   const apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
   if (!apiKey) {
-    return getMockWeather();
+    return getMockWeather(city);
   }
 
   try {
@@ -77,25 +77,39 @@ async function fetchWeather(city: string): Promise<WeatherData> {
       timezone: w.timezone,
     };
 
-    setCachedWeather(data);
+    setCachedWeather(city, data);
     return data;
   } catch {
-    return getCachedWeather() ?? getMockWeather();
+    return getCachedWeather(city) ?? getMockWeather(city);
   }
 }
 
-function getMockWeather(): WeatherData {
-  return {
-    city: 'New York City',
-    country: 'USA',
-    temp: 12,
-    condition: 'Clouds',
-    description: 'overcast clouds',
-    windSpeed: 3.5,
-    sunrise: 0,
-    sunset: 0,
-    timezone: -18000,
+function getMockWeather(city: string): WeatherData {
+  const mocks: Record<string, WeatherData> = {
+    Shenzhen: {
+      city: 'Shenzhen',
+      country: 'CN',
+      temp: 25,
+      condition: 'Clear',
+      description: 'clear sky',
+      windSpeed: 2.0,
+      sunrise: 0,
+      sunset: 0,
+      timezone: 28800,
+    },
+    'New York': {
+      city: 'New York City',
+      country: 'USA',
+      temp: 12,
+      condition: 'Clouds',
+      description: 'overcast clouds',
+      windSpeed: 3.5,
+      sunrise: 0,
+      sunset: 0,
+      timezone: -18000,
+    },
   };
+  return mocks[city] ?? mocks['New York'];
 }
 
 function isNightTime(weather: WeatherData): boolean {

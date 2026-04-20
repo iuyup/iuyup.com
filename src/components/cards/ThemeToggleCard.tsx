@@ -257,7 +257,7 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
       anim.startPctPhase = (anim.startPctPhase + (dt / 8) * Math.PI * 2) % (Math.PI * 2);
 
       const radius = (Math.sin(anim.radiusPhase) + 1) / 2;
-      const startPct = (25 + 10 * Math.sin(anim.startPctPhase)) * anim.currentInfluence;
+      const startPct = 15 * anim.currentInfluence;
 
       // Radius offset
       const baseRadius = 20;
@@ -271,11 +271,10 @@ export function WeatherCard({ tag = 'default' }: WeatherCardProps) {
       const targetInfluence = isHovered ? 0.95 : 0;
       anim.currentInfluence += (targetInfluence - anim.currentInfluence) * dt * 3;
 
-      // Compute gradient center: base position + mouse influence
-      const baseX = 50 + Math.cos(anim.angle) * radiusOffset;
-      const baseY = 50 + Math.sin(anim.angle) * radiusOffset;
-      const cx = baseX * (1 - anim.currentInfluence) + anim.mouseX * 100 * anim.currentInfluence;
-      const cy = baseY * (1 - anim.currentInfluence) + anim.mouseY * 100 * anim.currentInfluence;
+      // Compute gradient center: fixed center + mouse influence
+      // When influence=0, spot starts from center (50); when influence=1, spot follows mouse
+      const cx = 50 * (1 - anim.currentInfluence) + anim.mouseX * 100 * anim.currentInfluence;
+      const cy = 50 * (1 - anim.currentInfluence) + anim.mouseY * 100 * anim.currentInfluence;
       const clampedX = Math.max(20, Math.min(80, cx));
       const clampedY = Math.max(20, Math.min(80, cy));
 

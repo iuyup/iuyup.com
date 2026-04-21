@@ -19,10 +19,7 @@ export function useTheme() {
 }
 
 function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  const saved = localStorage.getItem("theme") as Theme | null;
-  if (saved) return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -30,11 +27,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    // Theme toggle disabled — always light mode
   };
 
   return (

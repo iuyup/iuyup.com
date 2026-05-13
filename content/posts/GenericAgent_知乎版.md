@@ -8,7 +8,6 @@ tags:
   - Agent
 ---
 
-# 3K 行代码，9 个工具，我读完了 GenericAgent 全部源码
 
 最近 V2EX 有个帖子火了——有人说高强度用了半年 Claude Code 之后卸载了，转投一个叫 GenericAgent 的项目。200 多条回复，吵得不可开交。
 

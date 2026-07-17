@@ -46,3 +46,6 @@ CLAUDE.md
 
 # content/posts is a symlink to Obsidian vault - do NOT ignore
 !content/posts
+
+.agent.md
+.devlog.md

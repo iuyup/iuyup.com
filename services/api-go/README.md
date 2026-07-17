@@ -2,7 +2,7 @@
 
 This service incrementally adds a Go backend to `iuyup.com`. Next.js continues
 to render the personal site, blog, and SEO pages; this service will own
-stateful APIs, beginning with the chat gateway.
+stateful APIs, including the chat gateway and guestbook.
 
 ## Current capability
 
@@ -14,8 +14,23 @@ JSON conversation, rejects client-supplied `system` roles, applies a per-process
 IP rate limit, injects the site's persona on the server, and translates the
 provider's SSE response into the plain-text stream consumed by the current UI.
 
-The endpoint is not connected to the Next.js frontend yet. The existing
-TypeScript RAG retrieval remains active until its Go replacement is ready.
+At startup, the service indexes Markdown and MDX posts with Chinese bigram and
+Latin-word tokenization. The best article excerpts are added to the server-side
+persona for each chat request.
+
+The current Next.js `POST /api/chat` route proxies browser requests to this
+service. The browser never receives the Go service address, DeepSeek key, or
+proxy token.
+
+`GET /v1/guestbook` returns a bounded, cursor-paginated list of approved
+messages. `POST /v1/guestbook` validates and creates a message, and
+`PATCH /v1/guestbook` increments one approved message's likes atomically in
+MySQL. Creating a message is limited to three attempts per minute per
+client; likes are limited to ten.
+
+The current Next.js `/api/guestbook` route proxies these requests to Go. The
+browser continues to use the same URL, while the Go service owns validation,
+moderation status, persistence, and atomic updates.
 
 ## Run locally
 
@@ -35,14 +50,49 @@ $env:DEEPSEEK_API_KEY = 'your-server-only-key'
 go run ./cmd/api
 ```
 
+To enable the durable guestbook, first provision MySQL and run its
+versioned schema migrations once:
+
+```powershell
+$env:DATABASE_URL = 'mysql://user:password@host:3306/selfweb?ssl-mode=REQUIRED'
+go run ./cmd/migrate
+go run ./cmd/api
+```
+
+`DATABASE_URL` accepts both a provider-style `mysql://` URL and the Go MySQL
+driver DSN format, for example
+`user:password@tcp(host:3306)/selfweb?tls=true&parseTime=true`.
+
+The old Upstash list is not migrated automatically. Export and import any
+production messages before switching the deployed Next.js route to this API.
+
 Optional configuration:
 
 - `DEEPSEEK_BASE_URL` defaults to `https://api.deepseek.com`.
 - `DEEPSEEK_MODEL` defaults to `deepseek-v4-flash`.
 - `API_ADDR` defaults to `:8080`.
+- `POSTS_DIR` defaults to `../../content/posts` when the service is started
+  from `services/api-go`.
+- `GO_API_PROXY_TOKEN` is optional for direct local calls. In production, set
+  the same high-entropy value in the Go service and in Next.js; it authorizes
+  Next.js to forward the original client IP for rate limiting.
+- `DATABASE_URL` enables the MySQL guestbook. Run `go run ./cmd/migrate`
+  against it before starting the API.
+- `GUESTBOOK_DEFAULT_STATUS` defaults to `approved`; set it to `pending` to
+  require review before newly submitted messages appear publicly.
 
-The in-memory rate limiter is valid for one service instance. Before deploying
-multiple instances, replace it with a shared Redis-backed limiter.
+For the Next.js application, configure these server-only variables:
+
+- `GO_API_BASE_URL`, for example `http://127.0.0.1:8080` locally or the private
+  address of the deployed Go service.
+- `GO_API_PROXY_TOKEN`, identical to the Go service value.
+- `TRUST_X_FORWARDED_FOR=true` only when the hosting ingress reliably removes
+  client-supplied `X-Forwarded-For` values and writes the real client address.
+  It is off by default; without it, Go rate limits the Next.js server address
+  rather than accepting a spoofable visitor IP.
+
+The in-memory rate limiters are valid for one service instance. Before
+deploying multiple instances, replace them with a shared Redis-backed limiter.
 
 To use another local port:
 
@@ -60,5 +110,5 @@ go vet ./...
 
 ## Next milestone
 
-Port the current article retrieval into Go, then switch the Next.js chat route
-to this service without exposing provider credentials to the browser.
+Deploy MySQL, migrate existing guestbook messages, and replace the
+in-memory limiters with a shared store before running multiple Go instances.

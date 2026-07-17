@@ -101,6 +101,20 @@ func TestChatHidesProviderError(t *testing.T) {
 	}
 }
 
+func TestClientAddressTrustsOnlyAuthorizedProxy(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPost, "/v1/chat", nil)
+	request.RemoteAddr = "203.0.113.10:12345"
+	request.Header.Set("X-Selfweb-Client-IP", "198.51.100.4")
+	request.Header.Set("X-Selfweb-Proxy-Token", "correct-token")
+
+	if got := clientAddress(request, "correct-token"); got != "198.51.100.4" {
+		t.Fatalf("authorized address = %q", got)
+	}
+	if got := clientAddress(request, "wrong-token"); got != "203.0.113.10" {
+		t.Fatalf("spoofed address = %q", got)
+	}
+}
+
 func newTestHandler(provider chat.StreamOpener, limit int) http.Handler {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	return NewHandler(logger, Config{

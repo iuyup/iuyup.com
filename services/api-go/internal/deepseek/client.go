@@ -31,9 +31,15 @@ const personaPrompt = `你是 T 的个人 AI 助手，部署在 T 的个人网�
 
 // Config defines the server-only DeepSeek connection settings.
 type Config struct {
-	APIKey  string
-	BaseURL string
-	Model   string
+	APIKey        string
+	BaseURL       string
+	Model         string
+	PromptBuilder PromptBuilder
+}
+
+// PromptBuilder enriches the fixed persona with server-owned retrieval context.
+type PromptBuilder interface {
+	BuildSystemPrompt(basePrompt, query string) string
 }
 
 // Client speaks the OpenAI-compatible DeepSeek Chat Completions protocol.
@@ -42,6 +48,7 @@ type Client struct {
 	baseURL    string
 	model      string
 	httpClient *http.Client
+	prompt     PromptBuilder
 }
 
 // NewClient constructs a DeepSeek client. Callers keep the API key in server
@@ -52,6 +59,7 @@ func NewClient(config Config) *Client {
 		baseURL:    strings.TrimRight(config.BaseURL, "/"),
 		model:      config.Model,
 		httpClient: http.DefaultClient,
+		prompt:     config.PromptBuilder,
 	}
 }
 
@@ -63,10 +71,15 @@ type completionRequest struct {
 
 // OpenChatStream opens, but does not parse, the provider's SSE response.
 func (client *Client) OpenChatStream(ctx context.Context, messages []chat.Message) (io.ReadCloser, error) {
+	systemPrompt := personaPrompt
+	if client.prompt != nil {
+		systemPrompt = client.prompt.BuildSystemPrompt(personaPrompt, messages[len(messages)-1].Content)
+	}
+
 	payload := completionRequest{
 		Model: client.model,
 		Messages: append([]chat.Message{
-			{Role: "system", Content: personaPrompt},
+			{Role: "system", Content: systemPrompt},
 		}, messages...),
 		Stream: true,
 	}

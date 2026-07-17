@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"io"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/iuyup/selfweb/services/api-go/internal/chat"
 	"github.com/iuyup/selfweb/services/api-go/internal/deepseek"
+	"github.com/iuyup/selfweb/services/api-go/internal/guestbook"
 	"github.com/iuyup/selfweb/services/api-go/internal/ratelimit"
 )
 
@@ -20,10 +22,16 @@ const defaultMaxRequestBodyBytes int64 = 32 * 1024
 
 // Config configures the HTTP API's dependencies and request limits.
 type Config struct {
-	Chat                chat.StreamOpener
-	RateLimiter         *ratelimit.FixedWindow
-	RequestTimeout      time.Duration
-	MaxRequestBodyBytes int64
+	Chat                    chat.StreamOpener
+	RateLimiter             *ratelimit.FixedWindow
+	RequestTimeout          time.Duration
+	MaxRequestBodyBytes     int64
+	TrustedProxyToken       string
+	Guestbook               guestbook.Store
+	GuestbookCreateLimiter  *ratelimit.FixedWindow
+	GuestbookLikeLimiter    *ratelimit.FixedWindow
+	GuestbookRequestTimeout time.Duration
+	GuestbookDefaultStatus  guestbook.Status
 }
 
 // NewHandler exposes the public HTTP routes for the Go API service.
@@ -40,10 +48,25 @@ func NewHandler(logger *slog.Logger, config Config) http.Handler {
 	if config.MaxRequestBodyBytes <= 0 {
 		config.MaxRequestBodyBytes = defaultMaxRequestBodyBytes
 	}
+	if config.GuestbookCreateLimiter == nil {
+		config.GuestbookCreateLimiter = ratelimit.NewFixedWindow(3, time.Minute)
+	}
+	if config.GuestbookLikeLimiter == nil {
+		config.GuestbookLikeLimiter = ratelimit.NewFixedWindow(10, time.Minute)
+	}
+	if config.GuestbookRequestTimeout <= 0 {
+		config.GuestbookRequestTimeout = 5 * time.Second
+	}
+	if _, err := guestbook.ParseStatus(string(config.GuestbookDefaultStatus)); err != nil {
+		config.GuestbookDefaultStatus = guestbook.StatusApproved
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthz)
 	mux.HandleFunc("POST /v1/chat", chatHandler(logger, config))
+	mux.HandleFunc("GET /v1/guestbook", listGuestbookMessages(logger, config))
+	mux.HandleFunc("POST /v1/guestbook", createGuestbookMessage(logger, config))
+	mux.HandleFunc("PATCH /v1/guestbook", likeGuestbookMessage(logger, config))
 
 	return requestLogger(logger, mux)
 }
@@ -62,7 +85,7 @@ func chatHandler(logger *slog.Logger, config Config) http.HandlerFunc {
 			return
 		}
 
-		if !config.RateLimiter.Allow(clientAddress(request)) {
+		if !config.RateLimiter.Allow(clientAddress(request, config.TrustedProxyToken)) {
 			writeError(writer, http.StatusTooManyRequests, "rate limit exceeded")
 			return
 		}
@@ -126,7 +149,15 @@ func decodeMessages(writer http.ResponseWriter, request *http.Request, maxBytes 
 	return payload.ValidatedMessages()
 }
 
-func clientAddress(request *http.Request) string {
+func clientAddress(request *http.Request, trustedProxyToken string) string {
+	forwardedAddress := strings.TrimSpace(request.Header.Get("X-Selfweb-Client-IP"))
+	providedToken := request.Header.Get("X-Selfweb-Proxy-Token")
+	if trustedProxyToken != "" &&
+		subtle.ConstantTimeCompare([]byte(providedToken), []byte(trustedProxyToken)) == 1 &&
+		net.ParseIP(forwardedAddress) != nil {
+		return forwardedAddress
+	}
+
 	host, _, err := net.SplitHostPort(request.RemoteAddr)
 	if err == nil && host != "" {
 		return host

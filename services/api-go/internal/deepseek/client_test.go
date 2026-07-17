@@ -49,3 +49,46 @@ func TestOpenChatStreamUsesOpenAICompatibleRequest(t *testing.T) {
 		t.Fatalf("read stream: %v", err)
 	}
 }
+
+func TestOpenChatStreamUsesPromptBuilder(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		var payload completionRequest
+		if err := json.NewDecoder(request.Body).Decode(&payload); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if payload.Messages[0].Content != "base prompt with retrieved context for Go" {
+			t.Fatalf("system prompt = %q", payload.Messages[0].Content)
+		}
+		_, _ = writer.Write([]byte("data: [DONE]\n"))
+	}))
+	defer server.Close()
+
+	client := NewClient(Config{
+		APIKey:  "test-key",
+		BaseURL: server.URL,
+		Model:   "test-model",
+		PromptBuilder: promptBuilderFunc(func(basePrompt, query string) string {
+			if basePrompt != personaPrompt || query != "Go" {
+				t.Fatalf("prompt builder input = %q / %q", basePrompt, query)
+			}
+			return "base prompt with retrieved context for " + query
+		}),
+	})
+	client.httpClient = server.Client()
+
+	stream, err := client.OpenChatStream(context.Background(), []chat.Message{{Role: "user", Content: "Go"}})
+	if err != nil {
+		t.Fatalf("open chat stream: %v", err)
+	}
+	defer stream.Close()
+
+	if _, err := io.ReadAll(stream); err != nil {
+		t.Fatalf("read stream: %v", err)
+	}
+}
+
+type promptBuilderFunc func(basePrompt, query string) string
+
+func (builder promptBuilderFunc) BuildSystemPrompt(basePrompt, query string) string {
+	return builder(basePrompt, query)
+}

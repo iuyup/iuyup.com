@@ -127,5 +127,7 @@ go vet ./...
 
 ## Next milestone
 
-Deploy MySQL, migrate existing guestbook messages, and replace the
-in-memory limiters with a shared store before running multiple Go instances.
+The Railway deployment now runs the MySQL guestbook and the article-backed
+DeepSeek chat gateway. Before running multiple Go instances, replace the
+in-memory limiters with a shared Redis-backed limiter and add production
+metrics for request rate, provider failures, and database latency.

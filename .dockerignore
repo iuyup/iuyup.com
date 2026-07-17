@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!services/
+!services/api-go/
+!services/api-go/**
+!content/
+!content/posts/
+!content/posts/**

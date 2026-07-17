@@ -94,6 +94,23 @@ For the Next.js application, configure these server-only variables:
 The in-memory rate limiters are valid for one service instance. Before
 deploying multiple instances, replace them with a shared Redis-backed limiter.
 
+## Railway RAG deployment
+
+The repository-root `Dockerfile` is the production build for this Go service.
+It compiles `services/api-go`, copies the canonical `content/posts` directory
+into the runtime image, and sets `POSTS_DIR=/content/posts`. This keeps the
+deployed RAG corpus aligned with the blog without maintaining a second copy of
+the articles in the Go module.
+
+To use it on Railway, set this service's Root Directory to the repository root
+(remove `/services/api-go`), clear the custom build and start commands so
+Railway uses the `Dockerfile` entrypoint, and retain `/healthz` as the health
+check path. The service still receives Railway's `PORT` variable at runtime.
+
+The Docker context deliberately includes only `services/api-go` and
+`content/posts`; browser code, local dependencies, and secret files are not
+sent to the image builder.
+
 To use another local port:
 
 ```powershell

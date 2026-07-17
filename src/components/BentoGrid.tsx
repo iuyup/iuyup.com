@@ -41,6 +41,15 @@ interface BentoGridProps {
   posts: Post[];
 }
 
+function stableOrder(value: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
 export default function BentoGrid({ posts }: BentoGridProps) {
   const topPost = posts[0];
   const restPosts = posts.slice(1);
@@ -49,12 +58,10 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
   const postItems: UnifiedItem[] = restPosts.map((p) => ({ ...p, type: 'post' }));
 
-  // Build all remaining items and shuffle to mix types
-  const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems];
-  for (let i = allItems.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allItems[i], allItems[j]] = [allItems[j], allItems[i]];
-  }
+  // Keep a varied, but deterministic, order so server and client renders agree.
+  const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems].sort(
+    (left, right) => stableOrder(left.slug) - stableOrder(right.slug)
+  );
 
   // Round-robin distribute across 3 columns
   const col1Items = allItems.filter((_, i) => i % 3 === 0);
@@ -65,7 +72,15 @@ export default function BentoGrid({ posts }: BentoGridProps) {
     if (item.type === 'project') {
       return (
         <ScrollTiltCard key={item.slug}>
-          <ProjectCard project={item as any} />
+          <ProjectCard
+            project={{
+              title: item.title,
+              desc: item.desc ?? '',
+              tag: item.tags?.[0] ?? 'Project',
+              color: item.color ?? '#B8C5C4',
+              href: item.href ?? item.slug,
+            }}
+          />
         </ScrollTiltCard>
       );
     }

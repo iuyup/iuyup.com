@@ -1,73 +1,63 @@
-import OpenAI from "openai";
 import { NextRequest } from "next/server";
-import { buildRAGSystemPrompt } from "@/lib/rag";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: process.env.DEEPSEEK_BASE_URL,
-});
+const MAX_REQUEST_BODY_BYTES = 32 * 1024;
 
-const SYSTEM_PROMPT = `你是 T 的个人 AI 助手，部署在 T 的个人网站上。访客可以通过你了解 T。
+function firstForwardedAddress(value: string | null): string {
+  return value?.split(",", 1)[0]?.trim() || "";
+}
 
-关于 T：
-- 21 岁，汕头大学大三，光电信息科学与工程专业
-- 对 AI Agent、开源、长期主义感兴趣
-- 项目：AgentFlow（10+种多智能体设计模式）、Auto-Tweet Agent（7节点推文系统）、RAG 2.0（混合检索+重排）
-- 技术栈：Python、LangGraph、LangChain、MCP
-- 长期路线：AI → 算力 → 芯片 → 能源
-- 喜欢《黑镜》，思考技术与人的关系
-- 喜欢听歌，喜欢 rnb、 喜欢 neosoul、喜欢jazz。喜欢陶喆、王力宏、方大同、黄宣
-- 说话风格：简洁直接，不啰嗦，偶尔中英混搭，喜欢用破折号补充说明
+function clientAddress(request: NextRequest): string {
+  if (process.env.TRUST_X_FORWARDED_FOR !== "true") {
+    return "";
+  }
 
-用简洁友好的中文回答，像 T 本人在聊天。不编造 T 没有的经历。
-
-回答时不要使用Markdown格式，不要用加粗、##标题、编号列表。用纯文本自然对话的方式回答，简洁口语化，每次回复控制在3-5句话以内。
-
-重要：绝对不要使用任何Markdown语法，包括加粗、斜体、##标题、- 列表。只用纯文本。`;
+  return firstForwardedAddress(request.headers.get("x-forwarded-for"));
+}
 
 export async function POST(req: NextRequest) {
+  const goAPIBaseURL = process.env.GO_API_BASE_URL?.replace(/\/$/, "");
+  const proxyToken = process.env.GO_API_PROXY_TOKEN;
+
+  if (!goAPIBaseURL || !proxyToken) {
+    console.error("Go chat gateway is not configured");
+    return Response.json({ error: "Chat service is unavailable" }, { status: 503 });
+  }
+
+  const body = await req.text();
+  if (new TextEncoder().encode(body).byteLength > MAX_REQUEST_BODY_BYTES) {
+    return Response.json({ error: "Chat request is too large" }, { status: 413 });
+  }
+
   try {
-    const { messages } = await req.json();
-
-    // 从用户消息中提取 query 用于 RAG 检索
-    const userMessage = messages.length > 0 ? messages[messages.length - 1].content : "";
-    const systemPrompt = buildRAGSystemPrompt(SYSTEM_PROMPT, userMessage);
-
-    const stream = await client.chat.completions.create({
-      model: process.env.DEEPSEEK_MODEL || "deepseek-chat",
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...messages,
-      ],
-      stream: true,
-    });
-
-    const encoder = new TextEncoder();
-
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || "";
-            if (content) {
-              controller.enqueue(encoder.encode(content));
-            }
-          }
-        } catch (error) {
-          console.error("Stream error:", error);
-        } finally {
-          controller.close();
-        }
-      },
-    });
-
-    return new Response(readableStream, {
+    const upstream = await fetch(`${goAPIBaseURL}/v1/chat`, {
+      method: "POST",
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "application/json",
+        "X-Selfweb-Client-IP": clientAddress(req),
+        "X-Selfweb-Proxy-Token": proxyToken,
       },
+      body,
+      cache: "no-store",
+      signal: req.signal,
+    });
+
+    const headers = new Headers();
+    for (const name of ["content-type", "cache-control", "x-accel-buffering"]) {
+      const value = upstream.headers.get(name);
+      if (value) headers.set(name, value);
+    }
+    headers.set("X-Content-Type-Options", "nosniff");
+
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers,
     });
   } catch (error) {
-    console.error("Chat API Error:", error);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    if (req.signal.aborted) {
+      return new Response(null, { status: 499 });
+    }
+
+    console.error("Go chat gateway request failed:", error);
+    return Response.json({ error: "Chat service is unavailable" }, { status: 502 });
   }
 }

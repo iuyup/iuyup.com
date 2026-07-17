@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 type TiltDirection = 'enter' | 'leave-top' | 'leave-bottom';
 
 interface UseScrollTiltOptions {
-  /** 视口外多少px触发离开动画 */
+  /** Extra viewport margin in pixels before a leave animation starts. */
   threshold?: number;
 }
 
@@ -17,34 +17,22 @@ export function useScrollTilt<T extends HTMLElement>(
   const [tilt, setTilt] = useState<TiltDirection>('enter');
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // 初始化时检查是否已经在视口外（向上滚动时刷新页面）
-    const rect = el.getBoundingClientRect();
-    if (rect.top < 0) {
-      setTilt('leave-top');
-    } else if (rect.bottom > window.innerHeight) {
-      setTilt('leave-bottom');
-    }
+    const element = ref.current;
+    if (!element) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setTilt('enter');
-        } else {
-          const rect = entry.boundingClientRect;
-          if (rect.top < 0) {
-            setTilt('leave-top');
-          } else {
-            setTilt('leave-bottom');
-          }
+          return;
         }
+
+        setTilt(entry.boundingClientRect.top < 0 ? 'leave-top' : 'leave-bottom');
       },
       { threshold: [0, 1], rootMargin: `${threshold}px` }
     );
 
-    observer.observe(el);
+    observer.observe(element);
     return () => observer.disconnect();
   }, [threshold]);
 

@@ -1,98 +1,78 @@
-import { Redis } from "@upstash/redis";
-import { Ratelimit } from "@upstash/ratelimit";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-const redis = Redis.fromEnv();
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(3, "1 m"),
-});
+const MAX_REQUEST_BODY_BYTES = 4 * 1024;
 
-const GUESTBOOK_KEY = "guestbook:messages";
-
-interface GuestbookMessage {
-  id: string;
-  name: string;
-  text: string;
-  date: string;
-  likes: number;
+function firstForwardedAddress(value: string | null): string {
+  return value?.split(",", 1)[0]?.trim() || "";
 }
 
-export async function GET() {
+function clientAddress(request: NextRequest): string {
+  if (process.env.TRUST_X_FORWARDED_FOR !== "true") {
+    return "";
+  }
+
+  return firstForwardedAddress(request.headers.get("x-forwarded-for"));
+}
+
+async function proxyGuestbookRequest(request: NextRequest) {
+  const goAPIBaseURL = process.env.GO_API_BASE_URL?.replace(/\/$/, "");
+  const proxyToken = process.env.GO_API_PROXY_TOKEN;
+  if (!goAPIBaseURL || !proxyToken) {
+    console.error("Go guestbook gateway is not configured");
+    return Response.json({ error: "Guestbook service is unavailable" }, { status: 503 });
+  }
+
+  const body = request.method === "GET" ? undefined : await request.text();
+  if (body && new TextEncoder().encode(body).byteLength > MAX_REQUEST_BODY_BYTES) {
+    return Response.json({ error: "Guestbook request is too large" }, { status: 413 });
+  }
+
+  const headers = new Headers({
+    "X-Selfweb-Client-IP": clientAddress(request),
+    "X-Selfweb-Proxy-Token": proxyToken,
+  });
+  if (body !== undefined) {
+    headers.set("Content-Type", "application/json");
+  }
+
   try {
-    const messages = await redis.lrange<GuestbookMessage>(GUESTBOOK_KEY, 0, -1);
-    return NextResponse.json(messages);
+    const upstream = await fetch(`${goAPIBaseURL}/v1/guestbook${new URL(request.url).search}`, {
+      method: request.method,
+      headers,
+      body,
+      cache: "no-store",
+      signal: request.signal,
+    });
+
+    const responseHeaders = new Headers();
+    for (const name of ["content-type", "cache-control"]) {
+      const value = upstream.headers.get(name);
+      if (value) responseHeaders.set(name, value);
+    }
+    responseHeaders.set("X-Content-Type-Options", "nosniff");
+
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers: responseHeaders,
+    });
   } catch (error) {
-    console.error("Failed to fetch guestbook messages:", error);
-    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+    if (request.signal.aborted) {
+      return new Response(null, { status: 499 });
+    }
+
+    console.error("Go guestbook gateway request failed:", error);
+    return Response.json({ error: "Guestbook service is unavailable" }, { status: 502 });
   }
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const { success } = await ratelimit.limit(ip);
-
-    if (!success) {
-      return NextResponse.json(
-        { error: "Rate limit exceeded. Max 3 messages per minute." },
-        { status: 429 }
-      );
-    }
-
-    const body = await req.json();
-    const { name, text } = body;
-
-    if (!name?.trim() || !text?.trim()) {
-      return NextResponse.json({ error: "Name and text are required" }, { status: 400 });
-    }
-
-    if (name.trim().length > 50) {
-      return NextResponse.json({ error: "Name must be 50 characters or less" }, { status: 400 });
-    }
-
-    if (text.trim().length > 500) {
-      return NextResponse.json({ error: "Text must be 500 characters or less" }, { status: 400 });
-    }
-
-    const newMessage: GuestbookMessage = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      text: text.trim(),
-      date: new Date().toISOString().split("T")[0],
-      likes: 0,
-    };
-
-    await redis.lpush(GUESTBOOK_KEY, newMessage);
-
-    return NextResponse.json(newMessage, { status: 201 });
-  } catch (error) {
-    console.error("Failed to create guestbook message:", error);
-    return NextResponse.json({ error: "Failed to create message" }, { status: 500 });
-  }
+export async function GET(request: NextRequest) {
+  return proxyGuestbookRequest(request);
 }
 
-export async function PATCH(req: NextRequest) {
-  try {
-    const { id } = await req.json();
+export async function POST(request: NextRequest) {
+  return proxyGuestbookRequest(request);
+}
 
-    if (!id) {
-      return NextResponse.json({ error: "Message ID is required" }, { status: 400 });
-    }
-
-    const messages = await redis.lrange<GuestbookMessage>(GUESTBOOK_KEY, 0, -1);
-    const messageIndex = messages.findIndex((m) => m.id === id);
-
-    if (messageIndex === -1) {
-      return NextResponse.json({ error: "Message not found" }, { status: 404 });
-    }
-
-    messages[messageIndex].likes += 1;
-    await redis.lset(GUESTBOOK_KEY, messageIndex, JSON.stringify(messages[messageIndex]));
-
-    return NextResponse.json(messages[messageIndex]);
-  } catch (error) {
-    console.error("Failed to like message:", error);
-    return NextResponse.json({ error: "Failed to like message" }, { status: 500 });
-  }
+export async function PATCH(request: NextRequest) {
+  return proxyGuestbookRequest(request);
 }

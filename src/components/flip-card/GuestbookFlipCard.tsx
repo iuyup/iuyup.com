@@ -15,6 +15,12 @@ interface GuestbookMessage {
   text: string;
   date: string;
   likes: number;
+  status?: 'approved' | 'pending' | 'rejected';
+}
+
+interface GuestbookPage {
+  messages: GuestbookMessage[];
+  nextCursor?: string;
 }
 
 const DEFAULT_MESSAGES: GuestbookMessage[] = [
@@ -32,6 +38,8 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [messages, setMessages] = useState<GuestbookMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     fetchMessages();
@@ -41,10 +49,12 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
     try {
       const res = await fetch('/api/guestbook');
       if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setMessages(data.length > 0 ? data : DEFAULT_MESSAGES);
+      const data: GuestbookPage = await res.json();
+      setMessages(data.messages);
+      setNextCursor(data.nextCursor ?? null);
     } catch {
       setMessages(DEFAULT_MESSAGES);
+      setNextCursor(null);
     } finally {
       setLoading(false);
     }
@@ -67,9 +77,10 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
       });
 
       if (res.ok) {
+        const updatedMsg: GuestbookMessage = await res.json();
         setLiked((prev) => ({ ...prev, [id]: true }));
         setMessages((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, likes: m.likes + 1 } : m))
+          prev.map((m) => (m.id === id ? updatedMsg : m))
         );
       }
     } catch (err) {
@@ -90,8 +101,12 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
       });
 
       if (res.ok) {
-        const newMsg = await res.json();
-        setMessages((prev) => [newMsg, ...prev]);
+        const newMsg: GuestbookMessage = await res.json();
+        if (newMsg.status === 'approved') {
+          setMessages((prev) => [newMsg, ...prev]);
+        } else {
+          alert('Your message was submitted for review.');
+        }
         setNameInput('');
         setMsgInput('');
         setTimeout(() => setIsFlipped(false), 500);
@@ -104,6 +119,24 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
       alert('Failed to submit message');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const loadMore = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!nextCursor || loadingMore) return;
+
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/guestbook?cursor=${encodeURIComponent(nextCursor)}`);
+      if (!res.ok) throw new Error('Failed to fetch more messages');
+      const data: GuestbookPage = await res.json();
+      setMessages((prev) => [...prev, ...data.messages]);
+      setNextCursor(data.nextCursor ?? null);
+    } catch (err) {
+      console.error('Failed to load more messages:', err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -170,7 +203,18 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             )}
           </div>
 
-          <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages total</p>
+          {nextCursor && !loading && (
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="text-xs mt-2 hover:text-[#2C2C2C] disabled:opacity-50 flex-shrink-0"
+              style={{ color: variant.textSecondary }}
+            >
+              {loadingMore ? 'Loading...' : 'Load more messages'}
+            </button>
+          )}
+          <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages loaded</p>
         </div>
 
         {/* Back */}

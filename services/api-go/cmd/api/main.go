@@ -21,7 +21,7 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	address := envOrDefault("API_ADDR", ":8080")
+	address := envOrDefault("API_ADDR", ":"+envOrDefault("PORT", "8080"))
 	promptBuilder := newPromptBuilder(logger)
 	chatClient := newChatClient(logger, promptBuilder)
 	guestbookStore, closeGuestbookStore := newGuestbookStore(logger)

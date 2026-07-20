@@ -57,13 +57,13 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
             大家好哇，欢迎来到我的网站！
           </p>
           <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以现在大部分时间都在写 Agent 和拆开源项目的源码。现在在找 AI 开发相关的实习，真的好难找哇。
+            现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以大部分时间都在写 Agent 和拆开源项目的源码。现在在做 AI 开发相关的实习。
           </p>
           <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
             喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）。
           </p>
           <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            对未来有明确规划，但是保密。
+            对未来有明确规划。
           </p>
         </div>
         <div className="mt-auto pt-6 w-full text-left">

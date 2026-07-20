@@ -56,6 +56,15 @@ function filterObsidianSyntax(content: string): string {
     .replace(/!\[\[([^\]]+)\|([^\]]+)\]\]/g, ""); // Remove ![[note|display]]
 }
 
+function removeLeadingDuplicateTitle(content: string, title: string): string {
+  const leadingHeading = content.match(/^(?:[ \t]*\r?\n)*[ \t]*#\s+(.+?)(?:\s+#+)?[ \t]*(?:\r?\n|$)/);
+  if (!leadingHeading || leadingHeading[1].trim() !== title.trim()) {
+    return content;
+  }
+
+  return content.slice(leadingHeading[0].length);
+}
+
 const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
@@ -196,7 +205,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  const filteredContent = filterObsidianSyntax(post.content);
+  const filteredContent = removeLeadingDuplicateTitle(
+    filterObsidianSyntax(post.content),
+    post.frontmatter.title
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",

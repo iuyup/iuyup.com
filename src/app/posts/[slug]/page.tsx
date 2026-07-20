@@ -19,8 +19,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
-  const post = getPostBySlug(decodedSlug);
+  const post = getPostBySlug(slug);
 
   if (!post) {
     return { title: "未找到" };
@@ -191,8 +190,7 @@ const markdownComponents = {
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
-  const post = getPostBySlug(decodedSlug);
+  const post = getPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -213,7 +211,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     datePublished: post.frontmatter.date,
     dateModified: post.frontmatter.date,
     image: post.frontmatter.image || "/og-image.svg",
-    url: `https://iuyup.com/posts/${encodeURIComponent(decodedSlug)}`,
+    url: `https://iuyup.com/posts/${encodeURIComponent(post.slug)}`,
     publisher: {
       "@type": "Person",
       name: "T",

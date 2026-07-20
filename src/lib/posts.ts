@@ -16,6 +16,13 @@ export interface Post extends PostFrontmatter {
   slug: string;
 }
 
+export interface PostDocument {
+  slug: string;
+  frontmatter: PostFrontmatter;
+  content: string;
+  isMDX: boolean;
+}
+
 export function getAllPosts(): Post[] {
   let files: string[];
   try {
@@ -64,28 +71,46 @@ export function getAllPosts(): Post[] {
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getPostBySlug(slug: string): { frontmatter: PostFrontmatter; content: string; isMDX: boolean } | null {
-  // Try both .mdx and .md extensions
-  const mdxPath = path.join(postsDirectory, `${slug}.mdx`);
-  const mdPath = path.join(postsDirectory, `${slug}.md`);
-
-  let filePath: string;
-  let isMDX = false;
-
-  if (fs.existsSync(mdxPath)) {
-    filePath = mdxPath;
-    isMDX = true;
-  } else if (fs.existsSync(mdPath)) {
-    filePath = mdPath;
-    isMDX = false;
-  } else {
+function normalizePostSlug(rawSlug: string): string | null {
+  try {
+    const slug = decodeURIComponent(rawSlug);
+    if (!slug || slug === "." || slug === ".." || /[\\/\0]/.test(slug)) {
+      return null;
+    }
+    return slug;
+  } catch {
     return null;
   }
+}
+
+export function getPostBySlug(rawSlug: string): PostDocument | null {
+  const slug = normalizePostSlug(rawSlug);
+  if (!slug) {
+    return null;
+  }
+
+  let files: string[];
+  try {
+    files = fs.readdirSync(postsDirectory);
+  } catch {
+    return null;
+  }
+
+  const fileName = files.find((file) =>
+    (file.endsWith(".mdx") || file.endsWith(".md")) && file.replace(/\.mdx?$/, "") === slug
+  );
+  if (!fileName) {
+    return null;
+  }
+
+  const filePath = path.join(postsDirectory, fileName);
+  const isMDX = fileName.endsWith(".mdx");
 
   const fileContent = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(fileContent);
 
   return {
+    slug,
     frontmatter: {
       title: data.title as string,
       date: data.date as string,

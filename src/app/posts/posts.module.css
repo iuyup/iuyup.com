@@ -8,7 +8,7 @@
   background-attachment: fixed;
   background-color: var(--journal-paper);
   background-image:
-    linear-gradient(rgba(245, 240, 230, 0.9), rgba(245, 240, 230, 0.9)),
+    linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)),
     url("/monet.jpg");
   background-position: center;
   background-repeat: no-repeat;
@@ -292,7 +292,7 @@
   --journal-soft-rule: #4a443d;
   --journal-link: #e5a07d;
   background-image:
-    linear-gradient(rgba(32, 29, 25, 0.9), rgba(32, 29, 25, 0.9)),
+    linear-gradient(rgba(32, 29, 25, 0.85), rgba(32, 29, 25, 0.85)),
     url("/monet.jpg");
 }
 

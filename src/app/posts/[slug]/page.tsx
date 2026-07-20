@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ReactMarkdown from "react-markdown";
@@ -199,15 +200,20 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <header className={styles.masthead}>
               <p className={styles.eyebrow}>T. / Journal</p>
               <h1 className={styles.title}>{post.frontmatter.title}</h1>
-              {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
-                <div className={styles.tags} aria-label="文章标签">
+              <div className={styles.tags} aria-label="文章标签与导航">
+                {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
+                  <div className={styles.tagList}>
                   {post.frontmatter.tags.map((tag) => (
                     <span key={tag} className={styles.tag}>
                       {tag}
                     </span>
                   ))}
-                </div>
-              )}
+                  </div>
+                )}
+                <Link href="/posts" className={styles.backToPosts} aria-label="返回文章目录">
+                  /back
+                </Link>
+              </div>
             </header>
 
             <div className={styles.readingColumn}>

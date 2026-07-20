@@ -9,7 +9,7 @@
   background-attachment: fixed;
   background-color: var(--article-paper);
   background-image:
-    linear-gradient(rgba(245, 240, 230, 0.9), rgba(245, 240, 230, 0.9)),
+    linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)),
     url("/monet.jpg");
   background-position: center;
   background-repeat: no-repeat;
@@ -96,16 +96,44 @@
 .tags {
   border-bottom: 1px solid var(--article-rule);
   border-top: 1px solid var(--article-rule);
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+  margin: 1.45rem 0 0;
+  padding: 0.85rem 0;
+}
+
+.tagList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.22rem 0;
-  margin: 1.45rem 0 0;
-  padding: 0.85rem 0;
 }
 
 .tag:not(:last-child)::after {
   content: "/";
   margin: 0 0.58rem;
+}
+
+.backToPosts {
+  border-bottom: 1px solid transparent;
+  color: var(--article-muted);
+  display: inline-flex;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.backToPosts:hover,
+.backToPosts:focus-visible {
+  border-color: currentColor;
+  color: var(--article-ink);
+  outline: none;
 }
 
 .readingColumn {
@@ -365,7 +393,7 @@
   --article-link: #e5a07d;
   --article-code: #121417;
   background-image:
-    linear-gradient(rgba(32, 29, 25, 0.9), rgba(32, 29, 25, 0.9)),
+    linear-gradient(rgba(32, 29, 25, 0.85), rgba(32, 29, 25, 0.85)),
     url("/monet.jpg");
 }
 

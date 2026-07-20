@@ -1,0 +1,346 @@
+.page {
+  --journal-paper: rgba(245, 240, 230, 0.65);
+  --journal-ink: #2d2925;
+  --journal-muted: #756e65;
+  --journal-rule: #958c80;
+  --journal-soft-rule: #d8cdbd;
+  --journal-link: #8b5039;
+  background: var(--journal-paper);
+  backdrop-filter: blur(24px);
+  color: var(--journal-ink);
+  isolation: isolate;
+  min-height: 100vh;
+  overflow-x: clip;
+  position: relative;
+}
+
+.page::before {
+  background-image: radial-gradient(rgba(53, 45, 37, 0.19) 0.45px, transparent 0.6px);
+  background-size: 7px 7px;
+  content: "";
+  inset: 0;
+  opacity: 0.12;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.page ::selection {
+  background: #d9c8aa;
+  color: var(--journal-ink);
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: 1080px;
+  padding: 3rem 2rem 5rem;
+}
+
+.toolbar {
+  align-items: center;
+  color: var(--journal-muted);
+  display: flex;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.8rem;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.toolbar a {
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.toolbar a:hover,
+.toolbar a:focus-visible {
+  border-color: currentColor;
+  color: var(--journal-ink);
+  outline: none;
+}
+
+.rule {
+  background: var(--journal-rule);
+  height: 1px;
+  margin-top: 2rem;
+  opacity: 0.85;
+}
+
+.layout {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  padding-top: clamp(2.15rem, 3.5vw, 3rem);
+}
+
+.sidebar {
+  align-self: start;
+  height: fit-content;
+  position: sticky;
+  top: clamp(3rem, 5vw, 5.5rem);
+}
+
+.eyebrow,
+.sideNav a,
+.listHeader,
+.date,
+.tags {
+  color: var(--journal-muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  line-height: 1.55;
+}
+
+.eyebrow {
+  font-style: italic;
+  margin: 0 0 1.3rem;
+  text-transform: uppercase;
+}
+
+.pageTitle {
+  color: var(--journal-ink);
+  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-size: clamp(2.1rem, 3vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0;
+}
+
+.intro {
+  color: var(--journal-muted);
+  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 1.35rem 0 0;
+}
+
+.sideNav {
+  border-bottom: 1px solid var(--journal-rule);
+  border-top: 1px solid var(--journal-rule);
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.sideNav a {
+  align-items: baseline;
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+}
+
+.sideNav a:hover,
+.sideNav a:focus-visible {
+  border-color: currentColor;
+  color: var(--journal-ink);
+  outline: none;
+}
+
+.postArea {
+  min-width: 0;
+}
+
+.listHeader {
+  align-items: center;
+  border-bottom: 1px solid var(--journal-rule);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 0.9rem;
+  text-transform: uppercase;
+}
+
+.postList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.postItem {
+  border-bottom: 1px solid var(--journal-soft-rule);
+}
+
+.postLink {
+  color: inherit;
+  display: grid;
+  gap: 0 1.25rem;
+  grid-template-columns: 4.9rem minmax(0, 1fr) minmax(7rem, 9.5rem);
+  padding: 1.5rem 0;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.postLink:hover,
+.postLink:focus-visible {
+  color: var(--journal-link);
+  outline: none;
+}
+
+.date {
+  padding-top: 0.28rem;
+  white-space: nowrap;
+}
+
+.postBody {
+  min-width: 0;
+}
+
+.postTitle {
+  color: var(--journal-ink);
+  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-size: clamp(1.35rem, 1.8vw, 1.72rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.28;
+  margin: 0;
+  transition: color 160ms ease;
+}
+
+.postLink:hover .postTitle,
+.postLink:focus-visible .postTitle {
+  color: var(--journal-link);
+}
+
+.summary {
+  color: var(--journal-muted);
+  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin: 0.55rem 0 0;
+  max-width: 38rem;
+}
+
+.tags {
+  align-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0;
+  justify-content: flex-end;
+  padding-top: 0.3rem;
+  text-align: right;
+}
+
+.tag:not(:last-child)::after {
+  content: "/";
+  margin: 0 0.52rem;
+}
+
+.footer {
+  border-top: 1px solid var(--journal-rule);
+  color: var(--journal-muted);
+  padding: 1.7rem 2rem 2rem;
+}
+
+.footerInner {
+  align-items: center;
+  display: flex;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.75rem;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+  margin: 0 auto;
+  max-width: 1080px;
+  text-transform: uppercase;
+}
+
+.footerBrand {
+  color: var(--journal-ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.footerLinks a {
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+}
+
+.footerLinks a:hover,
+.footerLinks a:focus-visible {
+  border-color: currentColor;
+  color: var(--journal-ink);
+  outline: none;
+}
+
+:global([data-theme="dark"]) .page {
+  --journal-paper: #201d19;
+  --journal-ink: #f1e9de;
+  --journal-muted: #b8aea2;
+  --journal-rule: #7f766a;
+  --journal-soft-rule: #4a443d;
+  --journal-link: #e5a07d;
+}
+
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .page {
+    -webkit-backdrop-filter: blur(24px);
+  }
+}
+
+:global([data-theme="dark"]) .page::before {
+  background-image: radial-gradient(rgba(239, 230, 218, 0.15) 0.45px, transparent 0.6px);
+}
+
+@media (max-width: 820px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .sideNav {
+    max-width: 28rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell,
+  .footer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .toolbar {
+    font-size: 0.75rem;
+  }
+
+  .postLink {
+    gap: 0.35rem 0.85rem;
+    grid-template-columns: 4.35rem minmax(0, 1fr);
+    padding: 1.25rem 0;
+  }
+
+  .tags {
+    grid-column: 2;
+    justify-content: flex-start;
+    padding-top: 0.35rem;
+    text-align: left;
+  }
+
+  .summary {
+    font-size: 0.94rem;
+  }
+
+  .footerInner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

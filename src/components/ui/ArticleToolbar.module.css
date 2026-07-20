@@ -1,0 +1,62 @@
+.toolbar {
+  align-items: center;
+  color: var(--article-muted);
+  display: flex;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.8rem;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.backLink,
+.actionLink,
+.copyButton {
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.backLink {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.48rem;
+}
+
+.actions {
+  align-items: center;
+  display: flex;
+  gap: 1.25rem;
+}
+
+.copyButton {
+  background: none;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-transform: inherit;
+}
+
+.backLink:hover,
+.backLink:focus-visible,
+.actionLink:hover,
+.actionLink:focus-visible,
+.copyButton:hover,
+.copyButton:focus-visible {
+  border-color: currentColor;
+  color: var(--article-ink);
+  outline: none;
+}
+
+@media (max-width: 560px) {
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import JsonLd from "@/components/JsonLd";
+import styles from "./posts.module.css";
 
 export const metadata: Metadata = {
   title: "博客",
@@ -34,98 +35,94 @@ export default function PostsPage() {
     })),
   };
 
+  function formatListDate(date: string | Date) {
+    const parsedDate = date instanceof Date ? date : new Date(`${date}T00:00:00`);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return { dateTime: String(date), display: String(date) };
+    }
+
+    const year = String(parsedDate.getUTCFullYear()).slice(-2);
+    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+
+    return { dateTime: `${parsedDate.getUTCFullYear()}-${month}-${day}`, display: `${year}/${month}/${day}` };
+  }
+
   return (
     <>
       <JsonLd data={jsonLd} />
-    <div style={{ minHeight: '100vh', position: 'relative' }}>
-      {/* Monet Background - Fixed layer with gradient overlay */}
-      <div className="fixed inset-0 z-0">
-        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.7)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.15) 0%, rgba(245,240,235,0.15) 50%, rgba(245,240,235,0.7) 85%, #F5F0EB 100%)' }} />
-      </div>
+      <main className={styles.page}>
+        <div className={styles.shell}>
+          <nav className={styles.toolbar} aria-label="博客操作">
+            <Link href="/">← 首页</Link>
+            <a href="/feed.xml">RSS 订阅 ↗</a>
+          </nav>
+          <div className={styles.rule} />
 
-      {/* Content wrapper */}
-      <div className="relative z-10">
+          <div className={styles.layout}>
+            <aside className={styles.sidebar}>
+              <p className={styles.eyebrow}>T. / Journal</p>
+              <h1 className={styles.pageTitle}>文章</h1>
+              <p className={styles.intro}>关于 AI Agent、开源与技术思考。</p>
+              <nav className={styles.sideNav} aria-label="文章索引">
+                <a href="#post-list">
+                  <span>全部文章</span>
+                  <span>{posts.length.toString().padStart(2, "0")}</span>
+                </a>
+                <a href="/feed.xml">RSS 订阅 ↗</a>
+              </nav>
+            </aside>
 
-      {/* Nav - fixed, outside the middle band */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center">
-          <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
-            T.
-          </Link>
-        </div>
-      </nav>
+            <section className={styles.postArea} aria-labelledby="post-list-heading">
+              <header className={styles.listHeader}>
+                <span id="post-list-heading">Recent Writing</span>
+                <span>{posts.length} 篇</span>
+              </header>
 
-      {/* Bottom background band - wider than content, centered */}
-      <div style={{ background: 'var(--bg)', maxWidth: '900px', margin: '0 auto' }}>
-        {/* Content - centered */}
-        <div className="max-w-3xl mx-auto w-full px-6 py-24">
-          {/* Header */}
-          <header className="pb-16">
-            <h1 className="font-caveat text-5xl mb-4" style={{ color: 'var(--primary)' }}>Blog</h1>
-            <p style={{ color: 'var(--text-secondary)' }}>关于 AI Agent、开源与技术思考</p>
-          </header>
+              <ol id="post-list" className={styles.postList}>
+                {posts.map((post) => {
+                  const date = formatListDate(post.date);
 
-          {/* Posts List */}
-          <div className="space-y-8">
-            {posts.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/posts/${encodeURIComponent(post.slug)}`}
-                className="block group"
-              >
-                <section className="p-6 rounded-xl border hover:opacity-90 transition-all duration-300" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <h2 className="text-xl font-medium font-serif group-hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
-                      {post.title}
-                    </h2>
-                    <time className="text-sm shrink-0" style={{ color: 'var(--text-secondary)' }}>
-                      {new Date(post.date).toLocaleDateString("zh-CN", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </time>
-                  </div>
-                  <p className="mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{post.summary}</p>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs px-2 py-1 rounded-full border font-sans"
-                          style={{ background: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              </Link>
-            ))}
+                  return (
+                  <li key={post.slug} className={styles.postItem}>
+                    <Link href={`/posts/${encodeURIComponent(post.slug)}`} className={styles.postLink}>
+                      <time className={styles.date} dateTime={date.dateTime}>
+                        {date.display}
+                      </time>
+                      <div className={styles.postBody}>
+                        <h2 className={styles.postTitle}>{post.title}</h2>
+                        {post.summary && <p className={styles.summary}>{post.summary}</p>}
+                      </div>
+                      {post.tags && post.tags.length > 0 && (
+                        <div className={styles.tags} aria-label="文章标签">
+                          {post.tags.map((tag) => (
+                            <span key={tag} className={styles.tag}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                  );
+                })}
+              </ol>
+            </section>
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>
-          <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm" style={{ color: 'var(--text-secondary)' }}>
-            <span className="font-caveat text-base">T.</span>
-            <div className="flex gap-4 font-serif">
-              <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <span className={styles.footerBrand}>T.</span>
+            <div className={styles.footerLinks}>
+              <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer">
                 GitHub
               </a>
-              <a href="mailto:tyn2005315@gmail.com" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
-                Email
-              </a>
+              <a href="mailto:tyn2005315@gmail.com">Email</a>
             </div>
           </div>
         </footer>
-      </div>
-
-      {/* End content wrapper */}
-      </div>
-    </div>
+      </main>
     </>
   );
 }

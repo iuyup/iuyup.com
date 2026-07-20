@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ReactMarkdown from "react-markdown";
@@ -8,7 +7,9 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeHighlight from "rehype-highlight";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import Comments from "@/components/ui/Comments";
+import ArticleToolbar from "@/components/ui/ArticleToolbar";
 import JsonLd from "@/components/JsonLd";
+import styles from "./post.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -67,133 +68,89 @@ function removeLeadingDuplicateTitle(content: string, title: string): string {
 
 const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
+    <h1 {...props} />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="font-caveat text-3xl mb-4 mt-10" style={{ color: 'var(--primary)' }} {...props} />
+    <h2 {...props} />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="font-medium text-lg mb-3 mt-8" style={{ color: 'var(--text)' }} {...props} />
+    <h3 {...props} />
   ),
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="leading-relaxed mb-4" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <p {...props} />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <ul {...props} />
   ),
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <ol {...props} />
   ),
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li style={{ color: 'var(--text-secondary)' }} {...props} />
+    <li {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
-      className="hover:underline"
-      style={{ color: 'var(--primary)' }}
       target="_blank"
       rel="noopener noreferrer"
       {...props}
     />
   ),
   blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
-    <blockquote
-      className="border-l-4 pl-4 my-4 italic"
-      style={{ borderColor: 'var(--accent)', color: 'var(--text-secondary)' }}
-      {...props}
-    />
+    <blockquote {...props} />
   ),
-  code: (props: React.HTMLAttributes<HTMLElement> & { "data-language"?: string }) => {
-    const { "data-language": dataLanguage, children, ...rest } = props;
-    if (dataLanguage) {
-      return <code className="font-mono" {...rest}>{children}</code>;
-    }
-    return (
-      <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: '#E8E2DA', color: 'var(--accent)' }} {...rest}>
-        {children}
-      </code>
-    );
-  },
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm font-mono"
-      style={{ background: '#2C2C2C', color: '#E8E2DA' }}
-      {...props}
-    />
-  ),
-  hr: () => <hr style={{ borderColor: 'var(--border)' }} className="my-8" />,
-  strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-medium" style={{ color: 'var(--text)' }} {...props} />
-  ),
+  code: (props: React.HTMLAttributes<HTMLElement>) => <code {...props} />,
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} />,
+  hr: () => <hr />,
+  strong: (props: React.HTMLAttributes<HTMLElement>) => <strong {...props} />,
 };
 
 const markdownComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="font-caveat text-4xl mb-6 mt-12" style={{ color: 'var(--primary)' }} {...props} />
+    <h1 {...props} />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="font-caveat text-3xl mb-4 mt-10" style={{ color: 'var(--primary)' }} {...props} />
+    <h2 {...props} />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="font-medium text-lg mb-3 mt-8" style={{ color: 'var(--text)' }} {...props} />
+    <h3 {...props} />
   ),
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="leading-relaxed mb-4" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <p {...props} />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <ul {...props} />
   ),
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal list-inside mb-4 space-y-2" style={{ color: 'var(--text-secondary)' }} {...props} />
+    <ol {...props} />
   ),
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li style={{ color: 'var(--text-secondary)' }} {...props} />
+    <li {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
-      className="hover:underline"
-      style={{ color: 'var(--primary)' }}
       target="_blank"
       rel="noopener noreferrer"
       {...props}
     />
   ),
   blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
-    <blockquote
-      className="border-l-4 pl-4 my-4 italic"
-      style={{ borderColor: 'var(--accent)', color: 'var(--text-secondary)' }}
-      {...props}
-    />
+    <blockquote {...props} />
   ),
-  code: (props: React.HTMLAttributes<HTMLElement> & { className?: string }) => {
-    const isBlock = props.className?.includes('language-');
-    if (isBlock) {
-      return <code className="font-mono" {...props} />;
-    }
-    return <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: '#E8E2DA', color: 'var(--accent)' }} {...props} />;
-  },
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-      className="rounded-lg p-4 overflow-x-auto mb-4 text-sm font-mono"
-      style={{ background: '#2C2C2C', color: '#E8E2DA' }}
-      {...props}
-    />
-  ),
-  hr: () => <hr style={{ borderColor: 'var(--border)' }} className="my-8" />,
-  strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-medium" style={{ color: 'var(--text)' }} {...props} />
-  ),
+  code: (props: React.HTMLAttributes<HTMLElement>) => <code {...props} />,
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} />,
+  hr: () => <hr />,
+  strong: (props: React.HTMLAttributes<HTMLElement>) => <strong {...props} />,
   table: (props: React.HTMLAttributes<HTMLTableElement>) => (
-    <table className="w-full border-collapse mb-4" style={{ borderColor: 'var(--border)' }} {...props} />
+    <table {...props} />
   ),
   th: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <th className="border px-4 py-2 text-left" style={{ borderColor: 'var(--border)', background: 'var(--surface)' }} {...props} />
+    <th {...props} />
   ),
   td: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <td className="border px-4 py-2" style={{ borderColor: 'var(--border)' }} {...props} />
+    <td {...props} />
   ),
   del: (props: React.HTMLAttributes<HTMLModElement>) => (
-    <del className="line-through opacity-60" {...props} />
+    <del {...props} />
   ),
 };
 
@@ -233,72 +190,44 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   return (
     <>
       <JsonLd data={jsonLd} />
-    <div style={{ minHeight: '100vh', position: 'relative' }}>
-      {/* Monet Background - Fixed layer with gradient overlay */}
-      <div className="fixed inset-0 z-0">
-        <img src="/monet.jpg" alt="" className="w-full h-full object-cover" style={{ filter: 'saturate(0.7)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,235,0.15) 0%, rgba(245,240,235,0.15) 50%, rgba(245,240,235,0.7) 85%, #F5F0EB 100%)' }} />
-      </div>
+      <main className={styles.page}>
+        <article className={styles.article}>
+          <ArticleToolbar />
+          <div className={styles.rule} />
 
-      {/* Content wrapper */}
-      <div className="relative z-10">
+          <div className={styles.layout}>
+            <header className={styles.masthead}>
+              <p className={styles.eyebrow}>T. / Journal</p>
+              <h1 className={styles.title}>{post.frontmatter.title}</h1>
+              {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
+                <div className={styles.tags} aria-label="文章标签">
+                  {post.frontmatter.tags.map((tag) => (
+                    <span key={tag} className={styles.tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </header>
 
-      {/* Nav - fixed, outside the middle band */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b" style={{ background: 'color-mix(in srgb, var(--bg) 80%, transparent)', borderColor: 'var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center">
-          <Link href="/" className="font-caveat text-xl leading-none hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text)' }}>
-            T.
-          </Link>
-        </div>
-      </nav>
+            <div className={styles.readingColumn}>
+              <header className={styles.meta}>
+                <div className={styles.metaTop}>
+                  <time className={styles.date}>
+                    {new Date(post.frontmatter.date).toLocaleDateString("zh-CN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                  <p className={styles.metaLabel}>Personal Notes</p>
+                </div>
+                {post.frontmatter.summary && (
+                  <p className={styles.summary}>{post.frontmatter.summary}</p>
+                )}
+              </header>
 
-      {/* Bottom background band - wider than content, centered */}
-      <div style={{ background: 'var(--bg)', maxWidth: '900px', margin: '0 auto', color: 'var(--text)' }}>
-        {/* Blog */}
-        <article className="pt-32 pb-16">
-          <div className="max-w-3xl mx-auto px-6">
-          {/* Header */}
-          <header className="mb-12">
-            <Link
-              href="/posts"
-              className="inline-flex items-center gap-2 text-sm mb-8 transition-colors"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              返回博客
-            </Link>
-            <time className="text-sm block mb-4" style={{ color: 'var(--text-secondary)' }}>
-              {new Date(post.frontmatter.date).toLocaleDateString("zh-CN", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </time>
-            <h1 className="font-caveat text-5xl mb-6" style={{ color: 'var(--primary)' }}>
-              {post.frontmatter.title}
-            </h1>
-            <p className="text-lg leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
-              {post.frontmatter.summary}
-            </p>
-            {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
-              <div className="flex gap-2 flex-wrap">
-                {post.frontmatter.tags?.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1 rounded-full border font-sans"
-                    style={{ background: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </header>
-
-          {/* Content */}
-          <div className="prose">
+              <div id="article-content" className={styles.prose}>
             {post.isMDX ? (
               <MDXRemote
                 source={filteredContent}
@@ -329,31 +258,29 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 {filteredContent}
               </ReactMarkdown>
             )}
+              </div>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
 
-      <Comments />
-
-      {/* Footer */}
-      <footer className="py-12 border-t" style={{ borderColor: 'var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6 flex justify-between items-center text-sm" style={{ color: 'var(--text-secondary)' }}>
-          <span className="font-caveat text-base">T.</span>
-          <div className="flex gap-4 font-serif">
-            <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
-              GitHub
-            </a>
-            <a href="mailto:tyn2005315@gmail.com" className="hover:text-[var(--text)] transition-colors" style={{ color: 'inherit' }}>
-              Email
-            </a>
+        <section className={styles.discussion}>
+          <div className={styles.discussionInner}>
+            <Comments />
           </div>
-        </div>
-      </footer>
-      </div>
+        </section>
 
-      {/* End content wrapper */}
-      </div>
-    </div>
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <span className={styles.footerBrand}>T.</span>
+            <div className={styles.footerLinks}>
+              <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
+              <a href="mailto:tyn2005315@gmail.com">Email</a>
+            </div>
+          </div>
+        </footer>
+      </main>
     </>
   );
 }

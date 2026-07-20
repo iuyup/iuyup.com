@@ -1,5 +1,5 @@
 ---
-title: "拆完 Dify RAG 源码后的思考"
+title: Dify 源码拆解 01：RAG Pipeline
 date: "2026-04-10"
 summary: "花两天拆完 Dify 的 RAG Pipeline，发现工业级和练手项目的差距不在算法，而在父子分段、并发检索、快速失败这些工程细节里。"
 image: /picture/Dify-RAG.png

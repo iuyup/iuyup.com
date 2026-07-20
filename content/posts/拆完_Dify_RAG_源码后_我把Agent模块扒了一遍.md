@@ -1,5 +1,5 @@
 ---
-title: 拆解 Dify 的 Agent 模块
+title: Dify 源码拆解 02：Agent Runtime
 date: 2026-04-10
 summary: 从 graphon 到 workflow 胶水层再到旧版 Agent 运行器，逐层拆解 Dify 的三层 Agent 架构，对比自建 LangGraph 系统的设计差距。
 image: /picture/Dify-Agent.png

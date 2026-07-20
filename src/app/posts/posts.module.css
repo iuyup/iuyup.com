@@ -5,7 +5,14 @@
   --journal-rule: #958c80;
   --journal-soft-rule: #d8cdbd;
   --journal-link: #8b5039;
-  background: var(--journal-paper);
+  background-attachment: fixed;
+  background-color: var(--journal-paper);
+  background-image:
+    linear-gradient(rgba(245, 240, 230, 0.9), rgba(245, 240, 230, 0.9)),
+    url("/monet.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   backdrop-filter: blur(24px);
   color: var(--journal-ink);
   isolation: isolate;
@@ -284,6 +291,9 @@
   --journal-rule: #7f766a;
   --journal-soft-rule: #4a443d;
   --journal-link: #e5a07d;
+  background-image:
+    linear-gradient(rgba(32, 29, 25, 0.9), rgba(32, 29, 25, 0.9)),
+    url("/monet.jpg");
 }
 
 @supports (-webkit-backdrop-filter: blur(1px)) {
@@ -297,6 +307,10 @@
 }
 
 @media (max-width: 820px) {
+  .page {
+    background-attachment: scroll;
+  }
+
   .layout {
     grid-template-columns: minmax(0, 1fr);
   }

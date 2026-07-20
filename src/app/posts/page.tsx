@@ -70,6 +70,7 @@ export default function PostsPage() {
                   <span>{posts.length.toString().padStart(2, "0")}</span>
                 </a>
                 <a href="/feed.xml">RSS 订阅 ↗</a>
+                <Link href="/">首页 ↖</Link>
               </nav>
             </aside>
 

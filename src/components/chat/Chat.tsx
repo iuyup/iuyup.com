@@ -6,6 +6,9 @@ interface Message {
   content: string;
 }
 
+// Keep one slot for the message currently being sent; the Go API accepts 12.
+const MAX_HISTORY_MESSAGES = 11;
+
 export default function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,7 +51,9 @@ export default function Chat() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messagesRef.current, userMessage] }),
+        body: JSON.stringify({
+          messages: [...messagesRef.current.slice(-MAX_HISTORY_MESSAGES), userMessage],
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to fetch");

@@ -8,6 +8,8 @@ const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 
 
 const hoverSpring = { scale: 1.02 };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
+// Keep one slot for the message currently being sent; the Go API accepts 12.
+const MAX_HISTORY_MESSAGES = 11;
 
 interface ChatFlipCardProps {
   tag?: CardVariant;
@@ -52,7 +54,9 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messagesRef.current, userMsg] }),
+        body: JSON.stringify({
+          messages: [...messagesRef.current.slice(-MAX_HISTORY_MESSAGES), userMsg],
+        }),
       });
       if (!res.ok) throw new Error();
       const reader = res.body?.getReader();

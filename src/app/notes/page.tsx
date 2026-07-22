@@ -21,10 +21,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function NotesPage() {
+export default async function NotesPage() {
+  const notes = await getAllNotes();
+
   return (
     <JournalIndex
-      entries={getAllNotes()}
+      entries={notes}
       title="随心"
       description="一些没有固定主题的记录、想法与片段。"
       path="/notes"

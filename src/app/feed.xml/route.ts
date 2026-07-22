@@ -5,9 +5,10 @@ import { getAllPosts } from "@/lib/posts";
 export const dynamic = "force-static";
 
 export async function GET() {
+  const [posts, notes] = await Promise.all([getAllPosts(), getAllNotes()]);
   const entries = [
-    ...getAllPosts().map((entry) => ({ entry, path: "/posts", category: "文章" })),
-    ...getAllNotes().map((entry) => ({ entry, path: "/notes", category: "随心" })),
+    ...posts.map((entry) => ({ entry, path: "/posts", category: "文章" })),
+    ...notes.map((entry) => ({ entry, path: "/notes", category: "随心" })),
   ].sort((left, right) => new Date(right.entry.date).getTime() - new Date(left.entry.date).getTime());
 
   const feed = new RSS({

@@ -5,8 +5,8 @@ import { getAllPosts } from "@/lib/posts";
 import JsonLd from "@/components/JsonLd";
 import monetBackground from "@/assets/monet-background-3840.jpg";
 
-export default function Home() {
-  const posts = getAllPosts();
+export default async function Home() {
+  const posts = await getAllPosts();
 
   const jsonLd = {
     "@context": "https://schema.org",

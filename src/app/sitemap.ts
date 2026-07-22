@@ -35,10 +35,9 @@ function collectionPages(baseUrl: string, path: string, entries: ContentItem[]):
   });
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://iuyup.com";
-  const posts = getAllPosts();
-  const notes = getAllNotes();
+  const [posts, notes] = await Promise.all([getAllPosts(), getAllNotes()]);
   const latestPostModified = latestModified(posts);
   const latestNoteModified = latestModified(notes);
   const latestContentModified = latestModified([...posts, ...notes]);

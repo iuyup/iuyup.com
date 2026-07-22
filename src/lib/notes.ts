@@ -1,17 +1,13 @@
-import {
-  getAllContent,
-  getContentBySlug,
-  type ContentDocument,
-  type ContentItem,
-} from "@/lib/content";
+import type { ContentDocument, ContentItem } from "@/lib/content";
+import { getAllContentWithCms, getContentBySlugWithCms } from "@/lib/cms-content";
 
 export type Note = ContentItem;
 export type NoteDocument = ContentDocument;
 
-export function getAllNotes(): Note[] {
-  return getAllContent("notes");
+export async function getAllNotes(): Promise<Note[]> {
+  return getAllContentWithCms("notes");
 }
 
-export function getNoteBySlug(rawSlug: string): NoteDocument | null {
-  return getContentBySlug("notes", rawSlug);
+export async function getNoteBySlug(rawSlug: string): Promise<NoteDocument | null> {
+  return getContentBySlugWithCms("notes", rawSlug);
 }

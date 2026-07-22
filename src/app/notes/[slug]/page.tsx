@@ -3,15 +3,14 @@ import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import { getAllNotes, getNoteBySlug } from "@/lib/notes";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
-  return getAllNotes().map((note) => ({ slug: note.slug }));
+  const notes = await getAllNotes();
+  return notes.map((note) => ({ slug: note.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const note = await getNoteBySlug(slug);
 
   if (!note) {
     return { title: "未找到" };
@@ -47,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function NotePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const note = await getNoteBySlug(slug);
 
   if (!note) {
     notFound();

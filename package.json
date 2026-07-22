@@ -6,10 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sanity:migrate": "node scripts/migrate-markdown-to-sanity.mjs"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
+    "@sanity/vision": "^6.5.0",
     "@tabler/icons-react": "^3.41.1",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
@@ -18,6 +20,7 @@
     "gray-matter": "^4.0.3",
     "next": "16.2.10",
     "next-mdx-remote": "^6.0.0",
+    "next-sanity": "^13.1.5",
     "openai": "^6.34.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -26,6 +29,7 @@
     "rehype-pretty-code": "^0.14.3",
     "remark-gfm": "^4.0.1",
     "rss": "^1.2.2",
+    "sanity": "^6.5.0",
     "shiki": "^4.0.2"
   },
   "devDependencies": {

@@ -21,10 +21,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PostsPage() {
+export default async function PostsPage() {
+  const posts = await getAllPosts();
+
   return (
     <JournalIndex
-      entries={getAllPosts()}
+      entries={posts}
       title="文章"
       description="关于 AI Agent、开源与技术思考。"
       path="/posts"

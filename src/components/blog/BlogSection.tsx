@@ -2,8 +2,8 @@ import { getAllPosts } from "@/lib/posts";
 import BlogPreview from "@/components/blog/BlogPreview";
 import Link from "next/link";
 
-export default function BlogSection() {
-  const posts = getAllPosts().slice(0, 2);
+export default async function BlogSection() {
+  const posts = (await getAllPosts()).slice(0, 2);
 
   return (
     <section id="blog" className="py-24 border-t border-[#D5CEC7]">

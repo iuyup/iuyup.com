@@ -3,15 +3,14 @@ import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+  const posts = await getAllPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return { title: "未找到" };
@@ -47,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();

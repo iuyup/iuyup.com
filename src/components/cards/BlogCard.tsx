@@ -78,11 +78,16 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
   );
 }
 
-interface BlogLinkCardProps {
+interface JournalLinkCardProps {
   tag?: CardVariant;
+  href: string;
+  label: string;
+  title: string;
+  description: string;
+  action: string;
 }
 
-export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
+function JournalLinkCard({ tag = 'default', href, label, title, description, action }: JournalLinkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
@@ -95,7 +100,7 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
       onHoverEnd={() => setIsHovered(false)}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[280px] flex flex-col justify-between">
-        <Link href="/posts" className="group flex flex-col h-full justify-between">
+        <Link href={href} className="group flex flex-col h-full justify-between">
           <motion.span
             className="relative inline-block self-center"
             style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
@@ -107,7 +112,7 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
               animate={{ opacity: isHovered ? 0 : 1 }}
               transition={{ duration: 0.15 }}
             >
-              Blog
+              {label}
             </motion.span>
             <motion.span
               className="absolute inset-0 text-[10px] uppercase tracking-widest bg-white/40 text-[#2C2C2C] px-3 py-1 rounded-sm"
@@ -115,22 +120,48 @@ export function BlogLinkCard({ tag = 'default' }: BlogLinkCardProps) {
               animate={{ opacity: isHovered ? 1 : 0 }}
               transition={{ duration: 0.15 }}
             >
-              Blog
+              {label}
             </motion.span>
           </motion.span>
           <div className="my-6">
             <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words">
-              所有文章
+              {title}
             </h3>
             <p className="text-sm mt-2" style={{ color: variant.textSecondary }}>
-              关于 AI Agent、开源与技术思考
+              {description}
             </p>
           </div>
           <span className="border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all inline-block mt-auto">
-            View All
+            {action}
           </span>
         </Link>
       </div>
     </motion.div>
+  );
+}
+
+export function BlogLinkCard({ tag = 'default' }: Pick<JournalLinkCardProps, 'tag'>) {
+  return (
+    <JournalLinkCard
+      tag={tag}
+      href="/posts"
+      label="Blog"
+      title="所有文章"
+      description="关于 AI Agent、开源与技术思考"
+      action="View All"
+    />
+  );
+}
+
+export function NoteLinkCard({ tag = 'default' }: Pick<JournalLinkCardProps, 'tag'>) {
+  return (
+    <JournalLinkCard
+      tag={tag}
+      href="/notes"
+      label="Notes"
+      title="随心"
+      description="一些没有固定主题的记录、想法与片段"
+      action="View Notes"
+    />
   );
 }

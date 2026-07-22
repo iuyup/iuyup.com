@@ -4,7 +4,7 @@ import { AboutCard } from '@/components/cards/AboutCard';
 import { ProjectCard } from '@/components/cards/ProjectCard';
 import { AlbumCard } from '@/components/cards/MusicCard';
 import { albums, projects } from '@/lib/data';
-import { BlogCard, BlogLinkCard } from '@/components/cards/BlogCard';
+import { BlogCard, BlogLinkCard, NoteLinkCard } from '@/components/cards/BlogCard';
 import { WeatherCard } from '@/components/cards/ThemeToggleCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
 import { ChatFlipCard } from '@/components/flip-card/ChatFlipCard';
@@ -132,6 +132,9 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           </ScrollTiltCard>
           <ScrollTiltCard>
             <BlogLinkCard tag="blog" />
+          </ScrollTiltCard>
+          <ScrollTiltCard>
+            <NoteLinkCard tag="blog" />
           </ScrollTiltCard>
           <ScrollTiltCard>
             <SocialLinksCard />

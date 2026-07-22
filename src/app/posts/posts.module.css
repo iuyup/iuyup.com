@@ -170,6 +170,15 @@
   padding: 0;
 }
 
+.emptyState {
+  border-bottom: 1px solid var(--journal-soft-rule);
+  color: var(--journal-muted);
+  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  line-height: 1.75;
+  margin: 0;
+  padding: 1.5rem 0;
+}
+
 .postItem {
   border-bottom: 1px solid var(--journal-soft-rule);
 }

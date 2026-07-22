@@ -1,4 +1,6 @@
 import { MetadataRoute } from "next";
+import type { ContentItem } from "@/lib/content";
+import { getAllNotes } from "@/lib/notes";
 import { getAllPosts } from "@/lib/posts";
 
 function toValidDate(value: string | undefined): Date | undefined {
@@ -10,21 +12,41 @@ function toValidDate(value: string | undefined): Date | undefined {
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://iuyup.com";
-  const posts = getAllPosts();
-  const latestPostModified = posts.reduce<Date | undefined>((latest, post) => {
-    const modified = toValidDate(post.updated) ?? toValidDate(post.date);
+function latestModified(entries: ContentItem[]): Date | undefined {
+  return entries.reduce<Date | undefined>((latest, entry) => {
+    const modified = toValidDate(entry.updated) ?? toValidDate(entry.date);
     if (!modified || (latest && modified <= latest)) {
       return latest;
     }
     return modified;
   }, undefined);
+}
+
+function collectionPages(baseUrl: string, path: string, entries: ContentItem[]): MetadataRoute.Sitemap {
+  return entries.map((entry) => {
+    const lastModified = toValidDate(entry.updated) ?? toValidDate(entry.date);
+
+    return {
+      url: `${baseUrl}${path}/${encodeURIComponent(entry.slug)}`,
+      ...(lastModified ? { lastModified } : {}),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    };
+  });
+}
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://iuyup.com";
+  const posts = getAllPosts();
+  const notes = getAllNotes();
+  const latestPostModified = latestModified(posts);
+  const latestNoteModified = latestModified(notes);
+  const latestContentModified = latestModified([...posts, ...notes]);
 
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/`,
-      ...(latestPostModified ? { lastModified: latestPostModified } : {}),
+      ...(latestContentModified ? { lastModified: latestContentModified } : {}),
       changeFrequency: "weekly",
       priority: 1.0,
     },
@@ -34,18 +56,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/notes`,
+      ...(latestNoteModified ? { lastModified: latestNoteModified } : {}),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
   ];
 
-  const blogPages: MetadataRoute.Sitemap = posts.map((post) => {
-    const lastModified = toValidDate(post.updated) ?? toValidDate(post.date);
-
-    return {
-      url: `${baseUrl}/posts/${encodeURIComponent(post.slug)}`,
-      ...(lastModified ? { lastModified } : {}),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    };
-  });
-
-  return [...staticPages, ...blogPages];
+  return [
+    ...staticPages,
+    ...collectionPages(baseUrl, "/posts", posts),
+    ...collectionPages(baseUrl, "/notes", notes),
+  ];
 }

@@ -60,6 +60,7 @@
 .masthead {
   align-self: start;
   height: fit-content;
+  min-width: 0;
   padding-top: clamp(2.15rem, 3.5vw, 3rem);
   position: sticky;
   top: clamp(3rem, 5vw, 5.5rem);
@@ -90,6 +91,7 @@
   letter-spacing: -0.045em;
   line-height: 1.04;
   margin: 0;
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 

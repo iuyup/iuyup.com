@@ -1,10 +1,14 @@
 import RSS from "rss";
+import { getAllNotes } from "@/lib/notes";
 import { getAllPosts } from "@/lib/posts";
 
 export const dynamic = "force-static";
 
 export async function GET() {
-  const posts = getAllPosts();
+  const entries = [
+    ...getAllPosts().map((entry) => ({ entry, path: "/posts", category: "文章" })),
+    ...getAllNotes().map((entry) => ({ entry, path: "/notes", category: "随心" })),
+  ].sort((left, right) => new Date(right.entry.date).getTime() - new Date(left.entry.date).getTime());
 
   const feed = new RSS({
     title: "T | Builder & Explorer",
@@ -14,13 +18,13 @@ export async function GET() {
     language: "zh-CN",
   });
 
-  posts.forEach((post) => {
+  entries.forEach(({ entry, path, category }) => {
     feed.item({
-      title: post.title,
-      description: post.summary || "",
-      url: `https://iuyup.com/posts/${encodeURIComponent(post.slug)}`,
-      date: new Date(post.date),
-      categories: post.tags || [],
+      title: entry.title,
+      description: entry.summary || "",
+      url: `https://iuyup.com${path}/${encodeURIComponent(entry.slug)}`,
+      date: new Date(entry.date),
+      categories: [...new Set([...(entry.tags || []), category])],
     });
   });
 

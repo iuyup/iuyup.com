@@ -23,11 +23,24 @@ interface GuestbookPage {
   nextCursor?: string;
 }
 
-const DEFAULT_MESSAGES: GuestbookMessage[] = [
-  { id: '1', name: 'Alice', text: '网站做得真好看！', date: '2026-04-10', likes: 3 },
-  { id: '2', name: 'Bob', text: '期待更多内容！', date: '2026-04-08', likes: 1 },
-  { id: '3', name: 'Carol', text: '手绘风格太赞了', date: '2026-04-05', likes: 7 },
-];
+async function responseError(response: Response, fallback: string) {
+  try {
+    const data: unknown = await response.json();
+    if (
+      data &&
+      typeof data === 'object' &&
+      'error' in data &&
+      typeof data.error === 'string' &&
+      data.error.trim()
+    ) {
+      return data.error;
+    }
+  } catch {
+    // Fall back to a user-friendly message when the proxy cannot return JSON.
+  }
+
+  return fallback;
+}
 
 interface GuestbookFlipCardProps {
   tag?: CardVariant;
@@ -38,6 +51,8 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [messages, setMessages] = useState<GuestbookMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -46,29 +61,40 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
   }, []);
 
   const fetchMessages = async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
       const res = await fetch('/api/guestbook');
-      if (!res.ok) throw new Error('Failed to fetch');
+      if (!res.ok) {
+        setMessages([]);
+        setNextCursor(null);
+        setLoadError(await responseError(res, 'Guestbook is temporarily unavailable.'));
+        return;
+      }
       const data: GuestbookPage = await res.json();
       setMessages(data.messages);
       setNextCursor(data.nextCursor ?? null);
     } catch {
-      setMessages(DEFAULT_MESSAGES);
+      setMessages([]);
       setNextCursor(null);
+      setLoadError('Guestbook is temporarily unavailable. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const [liked, setLiked] = useState<Record<string, boolean>>({});
+  const [liking, setLiking] = useState<Record<string, boolean>>({});
   const [nameInput, setNameInput] = useState('');
   const [msgInput, setMsgInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleLike = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (liked[id]) return;
+    if (liked[id] || liking[id]) return;
 
+    setActionError(null);
+    setLiking((prev) => ({ ...prev, [id]: true }));
     try {
       const res = await fetch('/api/guestbook', {
         method: 'PATCH',
@@ -82,9 +108,14 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
         setMessages((prev) =>
           prev.map((m) => (m.id === id ? updatedMsg : m))
         );
+      } else {
+        setActionError(await responseError(res, 'Could not like this message. Please try again.'));
       }
-    } catch (err) {
-      console.error('Failed to like:', err);
+    } catch (error) {
+      console.error('Failed to like:', error);
+      setActionError('Could not like this message. Please try again.');
+    } finally {
+      setLiking((prev) => ({ ...prev, [id]: false }));
     }
   };
 
@@ -92,6 +123,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
     e.stopPropagation();
     if (!nameInput.trim() || !msgInput.trim() || submitting) return;
 
+    setActionError(null);
     setSubmitting(true);
     try {
       const res = await fetch('/api/guestbook', {
@@ -111,12 +143,11 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
         setMsgInput('');
         setTimeout(() => setIsFlipped(false), 500);
       } else {
-        const data = await res.json();
-        alert(data.error || 'Failed to submit');
+        setActionError(await responseError(res, 'Failed to submit message. Please try again.'));
       }
-    } catch (err) {
-      console.error('Failed to submit:', err);
-      alert('Failed to submit message');
+    } catch (error) {
+      console.error('Failed to submit:', error);
+      setActionError('Failed to submit message. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -126,15 +157,20 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
     e.stopPropagation();
     if (!nextCursor || loadingMore) return;
 
+    setActionError(null);
     setLoadingMore(true);
     try {
       const res = await fetch(`/api/guestbook?cursor=${encodeURIComponent(nextCursor)}`);
-      if (!res.ok) throw new Error('Failed to fetch more messages');
+      if (!res.ok) {
+        setActionError(await responseError(res, 'Could not load more messages. Please try again.'));
+        return;
+      }
       const data: GuestbookPage = await res.json();
       setMessages((prev) => [...prev, ...data.messages]);
       setNextCursor(data.nextCursor ?? null);
-    } catch (err) {
-      console.error('Failed to load more messages:', err);
+    } catch (error) {
+      console.error('Failed to load more messages:', error);
+      setActionError('Could not load more messages. Please try again.');
     } finally {
       setLoadingMore(false);
     }
@@ -168,6 +204,24 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
               <div className="flex items-center justify-center h-full" style={{ color: variant.textSecondary }}>
                 Loading...
               </div>
+            ) : loadError ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3 px-4 text-center" role="alert" style={{ color: variant.textSecondary }}>
+                <p className="text-sm">{loadError}</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void fetchMessages();
+                  }}
+                  className="rounded-full border border-[#2C2C2C]/30 px-4 py-2 text-xs hover:bg-white/30"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex h-full items-center justify-center px-4 text-center text-sm" style={{ color: variant.textSecondary }}>
+                No messages yet. Be the first to leave one.
+              </div>
             ) : (
               messages.map((msg) => {
                 const isLiked = !!liked[msg.id];
@@ -179,10 +233,11 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
                         <p className="text-sm mt-1 break-words" style={{ color: variant.textSecondary }}>{msg.text}</p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          className="heart-container"
-                          title="Like"
-                          onClick={(e) => handleLike(msg.id, e)}
+                          <button
+                            className="heart-container"
+                            title="Like"
+                            onClick={(e) => handleLike(msg.id, e)}
+                            disabled={isLiked || !!liking[msg.id]}
                         >
                           <div className="svg-container">
                             <svg viewBox="0 0 24 24" className={`svg-outline ${isLiked ? 'hidden' : ''}`} xmlns="http://www.w3.org/2000/svg">
@@ -214,7 +269,12 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
               {loadingMore ? 'Loading...' : 'Load more messages'}
             </button>
           )}
-          <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages loaded</p>
+          {!loading && !loadError && (
+            <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages loaded</p>
+          )}
+          {actionError && (
+            <p className="text-xs mt-2 flex-shrink-0" role="alert" style={{ color: '#9B3A32' }}>{actionError}</p>
+          )}
         </div>
 
         {/* Back */}
@@ -237,7 +297,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             value={nameInput}
             onChange={(e) => setNameInput(e.target.value)}
             placeholder="Name"
-            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 flex-shrink-0"
+            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 text-base text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 flex-shrink-0 sm:text-sm"
             onClick={(e) => e.stopPropagation()}
           />
 
@@ -245,7 +305,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             value={msgInput}
             onChange={(e) => setMsgInput(e.target.value)}
             placeholder="Your message..."
-            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 flex-1 min-h-[140px] text-sm text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 resize-none"
+            className="bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 flex-1 min-h-[140px] text-base text-[#2C2C2C] placeholder:text-[#999] outline-none focus:border-white/50 resize-none sm:text-sm"
             onClick={(e) => e.stopPropagation()}
           />
 
@@ -257,6 +317,9 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
           >
             {submitting ? 'Submitting...' : 'Submit'}
           </button>
+          {actionError && (
+            <p className="text-xs text-center" role="alert" style={{ color: '#9B3A32' }}>{actionError}</p>
+          )}
         </div>
       </div>
     </motion.div>

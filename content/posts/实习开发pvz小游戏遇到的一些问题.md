@@ -2,7 +2,7 @@
 title: 实习开发pvz小游戏遇到的一些问题
 date: 2026-07-17
 summary: 记录这个 Pygame PvZ clone 开发里几个很小、但很容易被忽略的问题：开局时序、路障和铁桶的护具改造、豌豆目标与僵尸阻挡判定。
-image: /picture/pvz-debugging-retrospective.png
+image: /picture/pvz.png
 tags:
   - Pygame
   - 游戏开发

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 const MAX_REQUEST_BODY_BYTES = 4 * 1024;
+const UPSTREAM_TIMEOUT_MS = 8_000;
 
 function firstForwardedAddress(value: string | null): string {
   return value?.split(",", 1)[0]?.trim() || "";
@@ -35,14 +36,24 @@ async function proxyGuestbookRequest(request: NextRequest) {
     headers.set("Content-Type", "application/json");
   }
 
+  if (request.signal.aborted) {
+    return new Response(null, { status: 499 });
+  }
+
+  const upstreamAbort = new AbortController();
+  const timeout = setTimeout(() => upstreamAbort.abort(), UPSTREAM_TIMEOUT_MS);
+  const abortFromClient = () => upstreamAbort.abort();
+  request.signal.addEventListener("abort", abortFromClient, { once: true });
+
   try {
     const upstream = await fetch(`${goAPIBaseURL}/v1/guestbook${new URL(request.url).search}`, {
       method: request.method,
       headers,
       body,
       cache: "no-store",
-      signal: request.signal,
+      signal: upstreamAbort.signal,
     });
+    const upstreamBody = await upstream.arrayBuffer();
 
     const responseHeaders = new Headers();
     for (const name of ["content-type", "cache-control"]) {
@@ -51,7 +62,7 @@ async function proxyGuestbookRequest(request: NextRequest) {
     }
     responseHeaders.set("X-Content-Type-Options", "nosniff");
 
-    return new Response(upstream.body, {
+    return new Response(upstreamBody, {
       status: upstream.status,
       headers: responseHeaders,
     });
@@ -59,9 +70,16 @@ async function proxyGuestbookRequest(request: NextRequest) {
     if (request.signal.aborted) {
       return new Response(null, { status: 499 });
     }
+    if (upstreamAbort.signal.aborted) {
+      console.error("Go guestbook gateway request timed out");
+      return Response.json({ error: "Guestbook service timed out" }, { status: 504 });
+    }
 
     console.error("Go guestbook gateway request failed:", error);
     return Response.json({ error: "Guestbook service is unavailable" }, { status: 502 });
+  } finally {
+    clearTimeout(timeout);
+    request.signal.removeEventListener("abort", abortFromClient);
   }
 }
 

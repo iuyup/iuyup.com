@@ -3,10 +3,13 @@ import path from "path";
 import matter from "gray-matter";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
+const publicDirectory = path.join(process.cwd(), "public");
+const warnedMissingImages = new Set<string>();
 
 export interface PostFrontmatter {
   title: string;
   date: string;
+  updated: string | undefined;
   summary: string | undefined;
   tags: string[] | undefined;
   image: string | undefined;
@@ -21,6 +24,31 @@ export interface PostDocument {
   frontmatter: PostFrontmatter;
   content: string;
   isMDX: boolean;
+}
+
+function resolvePostImage(image: unknown, slug: string): string | undefined {
+  if (typeof image !== "string" || !image.trim()) {
+    return undefined;
+  }
+
+  if (!image.startsWith("/")) {
+    return image;
+  }
+
+  const relativePath = image.replace(/^\/+/, "");
+  const resolvedPath = path.resolve(publicDirectory, relativePath);
+  const publicPrefix = `${publicDirectory}${path.sep}`;
+
+  if (!resolvedPath.startsWith(publicPrefix) || !fs.existsSync(resolvedPath)) {
+    const warningKey = `${slug}:${image}`;
+    if (!warnedMissingImages.has(warningKey)) {
+      warnedMissingImages.add(warningKey);
+      console.warn(`Ignoring missing local cover image for post "${slug}": ${image}`);
+    }
+    return undefined;
+  }
+
+  return image;
 }
 
 export function getAllPosts(): Post[] {
@@ -61,9 +89,10 @@ export function getAllPosts(): Post[] {
         slug,
         title: data.title as string,
         date: data.date as string,
+        updated: data.updated as string | undefined,
         summary: data.summary as string | undefined,
         tags: data.tags as string[] | undefined,
-        image: data.image as string | undefined,
+        image: resolvePostImage(data.image, slug),
       };
     })
     .filter((post): post is Post => post !== null) as Post[];
@@ -114,9 +143,10 @@ export function getPostBySlug(rawSlug: string): PostDocument | null {
     frontmatter: {
       title: data.title as string,
       date: data.date as string,
+      updated: data.updated as string | undefined,
       summary: (data.summary as string) || "",
       tags: (data.tags as string[]) || [],
-      image: (data.image as string) || undefined,
+      image: resolvePostImage(data.image, slug),
     },
     content,
     isMDX,

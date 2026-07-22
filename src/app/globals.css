@@ -274,3 +274,22 @@ code:not([class*='language-']) {
   transform: rotateX(30deg) scale(0.95);
   opacity: 0;
 }
+
+/* On narrow or touch-first screens, decorative transforms can create a
+   horizontal page overflow and leave cards partially out of view. */
+@media (max-width: 639px), (hover: none) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  .scroll-tilt-target {
+    transform: none !important;
+    opacity: 1 !important;
+    will-change: auto;
+  }
+
+  .flip-card.flip-card-inner-base {
+    transform: none !important;
+  }
+}

@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: {
+    canonical: "/",
     types: {
       "application/rss+xml": "https://iuyup.com/feed.xml",
     },

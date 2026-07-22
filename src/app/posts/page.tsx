@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     title: "博客 | T",
     description: "关于 AI Agent、开源与技术思考",
   },
+  alternates: {
+    canonical: "/posts",
+  },
 };
 
 export default function PostsPage() {

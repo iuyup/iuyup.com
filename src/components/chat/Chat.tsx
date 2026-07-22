@@ -93,7 +93,7 @@ export default function Chat() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 w-[380px] h-[500px] rounded-2xl shadow-xl flex flex-col overflow-hidden z-50"
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(500px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl shadow-xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[500px] sm:w-[380px]"
           style={{ background: "#F5F0EB" }}
         >
           {/* Header */}
@@ -170,7 +170,7 @@ export default function Chat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="输入消息..."
-                className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
+                className="flex-1 rounded-lg px-3 py-2 text-base outline-none sm:text-sm"
                 style={{ background: "#F5F0EB", color: "#2C2C2C" }}
                 disabled={isLoading}
               />

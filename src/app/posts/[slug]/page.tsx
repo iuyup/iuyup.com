@@ -12,11 +12,11 @@ import ArticleToolbar from "@/components/ui/ArticleToolbar";
 import JsonLd from "@/components/JsonLd";
 import styles from "./post.module.css";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
-  return posts.map((post) => ({ slug: encodeURIComponent(post.slug) }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -29,13 +29,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const description = post.frontmatter.summary || post.content.slice(0, 160);
   const image = post.frontmatter.image || "/og-image.svg";
+  const canonical = `/posts/${encodeURIComponent(post.slug)}`;
+  const modifiedTime = post.frontmatter.updated || post.frontmatter.date;
 
   return {
     title: post.frontmatter.title,
     description,
+    alternates: {
+      canonical,
+    },
     openGraph: {
       type: "article",
+      url: canonical,
       publishedTime: post.frontmatter.date,
+      modifiedTime,
       authors: ["T"],
       images: [{ url: image, width: 1200, height: 630, alt: post.frontmatter.title }],
     },
@@ -167,6 +174,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     filterObsidianSyntax(post.content),
     post.frontmatter.title
   );
+  const image = post.frontmatter.image || "/og-image.svg";
+  const canonical = `https://iuyup.com/posts/${encodeURIComponent(post.slug)}`;
+  const modifiedTime = post.frontmatter.updated || post.frontmatter.date;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -179,9 +189,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       url: "https://iuyup.com",
     },
     datePublished: post.frontmatter.date,
-    dateModified: post.frontmatter.date,
-    image: post.frontmatter.image || "/og-image.svg",
-    url: `https://iuyup.com/posts/${encodeURIComponent(post.slug)}`,
+    dateModified: modifiedTime,
+    image,
+    mainEntityOfPage: canonical,
+    url: canonical,
     publisher: {
       "@type": "Person",
       name: "T",

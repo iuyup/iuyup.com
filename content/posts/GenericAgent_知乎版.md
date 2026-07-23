@@ -84,3 +84,6 @@ Claude Code 在长任务中容易"忘事"是很多用户的痛点。GA 的解决
 项目地址：github.com/lsdefine/GenericAgent
 技术报告：arxiv.org/abs/2604.17091
 源码拆解掘金全文（含完整代码分析）：juejin.cn/spost/7637740418106736646
+
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
+*GitHub: github.com/iuyup*

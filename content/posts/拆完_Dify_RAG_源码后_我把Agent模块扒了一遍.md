@@ -138,3 +138,6 @@ if iteration_step == max_iteration_steps and tool_calls:
 Dify 源码拆解系列到这里就告一段落了。两篇文章覆盖了 RAG Pipeline 和 Workflow/Agent 两大核心模块。如果你也在学 Agent 开发，希望这些笔记能给你一些参考hh。
 
 目前在找 AI Agent / LLM 应用方向的实习。有 Dify 源码级理解和 LangGraph 多智能体系统实战经验，开源项目 AgentFlow（github.com/iuyup/AgentFlow）。
+
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
+*GitHub: github.com/iuyup*

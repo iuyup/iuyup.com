@@ -6,6 +6,16 @@ interface JournalEntryTypeOptions {
   titleDescription: string;
 }
 
+function toUrlSlug(input: string): string {
+  return input
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96);
+}
+
 export function defineJournalEntryType({ name, title, titleDescription }: JournalEntryTypeOptions) {
   return defineType({
     name,
@@ -23,7 +33,11 @@ export function defineJournalEntryType({ name, title, titleDescription }: Journa
         title: "URL 标识",
         type: "slug",
         description: "发布后请不要随意修改，否则旧链接会失效。",
-        options: { source: "title", maxLength: 96 },
+        options: {
+          source: "title",
+          maxLength: 96,
+          slugify: toUrlSlug,
+        },
         validation: (rule) => rule.required(),
       }),
       defineField({

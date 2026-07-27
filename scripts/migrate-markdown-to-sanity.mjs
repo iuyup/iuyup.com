@@ -4,6 +4,11 @@ import path from "node:path";
 import matter from "gray-matter";
 import { createClient } from "@sanity/client";
 
+const localEnvFile = path.join(process.cwd(), ".env.local");
+if (fs.existsSync(localEnvFile)) {
+  process.loadEnvFile(localEnvFile);
+}
+
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "rnbye9v9";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-07-22";

@@ -12,7 +12,19 @@ interface JournalIndexProps {
 }
 
 function formatListDate(date: string | Date) {
-  const parsedDate = date instanceof Date ? date : new Date(`${date}T00:00:00`);
+  const calendarDate = date instanceof Date ? date.toISOString().slice(0, 10) : String(date).slice(0, 10);
+  const calendarMatch = calendarDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (calendarMatch) {
+    const [, year, month, day] = calendarMatch;
+
+    return {
+      dateTime: calendarDate,
+      display: `${year.slice(-2)}/${month}/${day}`,
+    };
+  }
+
+  const parsedDate = date instanceof Date ? date : new Date(String(date));
   if (Number.isNaN(parsedDate.getTime())) {
     return { dateTime: String(date), display: String(date) };
   }

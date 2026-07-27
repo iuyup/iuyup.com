@@ -35,6 +35,23 @@ const queries = {
 
 const warnedCollections = new Set<ContentCollection>();
 
+function getSanityCacheOptions(cacheTag: string, slug?: string) {
+  // A developer often creates or publishes content while the local server is
+  // already running. Do not keep an earlier empty result for an hour in that
+  // workflow; production keeps the static cache and invalidates it by webhook.
+  if (process.env.NODE_ENV === "development") {
+    return { cache: "no-store" as const };
+  }
+
+  return {
+    cache: "force-cache" as const,
+    next: {
+      revalidate: 3600,
+      tags: ["sanity-content", cacheTag, ...(slug ? [`sanity-${slug}`] : [])],
+    },
+  };
+}
+
 function normalizeSlug(rawSlug: string): string | null {
   try {
     const slug = decodeURIComponent(rawSlug);
@@ -99,13 +116,11 @@ async function fetchAllSanityContent(collection: ContentCollection): Promise<Con
   const { all, cacheTag } = queries[collection];
 
   try {
-    const entries = await sanityClient.fetch<SanityJournalEntry[]>(all, {}, {
-      cache: "force-cache",
-      next: {
-        revalidate: 3600,
-        tags: ["sanity-content", cacheTag],
-      },
-    });
+    const entries = await sanityClient.fetch<SanityJournalEntry[]>(
+      all,
+      {},
+      getSanityCacheOptions(cacheTag)
+    );
 
     return entries
       .map(toContentItem)
@@ -124,13 +139,11 @@ async function fetchSanityContentBySlug(
   const { bySlug, cacheTag } = queries[collection];
 
   try {
-    const entry = await sanityClient.fetch<SanityJournalEntry | null>(bySlug, { slug }, {
-      cache: "force-cache",
-      next: {
-        revalidate: 3600,
-        tags: ["sanity-content", cacheTag, `sanity-${collection}-${slug}`],
-      },
-    });
+    const entry = await sanityClient.fetch<SanityJournalEntry | null>(
+      bySlug,
+      { slug },
+      getSanityCacheOptions(cacheTag, `${collection}-${slug}`)
+    );
 
     return entry ? toContentDocument(entry) : null;
   } catch (error) {

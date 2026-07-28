@@ -146,7 +146,7 @@ export function BlogLinkCard({ tag = 'default' }: Pick<JournalLinkCardProps, 'ta
       tag={tag}
       href="/posts"
       label="Blog"
-      title="所有文章"
+      title="文章"
       description="关于 AI Agent、开源与技术思考"
       action="View All"
     />

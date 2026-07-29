@@ -1,5 +1,5 @@
 .button {
-  --progress-surface: #fffdfa;
+  --progress-surface: rgb(255 253 250 / 0.86);
   --progress-ink: var(--article-muted, var(--text-secondary));
   --progress-focus: var(--article-link, var(--accent));
   background: transparent;
@@ -82,8 +82,12 @@
 }
 
 .arrow {
+  align-self: center;
+  display: block;
   height: 1.8rem;
+  justify-self: center;
   opacity: 0;
+  transform-origin: center;
   transform: translateY(0.3rem) scale(0.92);
   transition: opacity 460ms cubic-bezier(0.16, 1, 0.3, 1), transform 460ms cubic-bezier(0.16, 1, 0.3, 1);
   width: 1.8rem;
@@ -120,7 +124,7 @@
 }
 
 :global([data-theme="dark"]) .button {
-  --progress-surface: #24211f;
+  --progress-surface: rgb(36 33 31 / 0.88);
 }
 
 :global([data-theme="dark"]) .indicator {

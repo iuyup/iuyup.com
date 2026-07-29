@@ -94,6 +94,7 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
   }
 
   const offset = 100 - progress;
+  const isComplete = progress === 100;
   const showArrow = idle || hovered;
 
   if (typeof document === "undefined") {
@@ -120,14 +121,14 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
           cy="22"
           r="19.5"
           pathLength="100"
-          strokeDasharray="100"
-          strokeDashoffset={offset}
+          strokeDasharray={isComplete ? undefined : "100"}
+          strokeDashoffset={isComplete ? undefined : offset}
         />
       </svg>
       <span className={styles.center}>
         <span className={styles.percentage}>{progress}%</span>
-        <svg className={styles.arrow} viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <path d="M5 5.5h18M14 23V10l-5.5 5.5M14 10l5.5 5.5" />
+        <svg className={styles.arrow} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M7 8h18M16 25V13M10 19l6-6 6 6" />
         </svg>
       </span>
     </button>,

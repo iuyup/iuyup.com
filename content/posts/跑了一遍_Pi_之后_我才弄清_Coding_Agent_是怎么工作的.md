@@ -2,6 +2,7 @@
 title: 跑了一遍 Pi 之后，我才弄清 Coding Agent 是怎么工作的
 date: 2026-07-29
 summary: 从 Agent Loop、工具适配、扩展策略到会话和并发。我没有只停在读代码，而是实际写了路径保护和审计扩展；一次没有落下结果的审计记录，反而把 Pi 的事件边界暴露得很清楚。
+image: /picture/pi.png
 tags:
   - Pi
   - Coding Agent

@@ -6,14 +6,14 @@ export const metadata: Metadata = {
   title: "随心",
   description: "一些没有固定主题的记录、想法与片段。",
   openGraph: {
-    title: "随心 | T",
+    title: "随心 | iuyup",
     description: "一些没有固定主题的记录、想法与片段。",
     type: "website",
     images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "随心" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "随心 | T",
+    title: "随心 | iuyup",
     description: "一些没有固定主题的记录、想法与片段。",
   },
   alternates: {

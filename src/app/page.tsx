@@ -11,7 +11,7 @@ export default async function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "T's Site",
+    name: "iuyup",
     url: "https://iuyup.com",
   };
 

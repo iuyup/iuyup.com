@@ -12,7 +12,7 @@ export async function GET() {
   ].sort((left, right) => new Date(right.entry.date).getTime() - new Date(left.entry.date).getTime());
 
   const feed = new RSS({
-    title: "T | Builder & Explorer",
+    title: "iuyup",
     description: "AI Agent 开发者 · 光电信息科学与工程 · 汕头大学",
     feed_url: "https://iuyup.com/feed.xml",
     site_url: "https://iuyup.com",

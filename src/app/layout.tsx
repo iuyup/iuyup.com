@@ -6,20 +6,20 @@ import Chat from "@/components/chat/Chat";
 export const metadata: Metadata = {
   metadataBase: new URL("https://iuyup.com"),
   title: {
-    default: "T | Builder & Explorer",
-    template: "%s | T",
+    default: "iuyup",
+    template: "%s | iuyup",
   },
   description: "AI Agent 开发者 · 光电信息科学与工程 · 汕头大学",
   openGraph: {
     type: "website",
     locale: "zh_CN",
-    siteName: "T",
+    siteName: "iuyup",
     images: [
       {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: "T",
+        alt: "iuyup",
       },
     ],
   },

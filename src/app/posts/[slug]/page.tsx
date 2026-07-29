@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
+import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 
 export async function generateStaticParams() {
@@ -52,5 +53,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  return <JournalEntry entry={post} indexHref="/posts" indexLabel="文章" sectionLabel="Journal" metaLabel="Personal Notes" />;
+  return (
+    <>
+      <JournalEntry entry={post} indexHref="/posts" indexLabel="文章" sectionLabel="Journal" metaLabel="Personal Notes" />
+      <ReadingProgress targetId="article-content" />
+    </>
+  );
 }

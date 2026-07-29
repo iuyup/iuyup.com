@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import styles from "./ReadingProgress.module.css";
 
-const CIRCUMFERENCE = 122.522;
 const IDLE_DELAY_MS = 1100;
 
 function getReadingProgress(targetId?: string) {
@@ -93,10 +93,14 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
     window.scrollTo({ top: 0, behavior });
   }
 
-  const offset = CIRCUMFERENCE * (1 - progress / 100);
+  const offset = 100 - progress;
   const showArrow = idle || hovered;
 
-  return (
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <button
       type="button"
       className={`${styles.button} ${visible ? styles.visible : ""} ${showArrow ? styles.showArrow : ""}`}
@@ -108,22 +112,24 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
       onPointerLeave={() => setHovered(false)}
     >
       <svg className={styles.ring} viewBox="0 0 44 44" aria-hidden="true">
-        <circle className={styles.track} cx="22" cy="22" r="19.5" />
+        <circle className={styles.track} cx="22" cy="22" r="19.5" pathLength="100" />
         <circle
           className={styles.indicator}
           cx="22"
           cy="22"
           r="19.5"
-          strokeDasharray={CIRCUMFERENCE}
+          pathLength="100"
+          strokeDasharray="100"
           strokeDashoffset={offset}
         />
       </svg>
       <span className={styles.center}>
         <span className={styles.percentage}>{progress}%</span>
         <svg className={styles.arrow} viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <path d="M5 5.5h18M14 23V10M8.5 15.5 14 10l5.5 5.5" />
+          <path d="M5 5.5h18M14 23V10l-5.5 5.5M14 10l5.5 5.5" />
         </svg>
       </span>
-    </button>
+    </button>,
+    document.body
   );
 }

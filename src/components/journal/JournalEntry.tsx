@@ -7,7 +7,6 @@ import rehypeHighlight from "rehype-highlight";
 import Comments from "@/components/ui/Comments";
 import ArticleToolbar from "@/components/ui/ArticleToolbar";
 import JsonLd from "@/components/JsonLd";
-import ReadingProgress from "@/components/journal/ReadingProgress";
 import type { ContentDocument } from "@/lib/content";
 import styles from "@/app/posts/[slug]/post.module.css";
 
@@ -178,8 +177,6 @@ export default function JournalEntry({
             </div>
           </div>
         </article>
-
-        <ReadingProgress targetId="article-content" />
 
         <section className={styles.discussion}>
           <div className={styles.discussionInner}>

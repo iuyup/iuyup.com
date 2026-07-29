@@ -11,28 +11,6 @@
 - Markdown / MDX 与 Sanity CMS
 - 可选的 Go API：聊天和留言板等有状态功能
 
-## 本地运行
-
-需要 Node.js `>= 20.9.0`。
-
-```powershell
-npm install
-npm run dev
-```
-
-然后打开 `http://localhost:3000`。
-
-如需配置 Sanity 或其他服务，在 `.env.example` 的基础上创建 `.env.local`，并填入自己的密钥；不要提交 `.env.local`。
-
-## 常用命令
-
-```powershell
-npm run dev       # 开发服务器
-npm run build     # 生产构建
-npm run start     # 启动生产服务
-npm run lint      # 代码检查
-```
-
 ## 内容与服务
 
 - 博客文章：`content/posts/`

@@ -112,6 +112,7 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
       onPointerLeave={() => setHovered(false)}
     >
       <svg className={styles.ring} viewBox="0 0 44 44" aria-hidden="true">
+        <circle className={styles.base} cx="22" cy="22" r="17.8" />
         <circle className={styles.track} cx="22" cy="22" r="19.5" pathLength="100" />
         <circle
           className={styles.indicator}

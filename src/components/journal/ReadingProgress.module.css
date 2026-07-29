@@ -1,5 +1,5 @@
 .button {
-  --progress-surface: var(--bg);
+  --progress-surface: #fffdfa;
   --progress-ink: var(--article-muted, var(--text-secondary));
   --progress-focus: var(--article-link, var(--accent));
   background: transparent;
@@ -45,8 +45,12 @@
   stroke-width: 3.6;
 }
 
+.base {
+  fill: var(--progress-surface);
+}
+
 .track {
-  stroke: var(--progress-surface);
+  stroke: transparent;
 }
 
 .indicator {
@@ -56,13 +60,13 @@
 }
 
 .center {
-  background: var(--progress-surface);
-  border-radius: 50%;
+  background: transparent;
   display: grid;
   height: calc(100% - 0.82rem);
   place-items: center;
   position: relative;
   width: calc(100% - 0.82rem);
+  z-index: 1;
 }
 
 .percentage,
@@ -113,6 +117,10 @@
 
 :global([data-theme="dark"]) .ring {
   filter: drop-shadow(0 0.65rem 1.25rem rgba(0, 0, 0, 0.28));
+}
+
+:global([data-theme="dark"]) .button {
+  --progress-surface: #24211f;
 }
 
 :global([data-theme="dark"]) .indicator {

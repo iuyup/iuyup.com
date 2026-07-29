@@ -3,6 +3,7 @@ import HeroSection from "@/components/layout/HeroSection";
 import BentoGrid from "@/components/BentoGrid";
 import { getAllPosts } from "@/lib/posts";
 import JsonLd from "@/components/JsonLd";
+import ReadingProgress from "@/components/journal/ReadingProgress";
 import monetBackground from "@/assets/monet-background-3840.jpg";
 
 export default async function Home() {
@@ -39,6 +40,7 @@ export default async function Home() {
 
         {/* Bento Grid */}
         <BentoGrid posts={posts} />
+        <ReadingProgress />
       </div>
     </>
   );

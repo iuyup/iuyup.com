@@ -179,7 +179,7 @@ export default function JournalEntry({
           </div>
         </article>
 
-        <ReadingProgress />
+        <ReadingProgress targetId="article-content" />
 
         <section className={styles.discussion}>
           <div className={styles.discussionInner}>

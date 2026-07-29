@@ -1,15 +1,18 @@
 .button {
-  align-items: center;
+  --progress-surface: var(--article-paper, var(--bg));
+  --progress-ink: var(--article-muted, var(--text-secondary));
+  --progress-focus: var(--article-link, var(--accent));
   background: transparent;
   border: 0;
   bottom: clamp(1.25rem, 4vw, 2.5rem);
-  color: var(--article-muted);
+  color: var(--progress-ink);
   cursor: pointer;
   display: grid;
   height: 4.5rem;
   justify-content: center;
   opacity: 0;
   padding: 0;
+  place-items: center;
   pointer-events: none;
   position: fixed;
   right: clamp(1.25rem, 4vw, 2.5rem);
@@ -41,7 +44,7 @@
 }
 
 .track {
-  stroke: var(--article-paper);
+  stroke: var(--progress-surface);
 }
 
 .indicator {
@@ -51,12 +54,11 @@
 }
 
 .center {
-  align-items: center;
-  background: var(--article-paper);
+  background: var(--progress-surface);
   border-radius: 50%;
   display: grid;
   height: calc(100% - 0.82rem);
-  justify-content: center;
+  place-items: center;
   position: relative;
   width: calc(100% - 0.82rem);
 }
@@ -103,7 +105,7 @@
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--article-link);
+  outline: 2px solid var(--progress-focus);
   outline-offset: 0.25rem;
 }
 

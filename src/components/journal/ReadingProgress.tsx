@@ -6,8 +6,17 @@ import styles from "./ReadingProgress.module.css";
 const CIRCUMFERENCE = 122.522;
 const IDLE_DELAY_MS = 1100;
 
-function getReadingProgress() {
-  const content = document.getElementById("article-content");
+function getReadingProgress(targetId?: string) {
+  if (!targetId) {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll <= 0) {
+      return 0;
+    }
+
+    return Math.round(Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100)));
+  }
+
+  const content = document.getElementById(targetId);
   if (!content) {
     return 0;
   }
@@ -23,7 +32,11 @@ function getReadingProgress() {
   return Math.round(Math.min(100, Math.max(0, ((window.scrollY - start) / (end - start)) * 100)));
 }
 
-export default function ReadingProgress() {
+interface ReadingProgressProps {
+  targetId?: string;
+}
+
+export default function ReadingProgress({ targetId }: ReadingProgressProps) {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
   const [idle, setIdle] = useState(false);
@@ -39,7 +52,7 @@ export default function ReadingProgress() {
     }
 
     function settle() {
-      const nextProgress = getReadingProgress();
+      const nextProgress = getReadingProgress(targetId);
       setProgress(nextProgress);
 
       if (nextProgress === 0) {
@@ -52,7 +65,7 @@ export default function ReadingProgress() {
     }
 
     function handleScroll() {
-      const nextProgress = getReadingProgress();
+      const nextProgress = getReadingProgress(targetId);
       setProgress(nextProgress);
       setIdle(false);
       setVisible(true);
@@ -61,7 +74,7 @@ export default function ReadingProgress() {
     }
 
     function handleResize() {
-      setProgress(getReadingProgress());
+      setProgress(getReadingProgress(targetId));
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -73,7 +86,7 @@ export default function ReadingProgress() {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [targetId]);
 
   function scrollToTop() {
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";

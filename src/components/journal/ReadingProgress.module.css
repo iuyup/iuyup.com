@@ -8,8 +8,8 @@
   color: var(--progress-ink);
   cursor: pointer;
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   height: 4.5rem;
-  justify-content: center;
   opacity: 0;
   padding: 0;
   place-items: center;
@@ -62,6 +62,7 @@
 .center {
   background: transparent;
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   height: calc(100% - 0.82rem);
   place-items: center;
   position: relative;

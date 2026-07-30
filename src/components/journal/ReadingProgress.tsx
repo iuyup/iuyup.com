@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import styles from "./ReadingProgress.module.css";
 
 const IDLE_DELAY_MS = 1100;
+const subscribeToMount = () => () => {};
 
 function getReadingProgress(targetId?: string) {
   if (!targetId) {
@@ -37,6 +38,7 @@ interface ReadingProgressProps {
 }
 
 export default function ReadingProgress({ targetId }: ReadingProgressProps) {
+  const mounted = useSyncExternalStore(subscribeToMount, () => true, () => false);
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
   const [idle, setIdle] = useState(false);
@@ -97,7 +99,7 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
   const isComplete = progress === 100;
   const showArrow = idle || hovered;
 
-  if (typeof document === "undefined") {
+  if (!mounted) {
     return null;
   }
 

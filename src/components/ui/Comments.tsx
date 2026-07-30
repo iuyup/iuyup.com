@@ -7,16 +7,18 @@ export default function Comments() {
       <h2 className="mb-6 font-serif text-2xl font-semibold tracking-tight text-[var(--article-ink)]">讨论</h2>
       <div className="[&_iframe]:!w-full [&_iframe]:!max-w-full">
         <Giscus
-          repo="iuyup/selfweb"
+          repo="iuyup/iuyup.com"
           repoId="R_kgDOR_CBoQ"
           category="Announcements"
           categoryId="DIC_kwDOR_CBoc4C6lcr"
           mapping="pathname"
+          strict="1"
           reactionsEnabled="1"
           emitMetadata="0"
           inputPosition="bottom"
-          theme="light"
+          theme="noborder_light"
           lang="zh-CN"
+          loading="lazy"
         />
       </div>
     </section>

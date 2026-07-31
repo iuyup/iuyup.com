@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import Link from 'next/link';
 import { useState } from 'react';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -22,14 +23,21 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        transition={springTransition}
-        style={{ background: variant.bg }}
-        className={`${cardCls} items-center text-center card-hover`}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
+      <Link
+        href="/about"
+        aria-label="查看关于 iuyup 的详细介绍"
+        className="block rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
+        onFocus={() => setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
       >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          transition={springTransition}
+          style={{ background: variant.bg }}
+          className={`${cardCls} items-center text-center card-hover`}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+        >
         <motion.span
           className="relative inline-block mb-8"
           style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
@@ -69,7 +77,8 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
         <div className="mt-auto pt-6 w-full text-left">
           <p className="text-xs" style={{ color: variant.textSecondary }}>Think in decades, act in days.</p>
         </div>
-      </motion.div>
+        </motion.div>
+      </Link>
     </motion.div>
   );
 }

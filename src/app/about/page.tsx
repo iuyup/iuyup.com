@@ -70,7 +70,7 @@ export default function AboutPage() {
         <div className={styles.shell}>
         <article className={styles.content}>
           <p className={styles.eyebrow}>T. / About</p>
-          <h1 className={styles.title}>关于这个人，也关于这处小站。</h1>
+          <h1 className={styles.title}>关于</h1>
           <p className={styles.lead}>
             这里原本只是一个把想法放下来的地方。后来它慢慢装下了正在学的技术、做过的项目，和一些不急着变成结论的日常。
           </p>

@@ -72,7 +72,7 @@ export default function AboutPage() {
           <p className={styles.eyebrow}>T. / About</p>
           <h1 className={styles.title}>关于</h1>
           <p className={styles.lead}>
-            这里原本只是一个把想法放下来的地方。后来它慢慢装下了正在学的技术、做过的项目，和一些不急着变成结论的日常。
+            这里原本只是一个把想法放下来的地方。后来它慢慢装下了正在学的技术、做过的项目，还有一些闲散日常。
           </p>
 
           <section className={styles.section} aria-labelledby="about-me">

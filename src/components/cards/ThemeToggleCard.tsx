@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 import { getWeatherTheme, themeColors, type WeatherThemeKey } from '@/lib/weatherThemes';
 
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
@@ -22,16 +21,7 @@ export interface WeatherData {
   timezone: number;
 }
 
-interface OpenWeatherResponse {
-  name: string;
-  sys: { country: string; sunrise: number; sunset: number };
-  main: { temp: number };
-  weather: Array<{ main: string; description: string }>;
-  wind: { speed: number };
-  timezone: number;
-}
-
-const CACHE_KEY_PREFIX = 'weather_cache_';
+const CACHE_KEY_PREFIX = 'weather_cache_v2_';
 const CACHE_TTL = 10 * 60 * 1000;
 
 function getCachedWeather(city: string): WeatherData | null {
@@ -52,64 +42,10 @@ function setCachedWeather(city: string, data: WeatherData) {
   localStorage.setItem(CACHE_KEY_PREFIX + city, JSON.stringify({ data, timestamp: Date.now() }));
 }
 
-async function fetchWeather(city: string): Promise<WeatherData> {
-  const apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
-  if (!apiKey) {
-    return getMockWeather(city);
-  }
-
-  try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
-    );
-    if (!res.ok) throw new Error('API error');
-    const w: OpenWeatherResponse = await res.json();
-
-    const data: WeatherData = {
-      city: w.name,
-      country: w.sys.country,
-      temp: Math.round(w.main.temp),
-      condition: w.weather[0].main,
-      description: w.weather[0].description,
-      windSpeed: w.wind.speed,
-      sunrise: w.sys.sunrise,
-      sunset: w.sys.sunset,
-      timezone: w.timezone,
-    };
-
-    setCachedWeather(city, data);
-    return data;
-  } catch {
-    return getCachedWeather(city) ?? getMockWeather(city);
-  }
-}
-
-function getMockWeather(city: string): WeatherData {
-  const mocks: Record<string, WeatherData> = {
-    Shenzhen: {
-      city: 'Shenzhen',
-      country: 'CN',
-      temp: 25,
-      condition: 'Clear',
-      description: 'clear sky',
-      windSpeed: 2.0,
-      sunrise: 0,
-      sunset: 0,
-      timezone: 28800,
-    },
-    'New York': {
-      city: 'New York City',
-      country: 'USA',
-      temp: 12,
-      condition: 'Clouds',
-      description: 'overcast clouds',
-      windSpeed: 3.5,
-      sunrise: 0,
-      sunset: 0,
-      timezone: -18000,
-    },
-  };
-  return mocks[city] ?? mocks['New York'];
+async function fetchWeather(city: string, signal: AbortSignal): Promise<WeatherData> {
+  const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`, { signal });
+  if (!res.ok) throw new Error('Weather request failed');
+  return res.json() as Promise<WeatherData>;
 }
 
 function isNightTime(weather: WeatherData): boolean {
@@ -126,8 +62,6 @@ function lerp(a: number, b: number, t: number): number {
 }
 
 interface AnimatedState {
-  angle: number;
-  radiusPhase: number;
   startPctPhase: number;
   mouseX: number;
   mouseY: number;
@@ -206,7 +140,9 @@ function SnowIcon() {
   );
 }
 
-function getWeatherIcon(condition: string): React.ReactNode {
+function getWeatherIcon(condition: string, isNight: boolean): React.ReactNode {
+  if (condition === 'Clear' && isNight) return <MoonIcon />;
+
   const map: Record<string, React.ReactNode> = {
     Clear: <SunIcon />,
     Clouds: <CloudIcon />,
@@ -226,17 +162,17 @@ function getWeatherIcon(condition: string): React.ReactNode {
 // Component
 // ===================
 interface WeatherCardProps {
-  tag?: CardVariant;
   city?: string;
 }
 
-export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardProps) {
+export function WeatherCard({ city = 'Shenzhen' }: WeatherCardProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [hasWeatherError, setHasWeatherError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const bgRef = useRef<HTMLDivElement>(null);
 
   // Animation state
-  const animRef = useRef<AnimatedState>({ angle: 0, radiusPhase: 0, startPctPhase: 0, mouseX: 0, mouseY: 0, currentInfluence: 0 });
+  const animRef = useRef<AnimatedState>({ startPctPhase: 0, mouseX: 0, mouseY: 0, currentInfluence: 0 });
   const mouseTargetRef = useRef({ x: 0.5, y: 0.5 });
 
   // Use refs for animation loop to avoid restarting on state changes
@@ -252,13 +188,32 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
 
   // Fetch weather on mount
   useEffect(() => {
-    fetchWeather(city).then((data) => {
-      setWeather(data);
-      const night = isNightTime(data);
-      const key = getWeatherTheme(data.condition, night, data.windSpeed);
-      setThemeKey(key);
-    });
-  }, []);
+    const controller = new AbortController();
+
+    fetchWeather(city, controller.signal)
+      .then((data) => {
+        setCachedWeather(city, data);
+        setWeather(data);
+        setHasWeatherError(false);
+        const night = isNightTime(data);
+        setThemeKey(getWeatherTheme(data.condition, night, data.windSpeed));
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        console.error('Weather request failed:', error);
+        const cached = getCachedWeather(city);
+        if (cached) {
+          setWeather(cached);
+          setHasWeatherError(false);
+          setThemeKey(getWeatherTheme(cached.condition, isNightTime(cached), cached.windSpeed));
+          return;
+        }
+        setWeather(null);
+        setHasWeatherError(true);
+      });
+
+    return () => controller.abort();
+  }, [city]);
 
   // Animation loop via requestAnimationFrame
   useEffect(() => {
@@ -270,21 +225,10 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
       lastTime = currentTime;
       const anim = animRef.current;
 
-      // Angle rotation - 16s period
-      anim.angle = (anim.angle + (dt / 16) * Math.PI * 2) % (Math.PI * 2);
-
-      // Radius breath - 12s period
-      anim.radiusPhase = (anim.radiusPhase + (dt / 12) * Math.PI * 2) % (Math.PI * 2);
-
       // startPct breath - 8s period
       anim.startPctPhase = (anim.startPctPhase + (dt / 8) * Math.PI * 2) % (Math.PI * 2);
 
-      const radius = (Math.sin(anim.radiusPhase) + 1) / 2;
-      const startPct = 15 * anim.currentInfluence;
-
-      // Radius offset
-      const baseRadius = 20;
-      const radiusOffset = baseRadius * radius;
+      const startPct = (10 + ((Math.sin(anim.startPctPhase) + 1) / 2) * 5) * anim.currentInfluence;
 
       // Lerp mouse position
       anim.mouseX = lerp(anim.mouseX, mouseTargetRef.current.x, isHoveredRef.current ? 0.12 : 0.06);
@@ -357,17 +301,17 @@ export function WeatherCard({ tag = 'default', city = 'Shenzhen' }: WeatherCardP
       >
         {/* Weather icon */}
         <div style={{ opacity: 0.9 }}>
-          {weather ? getWeatherIcon(weather.condition) : <CloudIcon />}
+          {weather ? getWeatherIcon(weather.condition, isNightTime(weather)) : <CloudIcon />}
         </div>
 
         {/* City name */}
         <div style={{ fontFamily: "'Caveat', cursive", fontSize: '2.5rem', fontWeight: 600 }}>
-          {weather ? `${weather.city}, ${weather.country}` : 'Loading...'}
+          {weather ? `${weather.city}, ${weather.country}` : city}
         </div>
 
         {/* Condition + temp */}
         <div style={{ fontSize: '1.5rem', fontWeight: 500, opacity: 0.9, letterSpacing: '0.1em' }}>
-          {weather ? `${weather.condition.toUpperCase()} ${weather.temp}°C` : ''}
+          {weather ? `${weather.condition.toUpperCase()} ${weather.temp}°C` : hasWeatherError ? 'WEATHER UNAVAILABLE' : 'LOADING WEATHER...'}
         </div>
       </div>
     </motion.div>

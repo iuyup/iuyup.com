@@ -16,6 +16,7 @@ interface JournalEntryProps {
   indexLabel: string;
   sectionLabel: string;
   metaLabel?: string;
+  readingTimeMinutes?: number;
 }
 
 function filterObsidianSyntax(content: string): string {
@@ -68,6 +69,7 @@ export default function JournalEntry({
   indexLabel,
   sectionLabel,
   metaLabel,
+  readingTimeMinutes,
 }: JournalEntryProps) {
   const filteredContent = removeLeadingDuplicateTitle(
     filterObsidianSyntax(entry.content),
@@ -137,7 +139,12 @@ export default function JournalEntry({
                       day: "numeric",
                     })}
                   </time>
-                  <p className={styles.metaLabel}>{metaLabel ?? sectionLabel}</p>
+                  <div className={styles.metaDetails}>
+                    <p className={styles.metaLabel}>{metaLabel ?? sectionLabel}</p>
+                    {readingTimeMinutes !== undefined && (
+                      <p className={styles.readingTime}>约 {readingTimeMinutes} 分钟阅读</p>
+                    )}
+                  </div>
                 </div>
                 {entry.frontmatter.summary && <p className={styles.summary}>{entry.frontmatter.summary}</p>}
               </header>

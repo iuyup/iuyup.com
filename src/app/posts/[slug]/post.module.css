@@ -165,6 +165,24 @@
   text-transform: uppercase;
 }
 
+.metaDetails {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  justify-content: flex-end;
+}
+
+.readingTime {
+  color: var(--article-muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  line-height: 1.55;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .summary {
   color: var(--article-muted);
   font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
@@ -476,6 +494,10 @@
 
   .metaLabel {
     text-align: left;
+  }
+
+  .metaDetails {
+    justify-content: flex-start;
   }
 
   .prose {

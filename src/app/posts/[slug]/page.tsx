@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
+import { estimateReadingTimeMinutes } from "@/lib/reading-time";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -55,7 +56,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <JournalEntry entry={post} indexHref="/posts" indexLabel="文章" sectionLabel="Journal" metaLabel="Personal Notes" />
+      <JournalEntry
+        entry={post}
+        indexHref="/posts"
+        indexLabel="文章"
+        sectionLabel="Journal"
+        metaLabel="Personal Notes"
+        readingTimeMinutes={estimateReadingTimeMinutes(post.content)}
+      />
       <ReadingProgress targetId="article-content" />
     </>
   );

@@ -86,7 +86,9 @@ Optional configuration:
   server-to-server request and to authorize the forwarded original client IP
   used for rate limiting. Never expose it through a `NEXT_PUBLIC_*` variable.
 - `DATABASE_URL` enables the MySQL guestbook. Run `go run ./cmd/migrate`
-  against it before starting the API.
+  against it before starting the API. The API keeps a lazy connection pool so
+  a serverless MySQL cold start does not disable the guestbook for the rest of
+  the Go process; the migration command still verifies connectivity eagerly.
 - `GUESTBOOK_DEFAULT_STATUS` defaults to `approved`; set it to `pending` to
   require review before newly submitted messages appear publicly.
 

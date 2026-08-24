@@ -26,9 +26,9 @@ type MySQLStore struct {
 	db *sql.DB
 }
 
-// OpenMySQL creates and verifies a bounded MySQL connection pool. It accepts
-// both the Go driver's DSN format and a mysql:// URL from hosting providers.
-func OpenMySQL(ctx context.Context, databaseURL string) (*MySQLStore, error) {
+// NewMySQLStore creates a bounded, lazily connected MySQL pool. It accepts both
+// the Go driver's DSN format and a mysql:// URL from hosting providers.
+func NewMySQLStore(databaseURL string) (*MySQLStore, error) {
 	dsn, err := normalizeMySQLDSN(databaseURL)
 	if err != nil {
 		return nil, err
@@ -43,12 +43,24 @@ func OpenMySQL(ctx context.Context, databaseURL string) (*MySQLStore, error) {
 	db.SetConnMaxLifetime(5 * time.Minute)
 	db.SetConnMaxIdleTime(time.Minute)
 
-	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+	return &MySQLStore{db: db}, nil
+}
+
+// OpenMySQL creates a bounded MySQL connection pool and verifies that the
+// database is reachable. Commands that must fail fast, such as migrations,
+// should use this instead of NewMySQLStore.
+func OpenMySQL(ctx context.Context, databaseURL string) (*MySQLStore, error) {
+	store, err := NewMySQLStore(databaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := store.db.PingContext(ctx); err != nil {
+		store.db.Close()
 		return nil, fmt.Errorf("ping mysql: %w", err)
 	}
 
-	return &MySQLStore{db: db}, nil
+	return store, nil
 }
 
 // Close releases the database pool during process shutdown.

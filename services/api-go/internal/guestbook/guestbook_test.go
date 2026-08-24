@@ -1,6 +1,7 @@
 package guestbook
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -71,5 +72,41 @@ func TestNormalizeMySQLDSNAcceptsDriverAndURLFormats(t *testing.T) {
 		if !config.ParseTime || config.Loc != time.UTC {
 			t.Fatalf("normalized config = %#v, want parseTime with UTC", config)
 		}
+	}
+}
+
+func TestNewMySQLStoreDoesNotRequireImmediateConnectivity(t *testing.T) {
+	store, err := NewMySQLStore("app:secret@tcp(127.0.0.1:1)/selfweb")
+	if err != nil {
+		t.Fatalf("NewMySQLStore() error = %v", err)
+	}
+	if store == nil {
+		t.Fatal("NewMySQLStore() returned a nil store")
+	}
+	if err := store.Close(); err != nil {
+		t.Fatalf("Close() error = %v", err)
+	}
+}
+
+func TestNewMySQLStoreRejectsInvalidDatabaseURL(t *testing.T) {
+	store, err := NewMySQLStore("mysql:///selfweb")
+	if err == nil {
+		if store != nil {
+			store.Close()
+		}
+		t.Fatal("NewMySQLStore() accepted a URL without a user or host")
+	}
+}
+
+func TestOpenMySQLStillRequiresConnectivity(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	store, err := OpenMySQL(ctx, "app:secret@tcp(127.0.0.1:1)/selfweb")
+	if err == nil {
+		if store != nil {
+			store.Close()
+		}
+		t.Fatal("OpenMySQL() unexpectedly connected")
 	}
 }

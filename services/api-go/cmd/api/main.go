@@ -108,16 +108,13 @@ func newGuestbookStore(logger *slog.Logger) (guestbook.Store, func()) {
 		return nil, func() {}
 	}
 
-	connectContext, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	store, err := guestbook.OpenMySQL(connectContext, databaseURL)
+	store, err := guestbook.NewMySQLStore(databaseURL)
 	if err != nil {
-		logger.Error("guestbook disabled: could not connect to mysql", "error", err)
+		logger.Error("guestbook disabled: invalid mysql configuration", "error", err)
 		return nil, func() {}
 	}
 
-	logger.Info("guestbook mysql connected")
+	logger.Info("guestbook mysql pool configured")
 	return store, func() {
 		if err := store.Close(); err != nil {
 			logger.Error("close guestbook mysql", "error", err)

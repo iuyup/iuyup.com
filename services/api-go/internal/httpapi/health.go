@@ -2,7 +2,6 @@ package httpapi
 
 import (
 	"context"
-	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"io"
@@ -22,11 +21,12 @@ const defaultMaxRequestBodyBytes int64 = 32 * 1024
 
 // Config configures the HTTP API's dependencies and request limits.
 type Config struct {
-	Chat                    chat.StreamOpener
-	RateLimiter             *ratelimit.FixedWindow
-	RequestTimeout          time.Duration
-	MaxRequestBodyBytes     int64
-	TrustedProxyToken       string
+	Chat                chat.StreamOpener
+	RateLimiter         *ratelimit.FixedWindow
+	RequestTimeout      time.Duration
+	MaxRequestBodyBytes int64
+	// ProxyToken authenticates every /v1/* request and authorizes forwarded client IPs.
+	ProxyToken              string
 	Guestbook               guestbook.Store
 	GuestbookCreateLimiter  *ratelimit.FixedWindow
 	GuestbookLikeLimiter    *ratelimit.FixedWindow
@@ -34,7 +34,7 @@ type Config struct {
 	GuestbookDefaultStatus  guestbook.Status
 }
 
-// NewHandler exposes the public HTTP routes for the Go API service.
+// NewHandler exposes the HTTP routes for the Go API service.
 func NewHandler(logger *slog.Logger, config Config) http.Handler {
 	if logger == nil {
 		logger = slog.Default()
@@ -61,12 +61,17 @@ func NewHandler(logger *slog.Logger, config Config) http.Handler {
 		config.GuestbookDefaultStatus = guestbook.StatusApproved
 	}
 
+	v1Mux := http.NewServeMux()
+	v1Mux.HandleFunc("POST /v1/chat", chatHandler(logger, config))
+	v1Mux.HandleFunc("GET /v1/guestbook", listGuestbookMessages(logger, config))
+	v1Mux.HandleFunc("POST /v1/guestbook", createGuestbookMessage(logger, config))
+	v1Mux.HandleFunc("PATCH /v1/guestbook", likeGuestbookMessage(logger, config))
+
+	protectedV1 := requireProxyToken(config.ProxyToken, v1Mux)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthz)
-	mux.HandleFunc("POST /v1/chat", chatHandler(logger, config))
-	mux.HandleFunc("GET /v1/guestbook", listGuestbookMessages(logger, config))
-	mux.HandleFunc("POST /v1/guestbook", createGuestbookMessage(logger, config))
-	mux.HandleFunc("PATCH /v1/guestbook", likeGuestbookMessage(logger, config))
+	mux.Handle("/v1", protectedV1)
+	mux.Handle("/v1/", protectedV1)
 
 	return requestLogger(logger, mux)
 }
@@ -85,7 +90,7 @@ func chatHandler(logger *slog.Logger, config Config) http.HandlerFunc {
 			return
 		}
 
-		if !config.RateLimiter.Allow(clientAddress(request, config.TrustedProxyToken)) {
+		if !config.RateLimiter.Allow(clientAddress(request, config.ProxyToken)) {
 			writeError(writer, http.StatusTooManyRequests, "rate limit exceeded")
 			return
 		}
@@ -151,9 +156,9 @@ func decodeMessages(writer http.ResponseWriter, request *http.Request, maxBytes 
 
 func clientAddress(request *http.Request, trustedProxyToken string) string {
 	forwardedAddress := strings.TrimSpace(request.Header.Get("X-Selfweb-Client-IP"))
-	providedToken := request.Header.Get("X-Selfweb-Proxy-Token")
+	providedToken := request.Header.Get(proxyTokenHeader)
 	if trustedProxyToken != "" &&
-		subtle.ConstantTimeCompare([]byte(providedToken), []byte(trustedProxyToken)) == 1 &&
+		proxyTokenMatches(providedToken, trustedProxyToken) &&
 		net.ParseIP(forwardedAddress) != nil {
 		return forwardedAddress
 	}

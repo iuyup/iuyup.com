@@ -53,7 +53,7 @@ func createGuestbookMessage(logger *slog.Logger, config Config) http.HandlerFunc
 			writeError(writer, http.StatusServiceUnavailable, "guestbook service is not configured")
 			return
 		}
-		if !config.GuestbookCreateLimiter.Allow(clientAddress(request, config.TrustedProxyToken)) {
+		if !config.GuestbookCreateLimiter.Allow(clientAddress(request, config.ProxyToken)) {
 			writeError(writer, http.StatusTooManyRequests, "guestbook message rate limit exceeded")
 			return
 		}
@@ -85,7 +85,7 @@ func likeGuestbookMessage(logger *slog.Logger, config Config) http.HandlerFunc {
 			writeError(writer, http.StatusServiceUnavailable, "guestbook service is not configured")
 			return
 		}
-		if !config.GuestbookLikeLimiter.Allow(clientAddress(request, config.TrustedProxyToken)) {
+		if !config.GuestbookLikeLimiter.Allow(clientAddress(request, config.ProxyToken)) {
 			writeError(writer, http.StatusTooManyRequests, "guestbook like rate limit exceeded")
 			return
 		}

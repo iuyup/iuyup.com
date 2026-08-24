@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+const testProxyToken = "test-proxy-token"
+
 func TestHealthz(t *testing.T) {
 	handler := NewHandler(slog.New(slog.NewTextHandler(io.Discard, nil)), Config{})
 	request := httptest.NewRequest(http.MethodGet, "/healthz", nil)

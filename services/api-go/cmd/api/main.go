@@ -33,7 +33,7 @@ func main() {
 			Chat:                    chatClient,
 			RateLimiter:             ratelimit.NewFixedWindow(10, time.Minute),
 			RequestTimeout:          60 * time.Second,
-			TrustedProxyToken:       os.Getenv("GO_API_PROXY_TOKEN"),
+			ProxyToken:              os.Getenv("GO_API_PROXY_TOKEN"),
 			Guestbook:               guestbookStore,
 			GuestbookCreateLimiter:  ratelimit.NewFixedWindow(3, time.Minute),
 			GuestbookLikeLimiter:    ratelimit.NewFixedWindow(10, time.Minute),

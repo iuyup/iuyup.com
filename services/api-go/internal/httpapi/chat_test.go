@@ -105,7 +105,7 @@ func TestClientAddressTrustsOnlyAuthorizedProxy(t *testing.T) {
 	request := httptest.NewRequest(http.MethodPost, "/v1/chat", nil)
 	request.RemoteAddr = "203.0.113.10:12345"
 	request.Header.Set("X-Selfweb-Client-IP", "198.51.100.4")
-	request.Header.Set("X-Selfweb-Proxy-Token", "correct-token")
+	request.Header.Set(proxyTokenHeader, "correct-token")
 
 	if got := clientAddress(request, "correct-token"); got != "198.51.100.4" {
 		t.Fatalf("authorized address = %q", got)
@@ -121,12 +121,14 @@ func newTestHandler(provider chat.StreamOpener, limit int) http.Handler {
 		Chat:           provider,
 		RateLimiter:    ratelimit.NewFixedWindow(limit, time.Minute),
 		RequestTimeout: time.Second,
+		ProxyToken:     testProxyToken,
 	})
 }
 
 func performChatRequest(handler http.Handler, body string) *httptest.ResponseRecorder {
 	request := httptest.NewRequest(http.MethodPost, "/v1/chat", strings.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set(proxyTokenHeader, testProxyToken)
 	request.RemoteAddr = "203.0.113.10:12345"
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)

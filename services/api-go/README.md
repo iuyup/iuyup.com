@@ -19,8 +19,12 @@ Latin-word tokenization. The best article excerpts are added to the server-side
 persona for each chat request.
 
 The current Next.js `POST /api/chat` route proxies browser requests to this
-service. The browser never receives the Go service address, DeepSeek key, or
-proxy token.
+service. Every `/v1/*` request must include the server-only
+`X-Selfweb-Proxy-Token` header whose value exactly matches
+`GO_API_PROXY_TOKEN`. Missing or invalid credentials are rejected before chat
+or guestbook handling. The browser never receives the Go service address,
+DeepSeek key, or proxy token. `GET /healthz` remains anonymous for deployment
+health checks.
 
 `GET /v1/guestbook` returns a bounded, cursor-paginated list of approved
 messages. `POST /v1/guestbook` validates and creates a message, and
@@ -42,10 +46,13 @@ go run ./cmd/api
 
 Then request `http://localhost:8080/healthz`.
 
-To enable the chat endpoint locally, configure a DeepSeek key before starting
-the service:
+To call any `/v1/*` endpoint locally, configure a proxy token before starting
+the service and send the same value from the calling server. The API fails
+closed with `401 Unauthorized` when `GO_API_PROXY_TOKEN` is unset. To enable
+chat, also configure a DeepSeek key:
 
 ```powershell
+$env:GO_API_PROXY_TOKEN = 'replace-with-a-long-random-server-only-token'
 $env:DEEPSEEK_API_KEY = 'your-server-only-key'
 go run ./cmd/api
 ```
@@ -73,9 +80,11 @@ Optional configuration:
 - `API_ADDR` defaults to `:8080`.
 - `POSTS_DIR` defaults to `../../content/posts` when the service is started
   from `services/api-go`.
-- `GO_API_PROXY_TOKEN` is optional for direct local calls. In production, set
-  the same high-entropy value in the Go service and in Next.js; it authorizes
-  Next.js to forward the original client IP for rate limiting.
+- `GO_API_PROXY_TOKEN` is required for every `/v1/*` request. Set the same
+  high-entropy value in the Go service and Next.js. Next.js sends it in
+  `X-Selfweb-Proxy-Token`; the Go service uses it both to authenticate the
+  server-to-server request and to authorize the forwarded original client IP
+  used for rate limiting. Never expose it through a `NEXT_PUBLIC_*` variable.
 - `DATABASE_URL` enables the MySQL guestbook. Run `go run ./cmd/migrate`
   against it before starting the API.
 - `GUESTBOOK_DEFAULT_STATUS` defaults to `approved`; set it to `pending` to
@@ -83,9 +92,11 @@ Optional configuration:
 
 For the Next.js application, configure these server-only variables:
 
-- `GO_API_BASE_URL`, for example `http://127.0.0.1:8080` locally or the private
-  address of the deployed Go service.
-- `GO_API_PROXY_TOKEN`, identical to the Go service value.
+- `GO_API_BASE_URL`, for example `http://127.0.0.1:8080` locally. When Next.js
+  runs outside Railway (such as on Vercel), use the Go service's public HTTPS
+  address; every `/v1/*` request is still protected by the shared token.
+- `GO_API_PROXY_TOKEN`, identical to the Go service value and sent only by the
+  server-side proxy routes.
 - `TRUST_X_FORWARDED_FOR=true` only when the hosting ingress reliably removes
   client-supplied `X-Forwarded-For` values and writes the real client address.
   It is off by default; without it, Go rate limits the Next.js server address

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllNotes, getNoteBySlug } from "@/lib/notes";
+import { DEFAULT_OG_IMAGE_PATH } from "@/lib/site";
 
 export async function generateStaticParams() {
   const notes = await getAllNotes();
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const description = note.frontmatter.summary || note.content.slice(0, 160);
-  const image = note.frontmatter.image || "/og-image.svg";
+  const image = note.frontmatter.image || DEFAULT_OG_IMAGE_PATH;
   const canonical = `/notes/${encodeURIComponent(note.slug)}`;
   const modifiedTime = note.frontmatter.updated || note.frontmatter.date;
 

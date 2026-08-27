@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import JournalIndex from "@/components/journal/JournalIndex";
 import { getAllPosts } from "@/lib/posts";
+import { DEFAULT_OG_IMAGE_PATH, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "博客",
@@ -9,12 +10,14 @@ export const metadata: Metadata = {
     title: "博客 | iuyup",
     description: "关于 AI Agent、开源与技术思考",
     type: "website",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "博客" }],
+    url: `${SITE_URL}/posts`,
+    images: [{ url: DEFAULT_OG_IMAGE_PATH, width: 1200, height: 630, alt: "博客" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "博客 | iuyup",
     description: "关于 AI Agent、开源与技术思考",
+    images: [DEFAULT_OG_IMAGE_PATH],
   },
   alternates: {
     canonical: "/posts",

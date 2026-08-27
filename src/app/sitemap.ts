@@ -2,6 +2,7 @@ import { MetadataRoute } from "next";
 import type { ContentItem } from "@/lib/content";
 import { getAllNotes } from "@/lib/notes";
 import { getAllPosts } from "@/lib/posts";
+import { SITE_URL } from "@/lib/site";
 
 function toValidDate(value: string | undefined): Date | undefined {
   if (!value) {
@@ -36,7 +37,6 @@ function collectionPages(baseUrl: string, path: string, entries: ContentItem[]):
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://iuyup.com";
   const [posts, notes] = await Promise.all([getAllPosts(), getAllNotes()]);
   const latestPostModified = latestModified(posts);
   const latestNoteModified = latestModified(notes);
@@ -44,28 +44,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: `${baseUrl}/`,
+      url: `${SITE_URL}/`,
       ...(latestContentModified ? { lastModified: latestContentModified } : {}),
       changeFrequency: "weekly",
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/posts`,
+      url: `${SITE_URL}/posts`,
       ...(latestPostModified ? { lastModified: latestPostModified } : {}),
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/notes`,
+      url: `${SITE_URL}/notes`,
       ...(latestNoteModified ? { lastModified: latestNoteModified } : {}),
       changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITE_URL}/about`,
+      changeFrequency: "monthly",
       priority: 0.6,
     },
   ];
 
   return [
     ...staticPages,
-    ...collectionPages(baseUrl, "/posts", posts),
-    ...collectionPages(baseUrl, "/notes", notes),
+    ...collectionPages(SITE_URL, "/posts", posts),
+    ...collectionPages(SITE_URL, "/notes", notes),
   ];
 }

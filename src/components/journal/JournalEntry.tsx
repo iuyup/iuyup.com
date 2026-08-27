@@ -8,6 +8,7 @@ import Comments from "@/components/ui/Comments";
 import ArticleToolbar from "@/components/ui/ArticleToolbar";
 import JsonLd from "@/components/JsonLd";
 import type { ContentDocument } from "@/lib/content";
+import { DEFAULT_OG_IMAGE_PATH, SITE_URL, toAbsoluteSiteUrl } from "@/lib/site";
 import styles from "@/app/posts/[slug]/post.module.css";
 
 interface JournalEntryProps {
@@ -75,8 +76,8 @@ export default function JournalEntry({
     filterObsidianSyntax(entry.content),
     entry.frontmatter.title
   );
-  const image = entry.frontmatter.image || "/og-image.svg";
-  const canonical = `https://iuyup.com${indexHref}/${encodeURIComponent(entry.slug)}`;
+  const image = entry.frontmatter.image || DEFAULT_OG_IMAGE_PATH;
+  const canonical = `${SITE_URL}${indexHref}/${encodeURIComponent(entry.slug)}`;
   const modifiedTime = entry.frontmatter.updated || entry.frontmatter.date;
 
   const jsonLd = {
@@ -88,11 +89,11 @@ export default function JournalEntry({
     author: {
       "@type": "Person",
       name: "T",
-      url: "https://iuyup.com",
+      url: SITE_URL,
     },
     datePublished: entry.frontmatter.date,
     dateModified: modifiedTime,
-    image,
+    image: toAbsoluteSiteUrl(image),
     mainEntityOfPage: canonical,
     url: canonical,
     publisher: {

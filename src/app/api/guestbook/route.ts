@@ -1,4 +1,8 @@
 import { NextRequest } from "next/server";
+import {
+  readLimitedTextBody,
+  validatePublicMutationRequest,
+} from "@/lib/server/public-api-request";
 
 const MAX_REQUEST_BODY_BYTES = 4 * 1024;
 const UPSTREAM_TIMEOUT_MS = 8_000;
@@ -16,16 +20,29 @@ function clientAddress(request: NextRequest): string {
 }
 
 async function proxyGuestbookRequest(request: NextRequest) {
+  let body: string | undefined;
+  if (request.method !== "GET") {
+    const invalidRequest = validatePublicMutationRequest(request);
+    if (invalidRequest) return invalidRequest;
+
+    const requestBody = await readLimitedTextBody(request, MAX_REQUEST_BODY_BYTES);
+    if (!requestBody.ok) {
+      if (requestBody.reason === "aborted") {
+        return new Response(null, { status: 499 });
+      }
+      if (requestBody.reason === "too-large") {
+        return Response.json({ error: "Guestbook request is too large" }, { status: 413 });
+      }
+      return Response.json({ error: "Guestbook request body is invalid" }, { status: 400 });
+    }
+    body = requestBody.body;
+  }
+
   const goAPIBaseURL = process.env.GO_API_BASE_URL?.replace(/\/$/, "");
   const proxyToken = process.env.GO_API_PROXY_TOKEN;
   if (!goAPIBaseURL || !proxyToken) {
     console.error("Go guestbook gateway is not configured");
     return Response.json({ error: "Guestbook service is unavailable" }, { status: 503 });
-  }
-
-  const body = request.method === "GET" ? undefined : await request.text();
-  if (body && new TextEncoder().encode(body).byteLength > MAX_REQUEST_BODY_BYTES) {
-    return Response.json({ error: "Guestbook request is too large" }, { status: 413 });
   }
 
   const headers = new Headers({

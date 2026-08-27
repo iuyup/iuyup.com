@@ -5,7 +5,7 @@
 ## 本地打开后台
 
 1. 把 `.env.example` 复制为本机的 `.env.local`，并保留其中的项目 ID 与数据集名。
-2. 在 Sanity 项目的 **API → CORS origins** 中添加 `http://localhost:3000`；部署后再添加 `https://iuyup.com`。两个来源都启用 credentials。
+2. 在 Sanity 项目的 **API → CORS origins** 中添加 `http://localhost:3000`；部署后再添加 `https://www.iuyup.com`。两个来源都启用 credentials。
 3. 运行 `npm run dev`，访问 `http://localhost:3000/studio`，用 Sanity 账号登录。
 
 `/studio` 不需要单独部署。它随 Next.js 站点一起发布，且已经被标记为 `noindex`，不会被搜索引擎收录。
@@ -27,7 +27,7 @@
 
 在 Sanity **API → Webhooks** 新建 webhook：
 
-- URL：`https://iuyup.com/api/revalidate/sanity`
+- URL：`https://www.iuyup.com/api/revalidate/sanity`
 - 触发：Create、Update、Delete
 - Filter：`_type == "post" || _type == "note"`
 - HTTP Header：`Authorization: Bearer <SANITY_REVALIDATE_SECRET>`

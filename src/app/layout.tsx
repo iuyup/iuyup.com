@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import Chat from "@/components/chat/Chat";
+import { DEFAULT_OG_IMAGE_PATH, RSS_URL, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://iuyup.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "iuyup",
     template: "%s | iuyup",
@@ -12,11 +13,12 @@ export const metadata: Metadata = {
   description: "AI Agent 开发者 · 光电信息科学与工程 · 汕头大学",
   openGraph: {
     type: "website",
+    url: SITE_URL,
     locale: "zh_CN",
     siteName: "iuyup",
     images: [
       {
-        url: "/og-image.svg",
+        url: DEFAULT_OG_IMAGE_PATH,
         width: 1200,
         height: 630,
         alt: "iuyup",
@@ -26,12 +28,13 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     creator: "@iuyup",
+    images: [DEFAULT_OG_IMAGE_PATH],
   },
   robots: { index: true, follow: true },
   alternates: {
     canonical: "/",
     types: {
-      "application/rss+xml": "https://iuyup.com/feed.xml",
+      "application/rss+xml": RSS_URL,
     },
   },
 };

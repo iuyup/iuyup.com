@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
 import { createClient } from "@sanity/client";
+import { parseFrontmatter } from "./lib/frontmatter.mjs";
 
 const localEnvFile = path.join(process.cwd(), ".env.local");
 if (fs.existsSync(localEnvFile)) {
@@ -43,7 +43,7 @@ function toDocument({ type, fileName, raw }) {
     throw new Error(`${fileName} 的 slug 无效`);
   }
 
-  const { data, content } = matter(raw);
+  const { data, content } = parseFrontmatter(raw);
   const title = asString(data.title);
   const publishedAt = data.date ? asDateTime(data.date, "date", fileName) : undefined;
   const body = content.trim();

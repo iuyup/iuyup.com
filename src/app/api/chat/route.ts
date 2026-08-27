@@ -1,4 +1,8 @@
 import { NextRequest } from "next/server";
+import {
+  readLimitedTextBody,
+  validatePublicMutationRequest,
+} from "@/lib/server/public-api-request";
 
 const MAX_REQUEST_BODY_BYTES = 32 * 1024;
 
@@ -15,17 +19,26 @@ function clientAddress(request: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
+  const invalidRequest = validatePublicMutationRequest(req);
+  if (invalidRequest) return invalidRequest;
+
+  const requestBody = await readLimitedTextBody(req, MAX_REQUEST_BODY_BYTES);
+  if (!requestBody.ok) {
+    if (requestBody.reason === "aborted") {
+      return new Response(null, { status: 499 });
+    }
+    if (requestBody.reason === "too-large") {
+      return Response.json({ error: "Chat request is too large" }, { status: 413 });
+    }
+    return Response.json({ error: "Chat request body is invalid" }, { status: 400 });
+  }
+
   const goAPIBaseURL = process.env.GO_API_BASE_URL?.replace(/\/$/, "");
   const proxyToken = process.env.GO_API_PROXY_TOKEN;
 
   if (!goAPIBaseURL || !proxyToken) {
     console.error("Go chat gateway is not configured");
     return Response.json({ error: "Chat service is unavailable" }, { status: 503 });
-  }
-
-  const body = await req.text();
-  if (new TextEncoder().encode(body).byteLength > MAX_REQUEST_BODY_BYTES) {
-    return Response.json({ error: "Chat request is too large" }, { status: 413 });
   }
 
   try {
@@ -36,7 +49,7 @@ export async function POST(req: NextRequest) {
         "X-Selfweb-Client-IP": clientAddress(req),
         "X-Selfweb-Proxy-Token": proxyToken,
       },
-      body,
+      body: requestBody.body,
       cache: "no-store",
       signal: req.signal,
     });

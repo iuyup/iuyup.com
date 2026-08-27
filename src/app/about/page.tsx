@@ -9,6 +9,7 @@ import {
   IconSparkles,
 } from "@tabler/icons-react";
 import { externalFeeds, siteProfile, siteTimeline } from "@/lib/about";
+import { DEFAULT_OG_IMAGE_PATH, RSS_URL, SITE_URL } from "@/lib/site";
 import monetBackground from "@/assets/monet-background-3840.jpg";
 import styles from "./about.module.css";
 
@@ -19,17 +20,19 @@ export const metadata: Metadata = {
     title: "关于 | iuyup",
     description: "关于 iuyup、正在关心的事情，以及这处小站的更新记录。",
     type: "website",
-    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "关于 iuyup" }],
+    url: `${SITE_URL}/about`,
+    images: [{ url: DEFAULT_OG_IMAGE_PATH, width: 1200, height: 630, alt: "关于 iuyup" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "关于 | iuyup",
     description: "关于 iuyup、正在关心的事情，以及这处小站的更新记录。",
+    images: [DEFAULT_OG_IMAGE_PATH],
   },
   alternates: {
     canonical: "/about",
     types: {
-      "application/rss+xml": "https://iuyup.com/feed.xml",
+      "application/rss+xml": RSS_URL,
     },
   },
 };

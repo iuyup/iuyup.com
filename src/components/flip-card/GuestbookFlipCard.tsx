@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
@@ -8,6 +8,9 @@ const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 
 
 const hoverSpring = { scale: 1.02 };
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
+const GUESTBOOK_REQUEST_TIMEOUT_MS = 12_000;
+const GUESTBOOK_RETRY_DELAY_MS = 1_500;
+const TRANSIENT_GUESTBOOK_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 interface GuestbookMessage {
   id: string;
@@ -42,52 +45,207 @@ async function responseError(response: Response, fallback: string) {
   return fallback;
 }
 
+function abortReason(signal: AbortSignal) {
+  return signal.reason ?? new DOMException('Request cancelled.', 'AbortError');
+}
+
+function waitForRetry(signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(abortReason(signal));
+      return;
+    }
+
+    const handleAbort = () => {
+      clearTimeout(timer);
+      reject(abortReason(signal));
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener('abort', handleAbort);
+      resolve();
+    }, GUESTBOOK_RETRY_DELAY_MS);
+
+    signal.addEventListener('abort', handleAbort, { once: true });
+  });
+}
+
+async function fetchWithTimeout(input: string, signal: AbortSignal) {
+  const attemptController = new AbortController();
+  const handleAbort = () => attemptController.abort(abortReason(signal));
+
+  if (signal.aborted) {
+    handleAbort();
+  } else {
+    signal.addEventListener('abort', handleAbort, { once: true });
+  }
+
+  const timeout = setTimeout(() => {
+    attemptController.abort(new DOMException('Guestbook request timed out.', 'TimeoutError'));
+  }, GUESTBOOK_REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(input, { signal: attemptController.signal });
+  } finally {
+    clearTimeout(timeout);
+    signal.removeEventListener('abort', handleAbort);
+  }
+}
+
+async function fetchGuestbookWithRetry(input: string, signal: AbortSignal) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetchWithTimeout(input, signal);
+      const shouldRetry =
+        attempt === 0 && TRANSIENT_GUESTBOOK_STATUSES.has(response.status);
+
+      if (!shouldRetry) {
+        return response;
+      }
+
+      await response.body?.cancel();
+    } catch (error) {
+      if (signal.aborted || attempt === 1) {
+        throw error;
+      }
+    }
+
+    await waitForRetry(signal);
+  }
+
+  throw new Error('Guestbook request failed.');
+}
+
 interface GuestbookFlipCardProps {
   tag?: CardVariant;
 }
 
 export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasStartedLoadRef = useRef(false);
+  const initialRequestRef = useRef<Promise<void> | null>(null);
+  const activeControllersRef = useRef(new Set<AbortController>());
+  const mountedRef = useRef(true);
+  const unmountAbortTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const [messages, setMessages] = useState<GuestbookMessage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hasRequestedMessages, setHasRequestedMessages] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  const fetchMessages = async () => {
-    setLoading(true);
-    setLoadError(null);
-    try {
-      const res = await fetch('/api/guestbook');
-      if (!res.ok) {
-        setMessages([]);
-        setNextCursor(null);
-        setLoadError(await responseError(res, 'Guestbook is temporarily unavailable.'));
-        return;
-      }
-      const data: GuestbookPage = await res.json();
-      setMessages(data.messages);
-      setNextCursor(data.nextCursor ?? null);
-    } catch {
-      setMessages([]);
-      setNextCursor(null);
-      setLoadError('Guestbook is temporarily unavailable. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [liking, setLiking] = useState<Record<string, boolean>>({});
   const [nameInput, setNameInput] = useState('');
   const [msgInput, setMsgInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const fetchMessages = useCallback(async () => {
+    if (initialRequestRef.current) {
+      return initialRequestRef.current;
+    }
+
+    const controller = new AbortController();
+    activeControllersRef.current.add(controller);
+
+    const request = (async () => {
+      if (mountedRef.current) {
+        setHasRequestedMessages(true);
+        setLoading(true);
+        setLoadError(null);
+      }
+
+      try {
+        const res = await fetchGuestbookWithRetry('/api/guestbook', controller.signal);
+        if (!res.ok) {
+          const message = await responseError(res, 'Guestbook is temporarily unavailable.');
+          if (mountedRef.current) {
+            setMessages([]);
+            setNextCursor(null);
+            setLoadError(message);
+          }
+          return;
+        }
+
+        const data: GuestbookPage = await res.json();
+        if (mountedRef.current) {
+          setMessages(data.messages);
+          setNextCursor(data.nextCursor ?? null);
+        }
+      } catch {
+        if (!controller.signal.aborted && mountedRef.current) {
+          setMessages([]);
+          setNextCursor(null);
+          setLoadError('Guestbook is temporarily unavailable. Please try again.');
+        }
+      } finally {
+        activeControllersRef.current.delete(controller);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    initialRequestRef.current = request;
+    try {
+      await request;
+    } finally {
+      if (initialRequestRef.current === request) {
+        initialRequestRef.current = null;
+      }
+    }
+  }, []);
+
+  const ensureMessagesLoaded = useCallback(() => {
+    if (hasStartedLoadRef.current) return;
+
+    hasStartedLoadRef.current = true;
+    void fetchMessages();
+  }, [fetchMessages]);
+
+  useEffect(() => {
+    const activeControllers = activeControllersRef.current;
+    mountedRef.current = true;
+    if (unmountAbortTimerRef.current) {
+      clearTimeout(unmountAbortTimerRef.current);
+      unmountAbortTimerRef.current = null;
+    }
+
+    return () => {
+      mountedRef.current = false;
+      unmountAbortTimerRef.current = setTimeout(() => {
+        if (!mountedRef.current) {
+          activeControllers.forEach((controller) => controller.abort());
+          activeControllers.clear();
+        }
+      }, 0);
+    };
+  }, []);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    if (!('IntersectionObserver' in window)) {
+      ensureMessagesLoaded();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        ensureMessagesLoaded();
+        observer.disconnect();
+      },
+      { rootMargin: '320px 0px', threshold: 0.01 }
+    );
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [ensureMessagesLoaded]);
 
   const handleLike = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -159,8 +317,13 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
 
     setActionError(null);
     setLoadingMore(true);
+    const controller = new AbortController();
+    activeControllersRef.current.add(controller);
     try {
-      const res = await fetch(`/api/guestbook?cursor=${encodeURIComponent(nextCursor)}`);
+      const res = await fetchGuestbookWithRetry(
+        `/api/guestbook?cursor=${encodeURIComponent(nextCursor)}`,
+        controller.signal
+      );
       if (!res.ok) {
         setActionError(await responseError(res, 'Could not load more messages. Please try again.'));
         return;
@@ -169,17 +332,28 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
       setMessages((prev) => [...prev, ...data.messages]);
       setNextCursor(data.nextCursor ?? null);
     } catch (error) {
-      console.error('Failed to load more messages:', error);
-      setActionError('Could not load more messages. Please try again.');
+      if (!controller.signal.aborted) {
+        console.error('Failed to load more messages:', error);
+        setActionError('Could not load more messages. Please try again.');
+      }
     } finally {
-      setLoadingMore(false);
+      activeControllersRef.current.delete(controller);
+      if (mountedRef.current) {
+        setLoadingMore(false);
+      }
     }
   };
 
   return (
     <motion.div
+      ref={cardRef}
       className={`${cardCls} flip-card flip-card-inner-base w-full h-[750px] card-hover`}
-      onClick={() => !isFlipped && setIsFlipped(true)}
+      onClick={() => {
+        ensureMessagesLoaded();
+        if (!isFlipped) setIsFlipped(true);
+      }}
+      onPointerEnter={ensureMessagesLoaded}
+      onFocusCapture={ensureMessagesLoaded}
       whileHover={hoverSpring}
       transition={springTransition}
       style={{ background: variant.bg, isolation: 'isolate' }}
@@ -200,8 +374,12 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
 
           {/* Messages list */}
           <div className="flex-1 w-full mt-4 overflow-y-auto guestbook-messages space-y-3">
-            {loading ? (
-              <div className="flex items-center justify-center h-full" style={{ color: variant.textSecondary }}>
+            {!hasRequestedMessages ? (
+              <div className="flex items-center justify-center h-full px-4 text-center text-sm" style={{ color: variant.textSecondary }}>
+                Messages load when this card is nearby.
+              </div>
+            ) : loading ? (
+              <div className="flex items-center justify-center h-full" role="status" aria-live="polite" style={{ color: variant.textSecondary }}>
                 Loading...
               </div>
             ) : loadError ? (
@@ -269,7 +447,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
               {loadingMore ? 'Loading...' : 'Load more messages'}
             </button>
           )}
-          {!loading && !loadError && (
+          {hasRequestedMessages && !loading && !loadError && (
             <p className="text-xs mt-2 flex-shrink-0" style={{ color: variant.textSecondary }}>{messages.length} messages loaded</p>
           )}
           {actionError && (

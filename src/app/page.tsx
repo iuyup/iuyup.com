@@ -5,6 +5,7 @@ import { getAllPosts } from "@/lib/posts";
 import JsonLd from "@/components/JsonLd";
 import ReadingProgress from "@/components/journal/ReadingProgress";
 import monetBackground from "@/assets/monet-background-3840.jpg";
+import { SITE_URL } from "@/lib/site";
 
 export default async function Home() {
   const posts = await getAllPosts();
@@ -13,7 +14,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "iuyup",
-    url: "https://iuyup.com",
+    url: SITE_URL,
   };
 
   return (

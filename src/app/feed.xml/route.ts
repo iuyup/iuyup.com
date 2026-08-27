@@ -1,6 +1,7 @@
 import RSS from "rss";
 import { getAllNotes } from "@/lib/notes";
 import { getAllPosts } from "@/lib/posts";
+import { RSS_URL, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
 
@@ -14,8 +15,8 @@ export async function GET() {
   const feed = new RSS({
     title: "iuyup",
     description: "AI Agent 开发者 · 光电信息科学与工程 · 汕头大学",
-    feed_url: "https://iuyup.com/feed.xml",
-    site_url: "https://iuyup.com",
+    feed_url: RSS_URL,
+    site_url: SITE_URL,
     language: "zh-CN",
   });
 
@@ -23,7 +24,7 @@ export async function GET() {
     feed.item({
       title: entry.title,
       description: entry.summary || "",
-      url: `https://iuyup.com${path}/${encodeURIComponent(entry.slug)}`,
+      url: `${SITE_URL}${path}/${encodeURIComponent(entry.slug)}`,
       date: new Date(entry.date),
       categories: [...new Set([...(entry.tags || []), category])],
     });

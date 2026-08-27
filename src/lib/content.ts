@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
+import { parseFrontmatter } from "@/lib/frontmatter";
 
 export type ContentCollection = "posts" | "notes";
 
@@ -109,7 +109,7 @@ export function getAllContent(collection: ContentCollection): ContentItem[] {
         return null;
       }
 
-      const { data, content } = matter(fileContent);
+      const { data, content } = parseFrontmatter(fileContent);
       if (!data || !data.title || !data.date || content.trim().length < 10) {
         return null;
       }
@@ -149,7 +149,7 @@ export function getContentBySlug(
 
   const filePath = path.join(collectionDirectory(collection), fileName);
   const isMDX = fileName.endsWith(".mdx");
-  const { data, content } = matter(fs.readFileSync(filePath, "utf-8"));
+  const { data, content } = parseFrontmatter(fs.readFileSync(filePath, "utf-8"));
 
   return {
     slug,

@@ -4,6 +4,7 @@ import JournalEntry from "@/components/journal/JournalEntry";
 import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { estimateReadingTimeMinutes } from "@/lib/reading-time";
+import { DEFAULT_OG_IMAGE_PATH } from "@/lib/site";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const description = post.frontmatter.summary || post.content.slice(0, 160);
-  const image = post.frontmatter.image || "/og-image.svg";
+  const image = post.frontmatter.image || DEFAULT_OG_IMAGE_PATH;
   const canonical = `/posts/${encodeURIComponent(post.slug)}`;
   const modifiedTime = post.frontmatter.updated || post.frontmatter.date;
 

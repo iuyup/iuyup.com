@@ -1,3 +1,5 @@
+import { RSS_URL, SITE_URL } from "@/lib/site";
+
 export interface SiteTimelineEntry {
   date: string;
   title: string;
@@ -12,9 +14,9 @@ export interface ExternalFeed {
 
 export const siteProfile = {
   name: "iuyup",
-  url: "https://iuyup.com",
+  url: SITE_URL,
   feedPath: "/feed.xml",
-  feedLabel: "https://iuyup.com/feed.xml",
+  feedLabel: RSS_URL,
 };
 
 // Keep this list intentionally hand-curated. A feed should be added here only

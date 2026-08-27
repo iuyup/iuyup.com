@@ -1,6 +1,7 @@
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import type { ContentItem } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
 import styles from "@/app/posts/posts.module.css";
 
 interface JournalIndexProps {
@@ -48,7 +49,7 @@ export default function JournalIndex({ entries, title, description, path, listHe
     itemListElement: entries.map((entry, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `https://iuyup.com${path}/${encodeURIComponent(entry.slug)}`,
+      url: `${SITE_URL}${path}/${encodeURIComponent(entry.slug)}`,
     })),
   };
 

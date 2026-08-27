@@ -1,6 +1,6 @@
 # selfweb
 
-个人主页与博客项目，线上站点：[iuyup.com](https://iuyup.com)。
+个人主页与博客项目，线上站点：[www.iuyup.com](https://www.iuyup.com)。
 
 首页采用卡片式布局，集中展示个人介绍、项目、音乐、博客和随记；文章内容主要保存在 Markdown 文件中。
 

@@ -172,5 +172,5 @@ OpenHuman 值得关注的原因不是因为它现在多好用，而是因为它�
 
 *本文作者是 OpenHuman 的 Contributor，从源码阅读和实际贡献的角度分享对项目的理解。如有技术细节的偏差，欢迎指正。*
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

@@ -110,5 +110,5 @@ Dify 在两个地方做了去重：索引时每个 chunk 生成 `doc_hash`（内
 
 顺带一提，目前在寻找 AI Agent 方向的实习机会，如果你的团队在做相关方向，欢迎交流。
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

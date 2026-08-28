@@ -139,5 +139,5 @@ Dify 源码拆解系列到这里就告一段落了。两篇文章覆盖了 RAG P
 
 目前在找 AI Agent / LLM 应用方向的实习。有 Dify 源码级理解和 LangGraph 多智能体系统实战经验，开源项目 AgentFlow（github.com/iuyup/AgentFlow）。
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

@@ -111,5 +111,5 @@ Claude Code 更像已经打磨好的工作台：权限提示、终端交互、�
 
 ---
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

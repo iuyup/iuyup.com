@@ -238,5 +238,5 @@ Managed Agents 不是一个简单的 API 封装。它是 Anthropic 从"模型提
 
 ---
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

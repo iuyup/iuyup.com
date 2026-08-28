@@ -143,5 +143,5 @@ Sanity 里定义的是一份统一的内容 schema：标题、URL 标识、发�
 
 ---
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

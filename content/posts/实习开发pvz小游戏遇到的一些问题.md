@@ -113,5 +113,5 @@ is_blocking = zombie_right >= plant_left and x <= plant_right - 8
 
 ---
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

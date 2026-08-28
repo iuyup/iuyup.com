@@ -127,5 +127,5 @@ token 变成向量之后,真正的处理开始了。Transformer 主要靠两个�
 
 好了,今天就到这儿。
 
-*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*
-*GitHub: github.com/iuyup*
+*作者：T | 汕头大学光电信息科学与工程 | AI Agent 方向*\
+*[GitHub: github.com/iuyup](https://github.com/iuyup)*

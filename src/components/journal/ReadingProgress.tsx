@@ -35,9 +35,10 @@ function getReadingProgress(targetId?: string) {
 
 interface ReadingProgressProps {
   targetId?: string;
+  ariaLabel?: string;
 }
 
-export default function ReadingProgress({ targetId }: ReadingProgressProps) {
+export default function ReadingProgress({ targetId, ariaLabel = "回到文章开头" }: ReadingProgressProps) {
   const mounted = useSyncExternalStore(subscribeToMount, () => true, () => false);
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -107,7 +108,7 @@ export default function ReadingProgress({ targetId }: ReadingProgressProps) {
     <button
       type="button"
       className={`${styles.button} ${visible ? styles.visible : ""} ${showArrow ? styles.showArrow : ""}`}
-      aria-label="回到文章开头"
+      aria-label={ariaLabel}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       onClick={scrollToTop}

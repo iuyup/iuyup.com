@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import Chat from "@/components/chat/Chat";
 import { DEFAULT_OG_IMAGE_PATH, RSS_URL, SITE_URL } from "@/lib/site";
 
@@ -33,6 +34,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   alternates: {
     canonical: "/",
+    languages: {
+      "zh-CN": "/",
+      en: "/en",
+      "x-default": "/",
+    },
     types: {
       "application/rss+xml": RSS_URL,
     },
@@ -48,7 +54,10 @@ export default function RootLayout({
     <html lang="zh-CN" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head />
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <LanguageSwitcher />
+        </ThemeProvider>
         <Chat />
       </body>
     </html>

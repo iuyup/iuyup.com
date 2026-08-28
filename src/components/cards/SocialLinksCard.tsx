@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
+import type { HomeLocale } from '@/lib/home-content';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 min-h-[300px] flex flex-col justify-between cursor-pointer';
 
@@ -122,9 +123,10 @@ function SocialItem({ href, label, icon }: SocialItemProps) {
 
 interface SocialLinksCardProps {
   tag?: CardVariant;
+  locale?: HomeLocale;
 }
 
-export function SocialLinksCard({ tag = 'default' }: SocialLinksCardProps) {
+export function SocialLinksCard({ tag = 'default', locale = 'zh-CN' }: SocialLinksCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
   const [isHovered, setIsHovered] = useState(false);
 
@@ -172,8 +174,8 @@ export function SocialLinksCard({ tag = 'default' }: SocialLinksCardProps) {
         <ul className="flex flex-col gap-2 items-center">
           <SocialItem href="https://github.com/iuyup" label="GitHub" icon={<GitHubIcon />} />
           <SocialItem href="mailto:23yntong@stu.edu.cn" label="Email" icon={<EmailIcon />} />
-          <SocialItem href="https://www.zhihu.com/people/ding-wen-xuan-86-64" label="知乎" icon={<ZhihuIcon />} />
-          <SocialItem href="https://juejin.cn/user/3317694868761003" label="掘金" icon={<JuejinIcon />} />
+          <SocialItem href="https://www.zhihu.com/people/ding-wen-xuan-86-64" label={locale === 'en' ? 'Zhihu' : '知乎'} icon={<ZhihuIcon />} />
+          <SocialItem href="https://juejin.cn/user/3317694868761003" label={locale === 'en' ? 'Juejin' : '掘金'} icon={<JuejinIcon />} />
         </ul>
 
         {/* Footer */}

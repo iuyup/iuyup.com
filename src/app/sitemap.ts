@@ -48,6 +48,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(latestContentModified ? { lastModified: latestContentModified } : {}),
       changeFrequency: "weekly",
       priority: 1.0,
+      alternates: {
+        languages: {
+          "zh-CN": `${SITE_URL}/`,
+          en: `${SITE_URL}/en`,
+          "x-default": `${SITE_URL}/`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/en`,
+      ...(latestContentModified ? { lastModified: latestContentModified } : {}),
+      changeFrequency: "monthly",
+      priority: 0.7,
+      alternates: {
+        languages: {
+          "zh-CN": `${SITE_URL}/`,
+          en: `${SITE_URL}/en`,
+          "x-default": `${SITE_URL}/`,
+        },
+      },
     },
     {
       url: `${SITE_URL}/posts`,

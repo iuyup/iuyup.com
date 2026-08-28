@@ -4,6 +4,7 @@ import { motion, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
+import type { HomeLocale } from '@/lib/home-content';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-14 px-10 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
@@ -16,16 +17,39 @@ const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50,
 
 interface AboutCardProps {
   tag?: CardVariant;
+  locale?: HomeLocale;
 }
 
-export function AboutCard({ tag = 'default' }: AboutCardProps) {
+const aboutCopy: Record<HomeLocale, { ariaLabel: string; paragraphs: string[] }> = {
+  'zh-CN': {
+    ariaLabel: '查看关于 iuyup 的详细介绍',
+    paragraphs: [
+      '大家好哇，欢迎来到我的网站！',
+      '现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以大部分时间都在写 Agent 和拆开源项目的源码。现在在做 AI 开发相关的实习。',
+      '喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）。',
+      '对未来有明确规划。',
+    ],
+  },
+  en: {
+    ariaLabel: 'Learn more about iuyup',
+    paragraphs: [
+      'Hey—welcome to my corner of the internet.',
+      "I'm 21 and in my third year at Shantou University, studying optoelectronics. AI has pulled me in more strongly, so I spend most of my time building agents and reading open-source code. I'm currently interning in AI development.",
+      "I'm into R&B, neo-soul, and jazz—especially David Tao, Leehom Wang, Khalil Fong, and YELLOW. I also play guitar in a band. And, despite appearances, I'm not an anime fan.",
+      'I know where I want to go next.',
+    ],
+  },
+};
+
+export function AboutCard({ tag = 'default', locale = 'zh-CN' }: AboutCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
+  const copy = aboutCopy[locale];
   return (
     <motion.div variants={cardFade} className="break-inside-avoid mb-6 md:mb-8">
       <Link
         href="/about"
-        aria-label="查看关于 iuyup 的详细介绍"
+        aria-label={copy.ariaLabel}
         className="block rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
@@ -61,18 +85,15 @@ export function AboutCard({ tag = 'default' }: AboutCardProps) {
           </motion.span>
         </motion.span>
         <div className="flex flex-col gap-6 w-full">
-          <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            大家好哇，欢迎来到我的网站！
-          </p>
-          <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            现在是 21 岁，大三在读。专业是光电，但对 AI 更感兴趣一些，所以大部分时间都在写 Agent 和拆开源项目的源码。现在在做 AI 开发相关的实习。
-          </p>
-          <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            喜欢听歌，喜欢 R&B/Neo-soul/Jazz。喜欢陶喆、王力宏、方大同、黄宣。喜欢弹吉他组乐队（虽然很想说... 但是我不是二次元）。
-          </p>
-          <p className="text-base leading-[1.8] whitespace-normal text-left" style={{ color: variant.textSecondary }}>
-            对未来有明确规划。
-          </p>
+          {copy.paragraphs.map((paragraph) => (
+            <p
+              key={paragraph}
+              className="text-base leading-[1.8] whitespace-normal text-left"
+              style={{ color: variant.textSecondary }}
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
         <div className="mt-auto pt-6 w-full text-left">
           <p className="text-xs" style={{ color: variant.textSecondary }}>Think in decades, act in days.</p>

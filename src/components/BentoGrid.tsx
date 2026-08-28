@@ -3,7 +3,8 @@
 import { AboutCard } from '@/components/cards/AboutCard';
 import { ProjectCard } from '@/components/cards/ProjectCard';
 import { AlbumCard } from '@/components/cards/MusicCard';
-import { albums, projects } from '@/lib/data';
+import { albums } from '@/lib/data';
+import { projectsByLocale, type HomeLocale } from '@/lib/home-content';
 import { BlogCard, BlogLinkCard, NoteLinkCard } from '@/components/cards/BlogCard';
 import { WeatherCard } from '@/components/cards/ThemeToggleCard';
 import { GuestbookFlipCard } from '@/components/flip-card/GuestbookFlipCard';
@@ -39,6 +40,7 @@ interface UnifiedItem {
 
 interface BentoGridProps {
   posts: Post[];
+  locale?: HomeLocale;
 }
 
 function stableOrder(value: string): number {
@@ -50,9 +52,10 @@ function stableOrder(value: string): number {
   return hash >>> 0;
 }
 
-export default function BentoGrid({ posts }: BentoGridProps) {
+export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
   const topPost = posts[0];
   const restPosts = posts.slice(1);
+  const projects = projectsByLocale[locale];
 
   const projectItems: UnifiedItem[] = projects.map((p) => ({ ...p, type: 'project', slug: p.href, date: '', summary: p.desc, tags: [p.tag], image: undefined }));
   const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
@@ -93,7 +96,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
     }
     return (
       <ScrollTiltCard key={item.slug}>
-        <BlogCard post={item as Post} tag="blog" />
+        <BlogCard post={item as Post} tag="blog" locale={locale} />
       </ScrollTiltCard>
     );
   }
@@ -104,11 +107,11 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         {/* Column 1: About + topPost */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <ScrollTiltCard>
-            <AboutCard />
+            <AboutCard locale={locale} />
           </ScrollTiltCard>
           {topPost && (
             <ScrollTiltCard>
-              <BlogCard post={topPost} tag="blog" />
+              <BlogCard post={topPost} tag="blog" locale={locale} />
             </ScrollTiltCard>
           )}
           {col1Items.map(renderItem)}
@@ -128,16 +131,16 @@ export default function BentoGrid({ posts }: BentoGridProps) {
         {/* Column 3: Chat + BlogLinkCard */}
         <div className="flex-1 flex flex-col gap-8 w-full">
           <ScrollTiltCard>
-            <ChatFlipCard tag="Chat" />
+            <ChatFlipCard tag="Chat" locale={locale} />
           </ScrollTiltCard>
           <ScrollTiltCard>
-            <BlogLinkCard tag="blog" />
+            <BlogLinkCard tag="blog" locale={locale} />
           </ScrollTiltCard>
           <ScrollTiltCard>
-            <NoteLinkCard tag="blog" />
+            <NoteLinkCard tag="blog" locale={locale} />
           </ScrollTiltCard>
           <ScrollTiltCard>
-            <SocialLinksCard />
+            <SocialLinksCard locale={locale} />
           </ScrollTiltCard>
           {col3Items.map(renderItem)}
           <ScrollTiltCard>

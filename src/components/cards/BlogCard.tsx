@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
+import type { HomeLocale } from '@/lib/home-content';
 
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.6 };
 
@@ -19,11 +20,13 @@ interface Post {
 interface BlogCardProps {
   post: Post;
   tag?: CardVariant;
+  locale?: HomeLocale;
 }
 
-export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
+export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
+  const isEnglish = locale === 'en';
   return (
     <motion.div
       className="mb-6 rounded-[2rem] overflow-hidden card-hover"
@@ -60,9 +63,17 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
           <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4 text-center">
             {post.title}
           </h3>
-          <img src={post.image || "/blog-placeholder.svg"} alt={`${post.title} 的封面图`} className="w-full h-auto object-cover rounded-xl mt-4 shadow-md" />
+          <img
+            src={post.image || "/blog-placeholder.svg"}
+            alt={isEnglish ? `Cover image for “${post.title}”` : `${post.title} 的封面图`}
+            className="w-full h-auto object-cover rounded-xl mt-4 shadow-md"
+          />
           <time className="text-base mt-4 text-center" style={{ color: variant.textSecondary }}>
-            {new Date(post.date).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+            {new Date(post.date).toLocaleDateString(isEnglish ? 'en-US' : 'zh-CN', {
+              month: isEnglish ? 'short' : '2-digit',
+              day: '2-digit',
+              timeZone: 'UTC',
+            })}
           </time>
           {post.summary && (
             <p className="text-sm mt-3 leading-relaxed text-center" style={{ color: variant.textSecondary }}>
@@ -70,7 +81,7 @@ export function BlogCard({ post, tag = 'default' }: BlogCardProps) {
             </p>
           )}
           <span className="mt-auto mb-2 border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">
-            Read More
+            {isEnglish ? 'Read in Chinese' : 'Read More'}
           </span>
         </Link>
       </div>
@@ -140,28 +151,36 @@ function JournalLinkCard({ tag = 'default', href, label, title, description, act
   );
 }
 
-export function BlogLinkCard({ tag = 'default' }: Pick<JournalLinkCardProps, 'tag'>) {
+interface LocalizedJournalLinkCardProps extends Pick<JournalLinkCardProps, 'tag'> {
+  locale?: HomeLocale;
+}
+
+export function BlogLinkCard({ tag = 'default', locale = 'zh-CN' }: LocalizedJournalLinkCardProps) {
+  const isEnglish = locale === 'en';
+
   return (
     <JournalLinkCard
       tag={tag}
       href="/posts"
       label="Blog"
-      title="文章"
-      description="关于 AI Agent、开源与技术思考"
-      action="View All"
+      title={isEnglish ? 'Writing' : '文章'}
+      description={isEnglish ? 'Notes on AI agents, open source, and engineering.' : '关于 AI Agent、开源与技术思考'}
+      action={isEnglish ? 'Read the Chinese blog' : 'View All'}
     />
   );
 }
 
-export function NoteLinkCard({ tag = 'default' }: Pick<JournalLinkCardProps, 'tag'>) {
+export function NoteLinkCard({ tag = 'default', locale = 'zh-CN' }: LocalizedJournalLinkCardProps) {
+  const isEnglish = locale === 'en';
+
   return (
     <JournalLinkCard
       tag={tag}
       href="/notes"
       label="Notes"
-      title="随心"
-      description="一些没有固定主题的记录、想法与片段"
-      action="View Notes"
+      title={isEnglish ? 'Field Notes' : '随心'}
+      description={isEnglish ? 'Short notes, loose thoughts, and fragments without a fixed theme.' : '一些没有固定主题的记录、想法与片段'}
+      action={isEnglish ? 'Read Chinese notes' : 'View Notes'}
     />
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
+import type { HomeLocale } from '@/lib/home-content';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
 
@@ -13,15 +14,43 @@ const MAX_HISTORY_MESSAGES = 11;
 
 interface ChatFlipCardProps {
   tag?: CardVariant;
+  locale?: HomeLocale;
 }
 
-export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
+const chatCopy: Record<HomeLocale, {
+  welcome: string;
+  error: string;
+  subtitle: string;
+  thinking: string;
+  placeholder: string;
+  send: string;
+}> = {
+  'zh-CN': {
+    welcome: '你好！有什么想了解的？',
+    error: '抱歉，出了点问题。',
+    subtitle: '和 AI 版的我聊聊',
+    thinking: '思考中...',
+    placeholder: '输入消息...',
+    send: '发送',
+  },
+  en: {
+    welcome: 'Hey! What would you like to know?',
+    error: 'Sorry—something went wrong.',
+    subtitle: 'Ask the AI version of me anything.',
+    thinking: 'Thinking…',
+    placeholder: 'Type a message…',
+    send: 'Send',
+  },
+};
+
+export function ChatFlipCard({ tag = 'default', locale = 'zh-CN' }: ChatFlipCardProps) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
+  const copy = chatCopy[locale];
   const [isFlipped, setIsFlipped] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
-    { role: 'assistant', content: '你好！有什么想了解的？' },
+    { role: 'assistant', content: copy.welcome },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef(messages);
@@ -74,7 +103,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
         });
       }
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: '抱歉，出了点问题。' }]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: copy.error }]);
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +130,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
             </svg>
           </div>
           <span className="text-xl font-serif text-[#2C2C2C]">Chat with T</span>
-          <span className="text-sm mt-1" style={{ color: variant.textSecondary }}>和 AI 版的我聊聊</span>
+          <span className="text-sm mt-1" style={{ color: variant.textSecondary }}>{copy.subtitle}</span>
         </div>
 
         {/* Back — full chat UI */}
@@ -143,7 +172,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
             {isLoading && (
               <div className="flex justify-start" onClick={(e) => e.stopPropagation()}>
                 <div className="px-4 py-3 rounded-2xl rounded-tl-sm text-base bg-white/10 text-[#F5F0EB]/60">
-                  思考中...
+                  {copy.thinking}
                 </div>
               </div>
             )}
@@ -160,7 +189,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="输入消息..."
+              placeholder={copy.placeholder}
               className="flex-1 px-4 py-4 rounded-lg text-base bg-white/20 text-[#F5F0EB] placeholder-[#F5F0EB]/40 outline-none border border-white/20 focus:border-white/50 transition-colors"
               disabled={isLoading}
               onClick={(e) => e.stopPropagation()}
@@ -171,7 +200,7 @@ export function ChatFlipCard({ tag = 'default' }: ChatFlipCardProps) {
               className="px-5 py-4 rounded-lg text-sm font-medium bg-[#F5F0EB]/20 text-[#F5F0EB] hover:bg-[#F5F0EB]/30 border border-white/20 transition-colors disabled:opacity-50"
               onClick={(e) => e.stopPropagation()}
             >
-              发送
+              {copy.send}
             </button>
           </form>
         </div>

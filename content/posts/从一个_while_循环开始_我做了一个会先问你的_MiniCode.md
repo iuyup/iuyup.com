@@ -2,6 +2,7 @@
 title: 从一个 while 循环开始，我做了一个会先问你的 MiniCode
 date: 2026-08-28
 summary: MiniCode 是我从 Pi 源码和几次真实踩坑里做出来的轻量 Coding Agent。它能读代码、提出补丁、运行验证，也能在 guided 模式下于计划、写入和命令执行前停下来等人确认。
+image: /picture/minicode.png
 tags:
   - MiniCode
   - Coding Agent

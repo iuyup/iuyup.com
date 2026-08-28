@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">MiniCode 受控 Coding Agent 工作流</title>
+  <desc id="desc">暖纸色背景上的终端流程图。MiniCode 展示计划预览、读取证据、补丁预览、项目检查预览和可选的只读 Git 检查，并在计划、修改和检查执行前等待 CONTINUE、APPLY、RUN 三个本地确认。检查失败后，修复方向仍需再次确认。</desc>
+
+  <defs>
+    <pattern id="paper-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1" fill="#CFC7BD" opacity="0.42"/>
+    </pattern>
+    <filter id="panel-shadow" x="-10%" y="-15%" width="120%" height="135%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#2D2925" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#9BA3AA"/>
+    </marker>
+    <marker id="repair-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#B8C5C4"/>
+    </marker>
+    <style>
+      .serif { font-family: Georgia, "Times New Roman", "Songti SC", STSong, serif; }
+      .sans { font-family: Inter, "Segoe UI", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+      .flow-line { fill: none; stroke: #9BA3AA; stroke-width: 2.2; stroke-linecap: round; marker-end: url(#arrow); }
+      .node-title { fill: #F7F2E9; font-size: 22px; font-weight: 700; letter-spacing: 0.02em; text-anchor: middle; }
+      .node-note { fill: #E2E7EA; font-size: 14px; letter-spacing: 0.07em; text-anchor: middle; }
+      .gate-title { fill: #211F1D; font-size: 19px; font-weight: 800; letter-spacing: 0.055em; text-anchor: middle; }
+      .gate-note { fill: #3C2A24; font-size: 13px; font-weight: 700; letter-spacing: 0.07em; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#F5F0EB"/>
+  <rect width="1200" height="630" fill="url(#paper-dots)"/>
+
+  <g aria-label="标题">
+    <text x="66" y="55" class="mono" fill="#5F5851" font-size="16" font-weight="700" letter-spacing="0.16em">MINICODE / CODING AGENT</text>
+    <rect x="341" y="33" width="94" height="30" rx="15" fill="#E8E2DA" stroke="#D5CEC7"/>
+    <text x="388" y="54" class="mono" fill="#743C2B" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="0.11em">GUIDED</text>
+
+    <text x="64" y="137" class="serif" fill="#2D2925" font-size="72" font-weight="700" letter-spacing="-0.045em">MiniCode</text>
+    <text x="68" y="177" class="sans" fill="#756E65" font-size="25">模型提出，本地判断，你来确认。</text>
+
+    <g transform="translate(908 46)">
+      <rect width="226" height="92" rx="20" fill="#EEE8DF" stroke="#D5CEC7" stroke-width="1.5"/>
+      <text x="20" y="31" class="mono" fill="#5A534C" font-size="14" letter-spacing="0.09em">THE SMALLEST LOOP</text>
+      <text x="20" y="66" class="mono" fill="#2D2925" font-size="22" font-weight="700">while (task)</text>
+      <path d="M183 25 C208 25 211 58 192 68" fill="none" stroke="#D4856A" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M192 68 L198 58 M192 68 L204 68" fill="none" stroke="#D4856A" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g filter="url(#panel-shadow)" aria-label="MiniCode 终端工作流">
+    <rect x="64" y="210" width="1072" height="354" rx="26" fill="#24282E" stroke="#4A4F55" stroke-width="1.5"/>
+    <path d="M64 268 H1136" stroke="#42474D" stroke-width="1.5"/>
+
+    <circle cx="96" cy="239" r="6" fill="#D4856A"/>
+    <circle cx="118" cy="239" r="6" fill="#C6A15B"/>
+    <circle cx="140" cy="239" r="6" fill="#7FA08E"/>
+    <text x="168" y="245" class="mono" fill="#E5E9EC" font-size="18">mini --profile deepseek --mode edit --guided</text>
+    <text x="1104" y="244" class="mono" fill="#AEB6BD" font-size="14" text-anchor="end" letter-spacing="0.105em">TRUSTED LOCAL WORKSPACE</text>
+
+    <text x="94" y="298" class="mono" fill="#8F979E" font-size="13" font-weight="700" letter-spacing="0.12em">MODEL PROPOSES</text>
+    <text x="1104" y="298" class="mono" fill="#8F979E" font-size="13" font-weight="700" text-anchor="end" letter-spacing="0.12em">RUNTIME VALIDATES · HUMAN APPROVES</text>
+
+    <path class="flow-line" d="M206 349 H222"/>
+    <path class="flow-line" d="M350 349 H366"/>
+    <path class="flow-line" d="M472 349 H488"/>
+    <path class="flow-line" d="M594 349 H610"/>
+    <path class="flow-line" d="M706 349 H722"/>
+    <path class="flow-line" d="M824 349 H840"/>
+    <path class="flow-line" d="M924 349 H940"/>
+    <text x="932" y="330" class="mono" fill="#9FC3AD" font-size="14" font-weight="700" text-anchor="middle">✓</text>
+
+    <g aria-label="计划预览">
+      <rect x="92" y="315" width="114" height="68" rx="15" fill="#3D434A" stroke="#69727A" stroke-width="1.5"/>
+      <text x="149" y="347" class="mono node-title">PLAN</text>
+      <text x="149" y="370" class="mono node-note">PREVIEW</text>
+    </g>
+
+    <g aria-label="确认计划">
+      <rect x="222" y="315" width="128" height="68" rx="34" fill="#D4856A"/>
+      <text x="286" y="346" class="mono gate-title">CONTINUE</text>
+      <text x="286" y="370" class="mono gate-note">APPROVE</text>
+    </g>
+
+    <g aria-label="搜索与读取证据">
+      <rect x="366" y="315" width="106" height="68" rx="15" fill="#315F5A" stroke="#5F9A8E" stroke-width="1.5"/>
+      <text x="419" y="347" class="mono node-title">READ</text>
+      <text x="419" y="370" class="mono node-note">EVIDENCE</text>
+    </g>
+
+    <g aria-label="补丁预览">
+      <rect x="488" y="315" width="106" height="68" rx="15" fill="#4A437E" stroke="#746AA9" stroke-width="1.5"/>
+      <text x="541" y="347" class="mono node-title">PATCH</text>
+      <text x="541" y="370" class="mono node-note">PREVIEW</text>
+    </g>
+
+    <g aria-label="确认补丁">
+      <rect x="610" y="315" width="96" height="68" rx="34" fill="#D4856A"/>
+      <text x="658" y="346" class="mono gate-title">APPLY</text>
+      <text x="658" y="370" class="mono gate-note">APPROVE</text>
+    </g>
+
+    <g aria-label="项目检查预览">
+      <rect x="722" y="315" width="102" height="68" rx="15" fill="#365D7F" stroke="#5F88AA" stroke-width="1.5"/>
+      <text x="773" y="347" class="mono node-title">CHECK</text>
+      <text x="773" y="370" class="mono node-note">PREVIEW</text>
+    </g>
+
+    <g aria-label="确认并运行检查">
+      <rect x="840" y="315" width="84" height="68" rx="34" fill="#D4856A"/>
+      <text x="882" y="346" class="mono gate-title">RUN</text>
+      <text x="882" y="370" class="mono gate-note">APPROVE</text>
+    </g>
+
+    <g aria-label="只读 Git 检查">
+      <rect x="940" y="315" width="166" height="68" rx="15" fill="#3F594B" stroke="#708D79" stroke-width="1.5"/>
+      <text x="1023" y="346" class="mono" fill="#F7F2E9" font-size="18" font-weight="700" text-anchor="middle">GIT READ-ONLY</text>
+      <text x="1023" y="370" class="mono node-note">STATUS · DIFF</text>
+    </g>
+
+    <path d="M882 390 C882 447 540 447 540 393" fill="none" stroke="#B8C5C4" stroke-width="2" stroke-dasharray="6 7" marker-end="url(#repair-arrow)"/>
+    <rect x="570" y="414" width="260" height="28" rx="14" fill="#2E3539" stroke="#78868B"/>
+    <text x="700" y="433" class="mono" fill="#DCE6E1" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="0.055em">IF FAILED · REPAIR PLAN · CONTINUE</text>
+
+    <g aria-label="脱敏审计轨迹">
+      <text x="94" y="483" class="mono" fill="#B7BEC4" font-size="13" font-weight="700" letter-spacing="0.11em">REDACTED JSONL AUDIT</text>
+      <circle cx="287" cy="478" r="5" fill="#6B8DAE"/>
+      <path d="M292 478 H407" stroke="#657078" stroke-width="2"/>
+      <circle cx="412" cy="478" r="5" fill="#B8C5C4"/>
+      <path d="M417 478 H532" stroke="#657078" stroke-width="2"/>
+      <circle cx="537" cy="478" r="5" fill="#D4856A"/>
+      <text x="287" y="507" class="mono" fill="#AEB6BD" font-size="12" text-anchor="middle">policy_decision</text>
+      <text x="412" y="507" class="mono" fill="#AEB6BD" font-size="12" text-anchor="middle">tool_finalized</text>
+      <text x="537" y="507" class="mono" fill="#AEB6BD" font-size="12" text-anchor="middle">agent_completed</text>
+    </g>
+
+    <g aria-label="边界说明">
+      <rect x="650" y="463" width="226" height="42" rx="21" fill="none" stroke="#D4856A" stroke-width="1.5"/>
+      <text x="763" y="489" class="mono" fill="#EAB39B" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="0.055em">CANCEL REJECTS PENDING ACTION</text>
+      <rect x="893" y="463" width="213" height="42" rx="21" fill="#31363B" stroke="#596168" stroke-width="1.5"/>
+      <text x="999.5" y="489" class="mono" fill="#C5CCD1" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="0.07em">NOT AN OS SANDBOX</text>
+    </g>
+
+    <text x="94" y="541" class="mono" fill="#AFB7BD" font-size="12" letter-spacing="0.08em">AGENT-LAYER POLICY · APPROVED PROJECT SCRIPTS MAY STILL HAVE HOST SIDE EFFECTS</text>
+    <text x="1106" y="541" class="mono" fill="#D5A28B" font-size="14" font-weight="700" text-anchor="end" letter-spacing="0.08em">HUMAN COMMIT ↗</text>
+  </g>
+
+  <g aria-label="核心原则">
+    <text x="68" y="603" class="mono" fill="#5F5851" font-size="15" font-weight="700" letter-spacing="0.075em">REMOTE EDIT · READ BEFORE PATCH</text>
+    <circle cx="365" cy="598" r="3.5" fill="#D4856A"/>
+    <text x="385" y="603" class="mono" fill="#5F5851" font-size="15" font-weight="700" letter-spacing="0.075em">CHECK AFTER PATCH</text>
+    <circle cx="601" cy="598" r="3.5" fill="#6B8DAE"/>
+    <text x="621" y="603" class="mono" fill="#5F5851" font-size="15" font-weight="700" letter-spacing="0.075em">GIT READ-ONLY</text>
+    <text x="1134" y="603" class="mono" fill="#9C573D" font-size="15" font-weight="700" text-anchor="end" letter-spacing="0.11em">MINICODE · 2026</text>
+  </g>
+</svg>

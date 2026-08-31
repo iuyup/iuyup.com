@@ -2,27 +2,28 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import ReadingProgress from "@/components/journal/ReadingProgress";
-import { getAllNotes, getNoteBySlug } from "@/lib/notes";
-import { getEnglishSlug } from "@/lib/content-translations";
+import { getAllEnglishNotes, getEnglishNoteBySlug } from "@/lib/english-content";
+import { getSourceSlug } from "@/lib/content-translations";
+import { estimateReadingTimeMinutes } from "@/lib/reading-time";
 import { DEFAULT_OG_IMAGE_PATH } from "@/lib/site";
 
 export async function generateStaticParams() {
-  const notes = await getAllNotes();
+  const notes = await getAllEnglishNotes();
   return notes.map((note) => ({ slug: note.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const note = await getNoteBySlug(slug);
+  const note = await getEnglishNoteBySlug(slug);
 
   if (!note) {
-    return { title: "未找到" };
+    return { title: "Not found" };
   }
 
   const description = note.frontmatter.summary || note.content.slice(0, 160);
   const image = note.frontmatter.image || DEFAULT_OG_IMAGE_PATH;
-  const canonical = `/notes/${encodeURIComponent(note.slug)}`;
-  const englishSlug = getEnglishSlug("notes", note.slug);
+  const canonical = `/en/notes/${encodeURIComponent(note.slug)}`;
+  const sourceSlug = note.frontmatter.sourceSlug ?? getSourceSlug("notes", note.slug);
   const modifiedTime = note.frontmatter.updated || note.frontmatter.date;
 
   return {
@@ -31,16 +32,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical,
       languages: {
-        "zh-CN": canonical,
-        ...(englishSlug ? { en: `/en/notes/${encodeURIComponent(englishSlug)}` } : {}),
+        ...(sourceSlug ? { "zh-CN": `/notes/${encodeURIComponent(sourceSlug)}` } : {}),
+        en: canonical,
       },
       types: {
-        "application/rss+xml": "/feed.xml",
+        "application/rss+xml": "/en/feed.xml",
       },
     },
     openGraph: {
       type: "article",
       url: canonical,
+      locale: "en_US",
       publishedTime: note.frontmatter.date,
       modifiedTime,
       authors: ["T"],
@@ -55,9 +57,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function NotePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EnglishNotePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const note = await getNoteBySlug(slug);
+  const note = await getEnglishNoteBySlug(slug);
 
   if (!note) {
     notFound();
@@ -65,8 +67,15 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <JournalEntry entry={note} indexHref="/notes" indexLabel="随心" sectionLabel="随心" />
-      <ReadingProgress targetId="article-content" />
+      <JournalEntry
+        entry={note}
+        indexHref="/en/notes"
+        indexLabel="Field Notes"
+        sectionLabel="Field Notes"
+        readingTimeMinutes={estimateReadingTimeMinutes(note.content)}
+        locale="en"
+      />
+      <ReadingProgress targetId="article-content" ariaLabel="Back to the note title" />
     </>
   );
 }

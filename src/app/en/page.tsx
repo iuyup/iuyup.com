@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import HomeLanding from "@/components/home/HomeLanding";
-import { getAllPosts } from "@/lib/posts";
+import { getAllEnglishPosts } from "@/lib/english-content";
 import { DEFAULT_OG_IMAGE_PATH, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -31,11 +31,14 @@ export const metadata: Metadata = {
       en: "/en",
       "x-default": "/",
     },
+    types: {
+      "application/rss+xml": "/en/feed.xml",
+    },
   },
 };
 
 export default async function EnglishHomePage() {
-  const posts = await getAllPosts();
+  const posts = await getAllEnglishPosts();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",

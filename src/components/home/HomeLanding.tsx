@@ -5,7 +5,7 @@ import BentoGrid from "@/components/BentoGrid";
 import ReadingProgress from "@/components/journal/ReadingProgress";
 import monetBackground from "@/assets/monet-background-3840.jpg";
 import type { ContentItem } from "@/lib/content";
-import { localizeHomePosts, type HomeLocale } from "@/lib/home-content";
+import type { HomeLocale } from "@/lib/home-content";
 
 interface HomeLandingProps {
   locale: HomeLocale;
@@ -41,7 +41,7 @@ export default function HomeLanding({ locale, posts, jsonLd }: HomeLandingProps)
         </div>
 
         <HeroSection />
-        <BentoGrid locale={locale} posts={localizeHomePosts(posts, locale)} />
+        <BentoGrid locale={locale} posts={posts} />
         <ReadingProgress ariaLabel={isEnglish ? "Back to the top" : undefined} />
       </div>
     </div>

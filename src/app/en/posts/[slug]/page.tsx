@@ -2,28 +2,28 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
 import ReadingProgress from "@/components/journal/ReadingProgress";
-import { getAllPosts, getPostBySlug } from "@/lib/posts";
+import { getAllEnglishPosts, getEnglishPostBySlug } from "@/lib/english-content";
+import { getSourceSlug } from "@/lib/content-translations";
 import { estimateReadingTimeMinutes } from "@/lib/reading-time";
-import { getEnglishSlug } from "@/lib/content-translations";
 import { DEFAULT_OG_IMAGE_PATH } from "@/lib/site";
 
 export async function generateStaticParams() {
-  const posts = await getAllPosts();
+  const posts = await getAllEnglishPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getEnglishPostBySlug(slug);
 
   if (!post) {
-    return { title: "未找到" };
+    return { title: "Not found" };
   }
 
   const description = post.frontmatter.summary || post.content.slice(0, 160);
   const image = post.frontmatter.image || DEFAULT_OG_IMAGE_PATH;
-  const canonical = `/posts/${encodeURIComponent(post.slug)}`;
-  const englishSlug = getEnglishSlug("posts", post.slug);
+  const canonical = `/en/posts/${encodeURIComponent(post.slug)}`;
+  const sourceSlug = post.frontmatter.sourceSlug ?? getSourceSlug("posts", post.slug);
   const modifiedTime = post.frontmatter.updated || post.frontmatter.date;
 
   return {
@@ -32,16 +32,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical,
       languages: {
-        "zh-CN": canonical,
-        ...(englishSlug ? { en: `/en/posts/${encodeURIComponent(englishSlug)}` } : {}),
+        ...(sourceSlug ? { "zh-CN": `/posts/${encodeURIComponent(sourceSlug)}` } : {}),
+        en: canonical,
       },
       types: {
-        "application/rss+xml": "/feed.xml",
+        "application/rss+xml": "/en/feed.xml",
       },
     },
     openGraph: {
       type: "article",
       url: canonical,
+      locale: "en_US",
       publishedTime: post.frontmatter.date,
       modifiedTime,
       authors: ["T"],
@@ -56,9 +57,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EnglishPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getEnglishPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -68,13 +69,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     <>
       <JournalEntry
         entry={post}
-        indexHref="/posts"
-        indexLabel="文章"
+        indexHref="/en/posts"
+        indexLabel="Writing"
         sectionLabel="Journal"
-        metaLabel="Personal Notes"
+        metaLabel="Engineering Notes"
         readingTimeMinutes={estimateReadingTimeMinutes(post.content)}
+        locale="en"
       />
-      <ReadingProgress targetId="article-content" />
+      <ReadingProgress targetId="article-content" ariaLabel="Back to the article title" />
     </>
   );
 }

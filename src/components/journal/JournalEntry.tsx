@@ -8,6 +8,7 @@ import Comments from "@/components/ui/Comments";
 import ArticleToolbar from "@/components/ui/ArticleToolbar";
 import JsonLd from "@/components/JsonLd";
 import type { ContentDocument } from "@/lib/content";
+import type { HomeLocale } from "@/lib/home-content";
 import { DEFAULT_OG_IMAGE_PATH, SITE_URL, toAbsoluteSiteUrl } from "@/lib/site";
 import styles from "@/app/posts/[slug]/post.module.css";
 
@@ -18,6 +19,7 @@ interface JournalEntryProps {
   sectionLabel: string;
   metaLabel?: string;
   readingTimeMinutes?: number;
+  locale?: HomeLocale;
 }
 
 function filterObsidianSyntax(content: string): string {
@@ -71,7 +73,9 @@ export default function JournalEntry({
   sectionLabel,
   metaLabel,
   readingTimeMinutes,
+  locale = "zh-CN",
 }: JournalEntryProps) {
+  const isEnglish = locale === "en";
   const filteredContent = removeLeadingDuplicateTitle(
     filterObsidianSyntax(entry.content),
     entry.frontmatter.title
@@ -86,6 +90,7 @@ export default function JournalEntry({
     headline: entry.frontmatter.title,
     description: entry.frontmatter.summary || entry.content.slice(0, 160),
     articleSection: sectionLabel,
+    inLanguage: locale,
     author: {
       "@type": "Person",
       name: "T",
@@ -105,16 +110,19 @@ export default function JournalEntry({
   return (
     <>
       <JsonLd data={jsonLd} />
-      <main className={styles.page}>
+      <main lang={locale} className={styles.page}>
         <article className={styles.article}>
-          <ArticleToolbar />
+          <ArticleToolbar locale={locale} indexHref={indexHref} indexLabel={indexLabel} />
           <div className={styles.rule} />
 
           <div className={styles.layout}>
             <header className={styles.masthead}>
               <p className={styles.eyebrow}>T. / {sectionLabel}</p>
               <h1 className={styles.title}>{entry.frontmatter.title}</h1>
-              <div className={styles.tags} aria-label={`${sectionLabel}标签与导航`}>
+              <div
+                className={styles.tags}
+                aria-label={isEnglish ? `${sectionLabel} tags and navigation` : `${sectionLabel}标签与导航`}
+              >
                 {entry.frontmatter.tags && entry.frontmatter.tags.length > 0 && (
                   <div className={styles.tagList}>
                     {entry.frontmatter.tags.map((tag) => (
@@ -124,7 +132,11 @@ export default function JournalEntry({
                     ))}
                   </div>
                 )}
-                <Link href={indexHref} className={styles.backToPosts} aria-label={`返回${indexLabel}目录`}>
+                <Link
+                  href={indexHref}
+                  className={styles.backToPosts}
+                  aria-label={isEnglish ? `Back to ${indexLabel}` : `返回${indexLabel}目录`}
+                >
                   /back
                 </Link>
               </div>
@@ -134,16 +146,21 @@ export default function JournalEntry({
               <header className={styles.meta}>
                 <div className={styles.metaTop}>
                   <time className={styles.date}>
-                    {new Date(entry.frontmatter.date).toLocaleDateString("zh-CN", {
+                    {new Date(entry.frontmatter.date).toLocaleDateString(isEnglish ? "en-US" : "zh-CN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
+                      timeZone: "UTC",
                     })}
                   </time>
                   <div className={styles.metaDetails}>
                     <p className={styles.metaLabel}>{metaLabel ?? sectionLabel}</p>
                     {readingTimeMinutes !== undefined && (
-                      <p className={styles.readingTime}>约 {readingTimeMinutes} 分钟阅读</p>
+                      <p className={styles.readingTime}>
+                        {isEnglish
+                          ? `${readingTimeMinutes} min read`
+                          : `约 ${readingTimeMinutes} 分钟阅读`}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -188,7 +205,7 @@ export default function JournalEntry({
 
         <section className={styles.discussion}>
           <div className={styles.discussionInner}>
-            <Comments />
+            <Comments locale={locale} />
           </div>
         </section>
 

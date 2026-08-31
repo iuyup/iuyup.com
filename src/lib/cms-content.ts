@@ -76,6 +76,7 @@ function toFrontmatter(entry: SanityJournalEntry): ContentFrontmatter | null {
     summary: entry.summary || undefined,
     tags: Array.isArray(entry.tags) ? entry.tags.filter((tag) => typeof tag === "string") : undefined,
     image: entry.coverImage || undefined,
+    sourceSlug: undefined,
   };
 }
 

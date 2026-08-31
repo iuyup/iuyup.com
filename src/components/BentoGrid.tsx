@@ -21,6 +21,7 @@ interface Post {
   summary: string | undefined;
   tags: string[] | undefined;
   image: string | undefined;
+  sourceSlug?: string | undefined;
 }
 
 interface UnifiedItem {
@@ -31,6 +32,7 @@ interface UnifiedItem {
   summary: string | undefined;
   tags: string[] | undefined;
   image: string | undefined;
+  orderKey?: string;
   href?: string;
   desc?: string;
   color?: string;
@@ -59,11 +61,15 @@ export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
 
   const projectItems: UnifiedItem[] = projects.map((p) => ({ ...p, type: 'project', slug: p.href, date: '', summary: p.desc, tags: [p.tag], image: undefined }));
   const albumItems: UnifiedItem[] = albums.map((a) => ({ type: 'album', slug: a.url, title: a.name, date: '', summary: a.artist, tags: ['Music'], image: a.cover, cover: a.cover, artist: a.artist, href: a.url, desc: '', color: '#B8C5C4' }));
-  const postItems: UnifiedItem[] = restPosts.map((p) => ({ ...p, type: 'post' }));
+  const postItems: UnifiedItem[] = restPosts.map((p) => ({
+    ...p,
+    type: 'post',
+    orderKey: p.sourceSlug ?? p.slug,
+  }));
 
   // Keep a varied, but deterministic, order so server and client renders agree.
   const allItems: UnifiedItem[] = [...postItems, ...projectItems, ...albumItems].sort(
-    (left, right) => stableOrder(left.slug) - stableOrder(right.slug)
+    (left, right) => stableOrder(left.orderKey ?? left.slug) - stableOrder(right.orderKey ?? right.slug)
   );
 
   // Round-robin distribute across 3 columns

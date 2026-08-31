@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/notes",
+    languages: {
+      "zh-CN": "/notes",
+      en: "/en/notes",
+    },
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
 };
 

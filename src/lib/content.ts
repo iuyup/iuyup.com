@@ -3,6 +3,7 @@ import path from "path";
 import { parseFrontmatter } from "@/lib/frontmatter";
 
 export type ContentCollection = "posts" | "notes";
+export type ContentLocale = "zh-CN" | "en";
 
 const contentDirectory = path.join(process.cwd(), "content");
 const publicDirectory = path.join(process.cwd(), "public");
@@ -15,6 +16,7 @@ export interface ContentFrontmatter {
   summary: string | undefined;
   tags: string[] | undefined;
   image: string | undefined;
+  sourceSlug: string | undefined;
 }
 
 export interface ContentItem extends ContentFrontmatter {
@@ -28,8 +30,10 @@ export interface ContentDocument {
   isMDX: boolean;
 }
 
-function collectionDirectory(collection: ContentCollection) {
-  return path.join(contentDirectory, collection);
+function collectionDirectory(collection: ContentCollection, locale: ContentLocale) {
+  return locale === "en"
+    ? path.join(contentDirectory, "en", collection)
+    : path.join(contentDirectory, collection);
 }
 
 function resolveContentImage(
@@ -85,13 +89,14 @@ function toFrontmatter(
     summary: (data.summary as string) || undefined,
     tags: data.tags as string[] | undefined,
     image: resolveContentImage(data.image, collection, slug),
+    sourceSlug: typeof data.sourceSlug === "string" ? data.sourceSlug : undefined,
   };
 }
 
-export function getAllContent(collection: ContentCollection): ContentItem[] {
+export function getAllContent(collection: ContentCollection, locale: ContentLocale = "zh-CN"): ContentItem[] {
   let files: string[];
   try {
-    files = fs.readdirSync(collectionDirectory(collection));
+    files = fs.readdirSync(collectionDirectory(collection, locale));
   } catch {
     return [];
   }
@@ -100,7 +105,7 @@ export function getAllContent(collection: ContentCollection): ContentItem[] {
     .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))
     .map((file) => {
       const slug = file.replace(/\.mdx?$/, "");
-      const filePath = path.join(collectionDirectory(collection), file);
+      const filePath = path.join(collectionDirectory(collection, locale), file);
 
       let fileContent: string;
       try {
@@ -126,7 +131,8 @@ export function getAllContent(collection: ContentCollection): ContentItem[] {
 
 export function getContentBySlug(
   collection: ContentCollection,
-  rawSlug: string
+  rawSlug: string,
+  locale: ContentLocale = "zh-CN"
 ): ContentDocument | null {
   const slug = normalizeContentSlug(rawSlug);
   if (!slug) {
@@ -135,7 +141,7 @@ export function getContentBySlug(
 
   let files: string[];
   try {
-    files = fs.readdirSync(collectionDirectory(collection));
+    files = fs.readdirSync(collectionDirectory(collection, locale));
   } catch {
     return null;
   }
@@ -147,7 +153,7 @@ export function getContentBySlug(
     return null;
   }
 
-  const filePath = path.join(collectionDirectory(collection), fileName);
+  const filePath = path.join(collectionDirectory(collection, locale), fileName);
   const isMDX = fileName.endsWith(".mdx");
   const { data, content } = parseFrontmatter(fs.readFileSync(filePath, "utf-8"));
 

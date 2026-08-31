@@ -1,10 +1,19 @@
 "use client";
 import Giscus from "@giscus/react";
+import type { HomeLocale } from "@/lib/home-content";
 
-export default function Comments() {
+interface CommentsProps {
+  locale?: HomeLocale;
+}
+
+export default function Comments({ locale = "zh-CN" }: CommentsProps) {
+  const isEnglish = locale === "en";
+
   return (
     <section className="border-t border-[#958C80] pt-8">
-      <h2 className="mb-6 font-serif text-2xl font-semibold tracking-tight text-[var(--article-ink)]">讨论</h2>
+      <h2 className="mb-6 font-serif text-2xl font-semibold tracking-tight text-[var(--article-ink)]">
+        {isEnglish ? "Discussion" : "讨论"}
+      </h2>
       <div className="[&_iframe]:!w-full [&_iframe]:!max-w-full">
         <Giscus
           repo="iuyup/iuyup.com"
@@ -17,7 +26,7 @@ export default function Comments() {
           emitMetadata="0"
           inputPosition="bottom"
           theme="noborder_light"
-          lang="zh-CN"
+          lang={isEnglish ? "en" : "zh-CN"}
           loading="lazy"
         />
       </div>

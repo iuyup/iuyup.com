@@ -37,7 +37,10 @@ export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardPr
       onHoverEnd={() => setIsHovered(false)}
     >
       <div className="backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col overflow-hidden">
-        <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="group flex flex-col justify-start gap-4">
+        <Link
+          href={`${isEnglish ? '/en/posts' : '/posts'}/${encodeURIComponent(post.slug)}`}
+          className="group flex flex-col justify-start gap-4"
+        >
           <motion.span
             className="relative inline-block self-center mt-6"
             style={{ transformStyle: 'preserve-3d', originX: 0.5, originY: 0.5 }}
@@ -81,7 +84,7 @@ export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardPr
             </p>
           )}
           <span className="mt-auto mb-2 border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">
-            {isEnglish ? 'Read in Chinese' : 'Read More'}
+            Read More
           </span>
         </Link>
       </div>
@@ -161,11 +164,11 @@ export function BlogLinkCard({ tag = 'default', locale = 'zh-CN' }: LocalizedJou
   return (
     <JournalLinkCard
       tag={tag}
-      href="/posts"
+      href={isEnglish ? '/en/posts' : '/posts'}
       label="Blog"
       title={isEnglish ? 'Writing' : '文章'}
       description={isEnglish ? 'Notes on AI agents, open source, and engineering.' : '关于 AI Agent、开源与技术思考'}
-      action={isEnglish ? 'Read the Chinese blog' : 'View All'}
+      action="View All"
     />
   );
 }
@@ -176,11 +179,11 @@ export function NoteLinkCard({ tag = 'default', locale = 'zh-CN' }: LocalizedJou
   return (
     <JournalLinkCard
       tag={tag}
-      href="/notes"
+      href={isEnglish ? '/en/notes' : '/notes'}
       label="Notes"
       title={isEnglish ? 'Field Notes' : '随心'}
       description={isEnglish ? 'Short notes, loose thoughts, and fragments without a fixed theme.' : '一些没有固定主题的记录、想法与片段'}
-      action={isEnglish ? 'Read Chinese notes' : 'View Notes'}
+      action="View Notes"
     />
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import type { ContentItem } from "@/lib/content";
+import type { HomeLocale } from "@/lib/home-content";
 import { SITE_URL } from "@/lib/site";
 import styles from "@/app/posts/posts.module.css";
 
@@ -10,6 +11,7 @@ interface JournalIndexProps {
   description: string;
   path: string;
   listHeading: string;
+  locale?: HomeLocale;
 }
 
 function formatListDate(date: string | Date) {
@@ -40,12 +42,23 @@ function formatListDate(date: string | Date) {
   };
 }
 
-export default function JournalIndex({ entries, title, description, path, listHeading }: JournalIndexProps) {
+export default function JournalIndex({
+  entries,
+  title,
+  description,
+  path,
+  listHeading,
+  locale = "zh-CN",
+}: JournalIndexProps) {
+  const isEnglish = locale === "en";
+  const homeHref = isEnglish ? "/en" : "/";
+  const feedHref = isEnglish ? "/en/feed.xml" : "/feed.xml";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: title,
     description,
+    inLanguage: locale,
     itemListElement: entries.map((entry, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -56,11 +69,11 @@ export default function JournalIndex({ entries, title, description, path, listHe
   return (
     <>
       <JsonLd data={jsonLd} />
-      <main className={styles.page}>
+      <main lang={locale} className={styles.page}>
         <div className={styles.shell}>
-          <nav className={styles.toolbar} aria-label={`${title}操作`}>
-            <Link href="/">← 首页</Link>
-            <a href="/feed.xml">RSS 订阅 ↗</a>
+          <nav className={styles.toolbar} aria-label={isEnglish ? `${title} actions` : `${title}操作`}>
+            <Link href={homeHref}>{isEnglish ? "← Home" : "← 首页"}</Link>
+            <a href={feedHref}>{isEnglish ? "RSS feed ↗" : "RSS 订阅 ↗"}</a>
           </nav>
           <div className={styles.rule} />
 
@@ -69,24 +82,26 @@ export default function JournalIndex({ entries, title, description, path, listHe
               <p className={styles.eyebrow}>T. / Journal</p>
               <h1 className={styles.pageTitle}>{title}</h1>
               <p className={styles.intro}>{description}</p>
-              <nav className={styles.sideNav} aria-label={`${title}索引`}>
+              <nav className={styles.sideNav} aria-label={isEnglish ? `${title} index` : `${title}索引`}>
                 <a href="#entry-list">
-                  <span>全部{title}</span>
+                  <span>{isEnglish ? `All ${title}` : `全部${title}`}</span>
                   <span>{entries.length.toString().padStart(2, "0")}</span>
                 </a>
-                <a href="/feed.xml">RSS 订阅 ↗</a>
-                <Link href="/">首页 ↖</Link>
+                <a href={feedHref}>{isEnglish ? "RSS feed ↗" : "RSS 订阅 ↗"}</a>
+                <Link href={homeHref}>{isEnglish ? "Home ↖" : "首页 ↖"}</Link>
               </nav>
             </aside>
 
             <section className={styles.postArea} aria-labelledby="entry-list-heading">
               <header className={styles.listHeader}>
                 <span id="entry-list-heading">{listHeading}</span>
-                <span>{entries.length} 篇</span>
+                <span>{isEnglish ? `${entries.length} entries` : `${entries.length} 篇`}</span>
               </header>
 
               {entries.length === 0 ? (
-                <p className={styles.emptyState}>这里暂时还没有公开内容。</p>
+                <p className={styles.emptyState}>
+                  {isEnglish ? "There is no published content here yet." : "这里暂时还没有公开内容。"}
+                </p>
               ) : (
                 <ol id="entry-list" className={styles.postList}>
                   {entries.map((entry) => {
@@ -103,7 +118,7 @@ export default function JournalIndex({ entries, title, description, path, listHe
                             {entry.summary && <p className={styles.summary}>{entry.summary}</p>}
                           </div>
                           {entry.tags && entry.tags.length > 0 && (
-                            <div className={styles.tags} aria-label="内容标签">
+                            <div className={styles.tags} aria-label={isEnglish ? "Content tags" : "内容标签"}>
                               {entry.tags.map((tag) => (
                                 <span key={tag} className={styles.tag}>
                                   {tag}

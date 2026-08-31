@@ -12,7 +12,7 @@ export const CARD_VARIANTS = {
     textSecondary: '#3a3a3a',
   },
   default: {
-    bg: 'rgba(245, 240, 230, 0.65)',
+    bg: 'linear-gradient(rgba(245, 240, 230, 0.75), rgba(245, 240, 230, 0.75))',
     textSecondary: '#3a3a3a',
   },
   blog: {

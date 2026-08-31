@@ -1,0 +1,298 @@
+.root {
+  --control-size: 3.5rem;
+  --control-surface: rgb(255 253 250 / 0.9);
+  --control-border: rgb(166 107 83 / 0.42);
+  --control-ink: var(--article-muted, var(--text-secondary));
+  --control-accent: #a66b53;
+  --control-accent-strong: #8d5944;
+  --control-shadow: 0 0.65rem 1.25rem rgb(45 41 37 / 0.14);
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  height: var(--control-size);
+  position: fixed;
+  right: calc(29px + env(safe-area-inset-right, 0px));
+  width: var(--control-size);
+  z-index: 30;
+}
+
+.controlButton {
+  align-items: center;
+  background: var(--control-surface);
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  box-shadow: var(--control-shadow);
+  color: var(--control-ink);
+  cursor: pointer;
+  display: flex;
+  height: var(--control-size);
+  justify-content: center;
+  padding: 0;
+  width: var(--control-size);
+}
+
+.controlButton:hover,
+.controlButton:focus-visible,
+.actionsOpen .progressButton,
+.languageButtonOpen {
+  border-color: var(--control-accent);
+  box-shadow: 0 0.8rem 1.6rem rgb(45 41 37 / 0.18);
+  color: var(--control-accent-strong);
+}
+
+.controlButton:focus-visible {
+  outline: 2px solid var(--article-link, var(--accent));
+  outline-offset: 0.25rem;
+}
+
+.progressButton {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  inset: 0;
+  place-items: center;
+  position: absolute;
+  transition:
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    color 240ms ease,
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.progressButton:hover,
+.progressButton:focus-visible,
+.actionsOpen .progressButton {
+  transform: translateY(-2px);
+}
+
+.ring {
+  height: calc(100% + 2px);
+  inset: -1px;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  transform: rotate(-90deg);
+  width: calc(100% + 2px);
+}
+
+.indicator {
+  fill: none;
+  stroke: var(--control-accent);
+  stroke-linecap: butt;
+  stroke-width: 2.5;
+  transition: stroke-dashoffset 760ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.center {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  height: calc(100% - 0.82rem);
+  place-items: center;
+  position: relative;
+  width: calc(100% - 0.82rem);
+  z-index: 1;
+}
+
+.percentage,
+.arrow {
+  grid-area: 1 / 1;
+}
+
+.percentage {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.972rem;
+  line-height: 1;
+  transition: opacity 420ms cubic-bezier(0.16, 1, 0.3, 1), transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow {
+  display: block;
+  height: 1.8rem;
+  opacity: 0;
+  transform: translateY(0.3rem) scale(0.92);
+  transition: opacity 460ms cubic-bezier(0.16, 1, 0.3, 1), transform 460ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 1.8rem;
+}
+
+.arrow path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.showArrow .percentage {
+  opacity: 0;
+  transform: translateY(-0.2rem);
+}
+
+.showArrow .arrow {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.hoverBridge {
+  bottom: 100%;
+  height: 0.75rem;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.actionsOpen .hoverBridge {
+  pointer-events: auto;
+}
+
+.languageAction {
+  bottom: calc(100% + 0.75rem);
+  height: var(--control-size);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  transform: translateY(calc(var(--control-size) + 0.75rem)) scale(0.78);
+  transform-origin: bottom center;
+  transition:
+    opacity 200ms ease,
+    transform 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 340ms;
+  visibility: hidden;
+  width: var(--control-size);
+  z-index: 1;
+}
+
+.actionsOpen .languageAction {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+.languageButton {
+  transition:
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    color 240ms ease,
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.languageButton:hover,
+.languageButton:focus-visible,
+.languageButtonOpen {
+  transform: translateY(-2px);
+}
+
+.panel {
+  background: rgb(255 253 250 / 0.96);
+  border: 1px solid rgb(213 206 199 / 0.92);
+  border-radius: 1rem;
+  bottom: calc(100% + 0.75rem);
+  box-shadow: 0 1rem 2.5rem rgb(45 41 37 / 0.18);
+  display: grid;
+  max-width: calc(100vw - 2rem);
+  min-width: 10.25rem;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  transform: translateY(0.5rem) scale(0.98);
+  transform-origin: bottom right;
+  transition:
+    opacity 220ms ease,
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 280ms;
+  visibility: hidden;
+}
+
+.panelOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+.option {
+  align-items: center;
+  color: var(--text-secondary);
+  display: flex;
+  font-family: "Source Serif 4", "Noto Sans SC", Georgia, serif;
+  font-size: 1rem;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.option + .option {
+  border-top: 1px solid rgb(213 206 199 / 0.72);
+}
+
+.option:hover,
+.option:focus-visible {
+  background: rgb(107 141 174 / 0.1);
+  color: var(--text);
+  outline: none;
+}
+
+.active {
+  color: var(--text);
+}
+
+.currentMark,
+.pendingMark {
+  color: var(--control-accent-strong);
+  font-family: "Noto Sans SC", Inter, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.pendingMark {
+  color: var(--text-secondary);
+}
+
+:global([data-theme="dark"]) .root {
+  --control-surface: rgb(36 33 31 / 0.94);
+  --control-border: rgb(207 138 107 / 0.48);
+  --control-accent: #cf8a6b;
+  --control-accent-strong: #e0a184;
+  --control-shadow: 0 0.65rem 1.25rem rgb(0 0 0 / 0.28);
+}
+
+:global([data-theme="dark"]) .panel {
+  background: rgb(36 33 31 / 0.96);
+  border-color: rgb(74 68 61 / 0.95);
+  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 0.34);
+}
+
+:global([data-theme="dark"]) .option + .option {
+  border-top-color: rgb(74 68 61 / 0.9);
+}
+
+@media (max-width: 560px) {
+  .root {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    right: calc(20px + env(safe-area-inset-right, 0px));
+  }
+
+  .arrow {
+    height: 1.55rem;
+    width: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controlButton,
+  .indicator,
+  .percentage,
+  .arrow,
+  .languageAction,
+  .panel,
+  .option {
+    transition: none;
+  }
+}

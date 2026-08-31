@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
-import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllEnglishNotes, getEnglishNoteBySlug } from "@/lib/english-content";
 import { getSourceSlug } from "@/lib/content-translations";
 import { estimateReadingTimeMinutes } from "@/lib/reading-time";
@@ -66,16 +65,13 @@ export default async function EnglishNotePage({ params }: { params: Promise<{ sl
   }
 
   return (
-    <>
-      <JournalEntry
-        entry={note}
-        indexHref="/en/notes"
-        indexLabel="Field Notes"
-        sectionLabel="Field Notes"
-        readingTimeMinutes={estimateReadingTimeMinutes(note.content)}
-        locale="en"
-      />
-      <ReadingProgress targetId="article-content" ariaLabel="Back to the note title" />
-    </>
+    <JournalEntry
+      entry={note}
+      indexHref="/en/notes"
+      indexLabel="Field Notes"
+      sectionLabel="Field Notes"
+      readingTimeMinutes={estimateReadingTimeMinutes(note.content)}
+      locale="en"
+    />
   );
 }

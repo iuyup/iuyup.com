@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
-import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import FloatingControls from "@/components/ui/FloatingControls";
 import Chat from "@/components/chat/Chat";
 import { DEFAULT_OG_IMAGE_PATH, RSS_URL, SITE_URL } from "@/lib/site";
 
@@ -56,7 +56,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           {children}
-          <LanguageSwitcher />
+          <FloatingControls />
         </ThemeProvider>
         <Chat />
       </body>

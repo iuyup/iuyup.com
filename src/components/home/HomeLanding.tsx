@@ -2,7 +2,6 @@ import Image from "next/image";
 import JsonLd from "@/components/JsonLd";
 import HeroSection from "@/components/layout/HeroSection";
 import BentoGrid from "@/components/BentoGrid";
-import ReadingProgress from "@/components/journal/ReadingProgress";
 import monetBackground from "@/assets/monet-background-3840.jpg";
 import type { ContentItem } from "@/lib/content";
 import type { HomeLocale } from "@/lib/home-content";
@@ -14,8 +13,6 @@ interface HomeLandingProps {
 }
 
 export default function HomeLanding({ locale, posts, jsonLd }: HomeLandingProps) {
-  const isEnglish = locale === "en";
-
   return (
     <div lang={locale}>
       <JsonLd data={jsonLd} />
@@ -42,7 +39,6 @@ export default function HomeLanding({ locale, posts, jsonLd }: HomeLandingProps)
 
         <HeroSection />
         <BentoGrid locale={locale} posts={posts} />
-        <ReadingProgress ariaLabel={isEnglish ? "Back to the top" : undefined} />
       </div>
     </div>
   );

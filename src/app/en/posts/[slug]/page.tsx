@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JournalEntry from "@/components/journal/JournalEntry";
-import ReadingProgress from "@/components/journal/ReadingProgress";
 import { getAllEnglishPosts, getEnglishPostBySlug } from "@/lib/english-content";
 import { getSourceSlug } from "@/lib/content-translations";
 import { estimateReadingTimeMinutes } from "@/lib/reading-time";
@@ -66,17 +65,14 @@ export default async function EnglishPostPage({ params }: { params: Promise<{ sl
   }
 
   return (
-    <>
-      <JournalEntry
-        entry={post}
-        indexHref="/en/posts"
-        indexLabel="Writing"
-        sectionLabel="Journal"
-        metaLabel="Engineering Notes"
-        readingTimeMinutes={estimateReadingTimeMinutes(post.content)}
-        locale="en"
-      />
-      <ReadingProgress targetId="article-content" ariaLabel="Back to the article title" />
-    </>
+    <JournalEntry
+      entry={post}
+      indexHref="/en/posts"
+      indexLabel="Writing"
+      sectionLabel="Journal"
+      metaLabel="Engineering Notes"
+      readingTimeMinutes={estimateReadingTimeMinutes(post.content)}
+      locale="en"
+    />
   );
 }

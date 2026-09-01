@@ -25,6 +25,11 @@ export const externalFeeds: ExternalFeed[] = [];
 
 export const siteTimeline: SiteTimelineEntry[] = [
   {
+    date: "2026-09-01",
+    title: "接入首页浏览量",
+    description: "右下角加入浏览量；只记录首页访问，短时间内会去重，也可排除站长自己的浏览。",
+  },
+  {
     date: "2026-07-30",
     title: "持续打磨阅读体验",
     description: "调整阅读进度和评论细节，让长文阅读与互动更顺畅。",

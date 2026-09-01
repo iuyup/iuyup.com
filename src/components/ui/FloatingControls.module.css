@@ -139,14 +139,15 @@
 }
 
 .actionsOpen .hoverBridge {
+  height: calc(var(--control-size) + 1.5rem);
   pointer-events: auto;
 }
 
+.pageviewsAction,
 .languageAction {
   bottom: calc(100% + 0.75rem);
   height: var(--control-size);
   opacity: 0;
-  pointer-events: none;
   position: absolute;
   right: 0;
   transform: translateY(calc(var(--control-size) + 0.75rem)) scale(0.78);
@@ -160,12 +161,51 @@
   z-index: 1;
 }
 
+.pageviewsAction {
+  align-items: center;
+  background: var(--control-surface);
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  box-shadow: var(--control-shadow);
+  color: var(--control-ink);
+  display: grid;
+  grid-template-rows: minmax(0, auto) minmax(0, auto);
+  justify-items: center;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  row-gap: 0.16rem;
+}
+
+.pageviewsNumber {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.pageviewsLabel {
+  font-family: "Noto Sans SC", Inter, sans-serif;
+  font-size: 0.58rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.languageAction {
+  bottom: calc(200% + 1.5rem);
+  pointer-events: none;
+}
+
+.actionsOpen .pageviewsAction,
 .actionsOpen .languageAction {
   opacity: 1;
-  pointer-events: auto;
   transform: translateY(0) scale(1);
   transition-delay: 0s;
   visibility: visible;
+}
+
+.actionsOpen .languageAction {
+  pointer-events: auto;
+  transition-delay: 56ms, 56ms, 0s;
 }
 
 .languageButton {
@@ -290,6 +330,7 @@
   .indicator,
   .percentage,
   .arrow,
+  .pageviewsAction,
   .languageAction,
   .panel,
   .option {

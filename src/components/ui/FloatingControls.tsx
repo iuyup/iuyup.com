@@ -20,6 +20,12 @@ import styles from "./FloatingControls.module.css";
 
 const IDLE_DELAY_MS = 1100;
 const CLOSE_DELAY_MS = 220;
+const SITE_VIEWS_OWNER_HASH_PREFIX = "#site-views-owner=";
+const HOME_PAGE_PATHS = new Set(["/", "/en"]);
+
+function isMainLandingPath(pathname: string) {
+  return HOME_PAGE_PATHS.has(pathname);
+}
 
 function routeSlug(pathname: string, prefix: string) {
   if (!pathname.startsWith(`${prefix}/`)) {
@@ -132,6 +138,40 @@ function getReadingProgress(targetId?: string) {
   return Math.round(Math.min(100, Math.max(0, ((window.scrollY - start) / (end - start)) * 100)));
 }
 
+function isSiteViewsResponse(value: unknown): value is { total: number } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "total" in value &&
+    typeof value.total === "number" &&
+    Number.isSafeInteger(value.total) &&
+    value.total >= 0
+  );
+}
+
+function siteViewsOwnerTokenFromHash() {
+  if (!window.location.hash.startsWith(SITE_VIEWS_OWNER_HASH_PREFIX)) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(window.location.hash.slice(SITE_VIEWS_OWNER_HASH_PREFIX.length));
+  } catch {
+    return null;
+  }
+}
+
+function clearSiteViewsOwnerHash() {
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+}
+
+function formatSiteViews(total: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 1,
+    notation: "compact",
+  }).format(total);
+}
+
 interface FloatingControlsForPathProps {
   pathname: string;
 }
@@ -149,6 +189,7 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
   const [progressHovered, setProgressHovered] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [languagePanelOpen, setLanguagePanelOpen] = useState(false);
+  const [siteViews, setSiteViews] = useState<number | null>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const progressButtonRef = useRef<HTMLButtonElement>(null);
@@ -162,6 +203,56 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
   useEffect(() => {
     document.documentElement.lang = isEnglish ? "en" : "zh-CN";
   }, [isEnglish]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadSiteViews() {
+      const ownerToken = siteViewsOwnerTokenFromHash();
+      const response = ownerToken
+        ? await fetch("/api/site-views", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "exclude-owner", token: ownerToken }),
+            cache: "no-store",
+            credentials: "same-origin",
+            signal: controller.signal,
+          })
+        : await fetch("/api/site-views", {
+            method: isMainLandingPath(pathname) ? "POST" : "GET",
+            ...(isMainLandingPath(pathname)
+              ? {
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "record", pathname }),
+                }
+              : {}),
+            cache: "no-store",
+            credentials: "same-origin",
+            signal: controller.signal,
+          });
+
+      if (!response.ok || controller.signal.aborted) {
+        return;
+      }
+
+      const data: unknown = await response.json().catch(() => null);
+      if (isSiteViewsResponse(data) && !controller.signal.aborted) {
+        setSiteViews(data.total);
+      }
+
+      if (ownerToken && !controller.signal.aborted) {
+        clearSiteViewsOwnerHash();
+      }
+    }
+
+    void loadSiteViews().catch((error: unknown) => {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        console.error("Site views request failed:", error);
+      }
+    });
+
+    return () => controller.abort();
+  }, [pathname]);
 
   useEffect(() => {
     let animationFrame = 0;
@@ -259,6 +350,15 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
   const progressLabel = isEnglish
     ? `Reading progress ${progress}%. Back to the top`
     : `阅读进度 ${progress}%，回到顶部`;
+  const siteViewsValue = siteViews === null ? "—" : formatSiteViews(siteViews, isEnglish ? "en" : "zh-CN");
+  const siteViewsLabel =
+    siteViews === null
+      ? isEnglish
+        ? "Site page views are unavailable"
+        : "站点浏览量暂不可用"
+      : isEnglish
+        ? `Site page views ${siteViews.toLocaleString("en")}`
+        : `站点浏览量 ${siteViews.toLocaleString("zh-CN")}`;
 
   function clearCloseTimer() {
     if (closeTimer.current !== null) {
@@ -351,7 +451,7 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
         className={`${styles.controlButton} ${styles.progressButton} ${showArrow ? styles.showArrow : ""}`}
         aria-label={progressLabel}
         aria-expanded={actionsOpen}
-        aria-controls="floating-language-action"
+        aria-controls="floating-control-actions"
         onClick={handleProgressClick}
         onKeyDown={() => {
           pointerType.current = "keyboard";
@@ -377,66 +477,69 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
 
       <span className={styles.hoverBridge} aria-hidden="true" />
 
-      <div
-        id="floating-language-action"
-        className={styles.languageAction}
-        aria-hidden={!actionsOpen}
-      >
-        <button
-          ref={languageButtonRef}
-          type="button"
-          className={`${styles.controlButton} ${styles.languageButton} ${languagePanelOpen ? styles.languageButtonOpen : ""}`}
-          aria-label={
-            isEnglish
-              ? `Choose language, current language is ${currentLanguage}`
-              : `切换语言，当前语言为${currentLanguage}`
-          }
-          aria-expanded={languagePanelOpen}
-          aria-controls="language-switcher-options"
-          tabIndex={actionsOpen ? 0 : -1}
-          onClick={() => {
-            setActionsOpen(true);
-            setLanguagePanelOpen((value) => !value);
-          }}
-        >
-          <IconLanguage size={27} stroke={1.65} aria-hidden="true" />
-        </button>
+      <div id="floating-control-actions" aria-hidden={!actionsOpen}>
+        <div className={styles.pageviewsAction} aria-label={siteViewsLabel} role="status">
+          <span className={styles.pageviewsNumber}>{siteViewsValue}</span>
+          <span className={styles.pageviewsLabel}>{isEnglish ? "Views" : "浏览量"}</span>
+        </div>
 
-        <nav
-          id="language-switcher-options"
-          className={`${styles.panel} ${languagePanelOpen ? styles.panelOpen : ""}`}
-          aria-label={isEnglish ? "Choose language" : "选择语言"}
-          aria-hidden={!languagePanelOpen}
-        >
-          <Link
-            href={hrefs.chinese}
-            hrefLang="zh-CN"
-            lang="zh-CN"
-            className={`${styles.option} ${!isEnglish ? styles.active : ""}`}
-            aria-current={!isEnglish ? "page" : undefined}
-            tabIndex={languagePanelOpen ? 0 : -1}
-            onClick={closeLanguageMenu}
+        <div id="floating-language-action" className={styles.languageAction}>
+          <button
+            ref={languageButtonRef}
+            type="button"
+            className={`${styles.controlButton} ${styles.languageButton} ${languagePanelOpen ? styles.languageButtonOpen : ""}`}
+            aria-label={
+              isEnglish
+                ? `Choose language, current language is ${currentLanguage}`
+                : `切换语言，当前语言为${currentLanguage}`
+            }
+            aria-expanded={languagePanelOpen}
+            aria-controls="language-switcher-options"
+            tabIndex={actionsOpen ? 0 : -1}
+            onClick={() => {
+              setActionsOpen(true);
+              setLanguagePanelOpen((value) => !value);
+            }}
           >
-            <span>中文</span>
-            {!isEnglish && <span className={styles.currentMark}>当前</span>}
-          </Link>
-          <Link
-            href={hrefs.english}
-            hrefLang="en"
-            lang="en"
-            className={`${styles.option} ${isEnglish ? styles.active : ""}`}
-            aria-current={isEnglish ? "page" : undefined}
-            tabIndex={languagePanelOpen ? 0 : -1}
-            onClick={closeLanguageMenu}
+            <IconLanguage size={27} stroke={1.65} aria-hidden="true" />
+          </button>
+
+          <nav
+            id="language-switcher-options"
+            className={`${styles.panel} ${languagePanelOpen ? styles.panelOpen : ""}`}
+            aria-label={isEnglish ? "Choose language" : "选择语言"}
+            aria-hidden={!languagePanelOpen}
           >
-            <span>English</span>
-            {isEnglish ? (
-              <span className={styles.currentMark}>Current</span>
-            ) : isChineseJournalEntry && !hrefs.hasPair ? (
-              <span className={styles.pendingMark}>文章筹备中</span>
-            ) : null}
-          </Link>
-        </nav>
+            <Link
+              href={hrefs.chinese}
+              hrefLang="zh-CN"
+              lang="zh-CN"
+              className={`${styles.option} ${!isEnglish ? styles.active : ""}`}
+              aria-current={!isEnglish ? "page" : undefined}
+              tabIndex={languagePanelOpen ? 0 : -1}
+              onClick={closeLanguageMenu}
+            >
+              <span>中文</span>
+              {!isEnglish && <span className={styles.currentMark}>当前</span>}
+            </Link>
+            <Link
+              href={hrefs.english}
+              hrefLang="en"
+              lang="en"
+              className={`${styles.option} ${isEnglish ? styles.active : ""}`}
+              aria-current={isEnglish ? "page" : undefined}
+              tabIndex={languagePanelOpen ? 0 : -1}
+              onClick={closeLanguageMenu}
+            >
+              <span>English</span>
+              {isEnglish ? (
+                <span className={styles.currentMark}>Current</span>
+              ) : isChineseJournalEntry && !hrefs.hasPair ? (
+                <span className={styles.pendingMark}>文章筹备中</span>
+              ) : null}
+            </Link>
+          </nav>
+        </div>
       </div>
     </div>
   );

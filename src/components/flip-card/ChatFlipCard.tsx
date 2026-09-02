@@ -143,7 +143,7 @@ export function ChatFlipCard({ tag = 'default', locale = 'zh-CN' }: ChatFlipCard
             className="flex items-center gap-3 pt-5 pb-2 mb-3 border-b border-white/20 px-4 cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="font-caveat text-2xl text-[#F5F0EB]">T&apos;s AI</span>
+            <span className="font-brand text-2xl text-[#F5F0EB]">T&apos;s AI</span>
           </div>
 
           {/* Messages */}

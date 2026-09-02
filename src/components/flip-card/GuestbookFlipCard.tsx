@@ -369,7 +369,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
               <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" stroke="#6B8DAE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="font-caveat text-xl text-[#2C2C2C] flex-shrink-0">Guestbook</span>
+          <span className="font-brand text-xl text-[#2C2C2C] flex-shrink-0">Guestbook</span>
           <span className="text-sm mt-0.5 flex-shrink-0" style={{ color: variant.textSecondary }}>Click to leave a message</span>
 
           {/* Messages list */}
@@ -468,7 +468,7 @@ export function GuestbookFlipCard({ tag = 'default' }: GuestbookFlipCardProps) {
             ← Back
           </button>
 
-          <span className="font-caveat text-xl text-[#2C2C2C] pr-5 text-center w-full overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 mt-1">Leave a message</span>
+          <span className="font-brand text-xl text-[#2C2C2C] pr-5 text-center w-full overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 mt-1">Leave a message</span>
 
           <input
             type="text"

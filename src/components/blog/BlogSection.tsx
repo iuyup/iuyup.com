@@ -8,7 +8,7 @@ export default async function BlogSection() {
   return (
     <section id="blog" className="py-24 border-t border-[#D5CEC7]">
       <div className="max-w-3xl mx-auto px-6">
-        <h2 className="font-caveat text-4xl mb-8 text-[#6B8DAE]">Blog</h2>
+        <h2 className="font-brand text-4xl mb-8 text-[#6B8DAE]">Blog</h2>
         <BlogPreview posts={posts} />
         <div className="mt-8">
           <Link href="/posts" className="text-sm text-[#6B8DAE] hover:underline transition-colors">

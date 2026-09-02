@@ -305,7 +305,7 @@ export function WeatherCard({ city = 'Shenzhen' }: WeatherCardProps) {
         </div>
 
         {/* City name */}
-        <div style={{ fontFamily: "'Caveat', cursive", fontSize: '2.5rem', fontWeight: 600 }}>
+        <div style={{ fontFamily: 'var(--font-brand)', fontSize: '2.5rem', fontWeight: 600 }}>
           {weather ? `${weather.city}, ${weather.country}` : city}
         </div>
 

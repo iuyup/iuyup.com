@@ -47,7 +47,7 @@
   align-items: center;
   color: var(--journal-muted);
   display: flex;
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-code);
   font-size: 0.8rem;
   justify-content: space-between;
   letter-spacing: 0.08em;
@@ -96,7 +96,7 @@
 .date,
 .tags {
   color: var(--journal-muted);
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-code);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   line-height: 1.55;
@@ -110,7 +110,7 @@
 
 .pageTitle {
   color: var(--journal-ink);
-  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-family: var(--font-heading);
   font-size: clamp(2.1rem, 3vw, 3.1rem);
   font-weight: 700;
   letter-spacing: -0.045em;
@@ -120,7 +120,7 @@
 
 .intro {
   color: var(--journal-muted);
-  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-family: var(--font-reading);
   font-size: 1rem;
   line-height: 1.75;
   margin: 1.35rem 0 0;
@@ -173,7 +173,7 @@
 .emptyState {
   border-bottom: 1px solid var(--journal-soft-rule);
   color: var(--journal-muted);
-  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-family: var(--font-reading);
   line-height: 1.75;
   margin: 0;
   padding: 1.5rem 0;
@@ -210,7 +210,7 @@
 
 .postTitle {
   color: var(--journal-ink);
-  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-family: var(--font-heading);
   font-size: clamp(1.35rem, 1.8vw, 1.72rem);
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -226,7 +226,7 @@
 
 .summary {
   color: var(--journal-muted);
-  font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun, "Source Serif 4", serif;
+  font-family: var(--font-reading);
   font-size: 0.98rem;
   line-height: 1.7;
   margin: 0.55rem 0 0;
@@ -257,7 +257,7 @@
 .footerInner {
   align-items: center;
   display: flex;
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-code);
   font-size: 0.75rem;
   justify-content: space-between;
   letter-spacing: 0.08em;
@@ -268,7 +268,7 @@
 
 .footerBrand {
   color: var(--journal-ink);
-  font-family: "Source Serif 4", Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 1rem;
   font-style: italic;
   letter-spacing: 0;

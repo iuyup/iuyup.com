@@ -9,7 +9,7 @@ export default function HeroSection() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-        className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 font-caveat text-6xl md:text-8xl leading-tight"
+        className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 font-brand text-6xl md:text-8xl leading-tight"
       >
         Hey, I&apos;m <span className="text-[#6B8DAE]" style={{ textShadow: '0 1px 0 #F5F0EB, 0 2px 8px rgba(0,0,0,0.15)' }}>T</span>
       </motion.h1>

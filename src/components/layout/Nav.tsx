@@ -25,7 +25,7 @@ export default function Nav() {
       style={{ background: scrolled ? undefined : 'transparent', borderColor: scrolled ? '#D5CEC7' : 'transparent' }}
     >
       <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-        <span className="font-caveat text-xl leading-none" style={{ color: 'var(--text)' }}>T.</span>
+        <span className="font-brand text-xl leading-none" style={{ color: 'var(--text)' }}>T.</span>
         <div className="flex gap-5 text-sm items-center self-center font-serif" style={{ color: 'var(--text-secondary)' }}>
           <Link href="/about" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>About</Link>
           <a href="#projects" className="hover:text-[var(--text)] transition-colors duration-300" style={{ color: 'inherit' }}>Projects</a>

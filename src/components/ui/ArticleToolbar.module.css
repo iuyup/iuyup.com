@@ -2,7 +2,7 @@
   align-items: center;
   color: var(--article-muted);
   display: flex;
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-code);
   font-size: 0.8rem;
   justify-content: space-between;
   letter-spacing: 0.08em;

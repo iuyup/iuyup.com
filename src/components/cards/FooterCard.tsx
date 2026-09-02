@@ -26,7 +26,7 @@ export function FooterCard({ tag = 'default' }: FooterCardProps) {
         style={{ background: variant.bg }}
         className={`${cardCls} items-center text-center card-hover`}
       >
-        <span className="font-caveat text-2xl mb-3 text-[#2C2C2C]">T.</span>
+        <span className="font-brand text-2xl mb-3 text-[#2C2C2C]">T.</span>
         <div className="flex gap-6 font-serif text-sm">
           <a href="https://github.com/iuyup" target="_blank" rel="noopener noreferrer" className="hover:text-[#2C2C2C] transition-colors" style={{ color: variant.textSecondary }}>
             GitHub

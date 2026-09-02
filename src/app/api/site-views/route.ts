@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { errors as redisErrors } from "@upstash/redis";
 import {
   canActivateSiteViewsOwner,
   createSiteViewsVisitorId,
@@ -21,6 +22,51 @@ function jsonResponse(body: unknown, status = 200) {
     status,
     headers: { "Cache-Control": "no-store" },
   });
+}
+
+function includesSiteViewsError(
+  error: unknown,
+  predicate: (candidate: unknown) => boolean
+): boolean {
+  if (predicate(error)) {
+    return true;
+  }
+
+  if (error instanceof AggregateError) {
+    return error.errors.some((candidate) =>
+      includesSiteViewsError(candidate, predicate)
+    );
+  }
+
+  if (error instanceof Error && error.cause) {
+    return includesSiteViewsError(error.cause, predicate);
+  }
+
+  return false;
+}
+
+function siteViewsErrorStatus(error: unknown) {
+  if (
+    includesSiteViewsError(
+      error,
+      (candidate) => candidate instanceof redisErrors.UrlError
+    )
+  ) {
+    return 503;
+  }
+
+  if (
+    includesSiteViewsError(
+      error,
+      (candidate) =>
+        candidate instanceof DOMException &&
+        (candidate.name === "AbortError" || candidate.name === "TimeoutError")
+    )
+  ) {
+    return 504;
+  }
+
+  return 502;
 }
 
 function isSameOriginRequest(request: NextRequest) {
@@ -85,7 +131,10 @@ export async function GET() {
     return jsonResponse(result, result.available ? 200 : 503);
   } catch (error) {
     console.error("Site views total request failed:", error);
-    return jsonResponse({ error: "Site views are unavailable" }, 502);
+    return jsonResponse(
+      { error: "Site views are unavailable" },
+      siteViewsErrorStatus(error)
+    );
   }
 }
 
@@ -138,7 +187,6 @@ export async function POST(request: NextRequest) {
     if (
       !isExcluded &&
       process.env.NODE_ENV === "production" &&
-      result.available &&
       !isSiteViewsVisitorId(existingVisitorId)
     ) {
       configureVisitorCookie(response, visitorId);
@@ -147,6 +195,18 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("Site views record request failed:", error);
-    return jsonResponse({ error: "Site views are unavailable" }, 502);
+    const response = jsonResponse(
+      { error: "Site views are unavailable" },
+      siteViewsErrorStatus(error)
+    );
+    if (
+      !isExcluded &&
+      process.env.NODE_ENV === "production" &&
+      !isSiteViewsVisitorId(existingVisitorId)
+    ) {
+      configureVisitorCookie(response, visitorId);
+    }
+
+    return response;
   }
 }

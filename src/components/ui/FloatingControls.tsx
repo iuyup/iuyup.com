@@ -16,16 +16,14 @@ import {
   getSourceSlug,
   type TranslatedCollection,
 } from "@/lib/content-translations";
+import {
+  parseSiteViewsOwnerHash,
+} from "@/lib/site-views-core";
+import { loadSiteViewsForPath } from "@/lib/site-views-client";
 import styles from "./FloatingControls.module.css";
 
 const IDLE_DELAY_MS = 1100;
 const CLOSE_DELAY_MS = 220;
-const SITE_VIEWS_OWNER_HASH_PREFIX = "#site-views-owner=";
-const HOME_PAGE_PATHS = new Set(["/", "/en"]);
-
-function isMainLandingPath(pathname: string) {
-  return HOME_PAGE_PATHS.has(pathname);
-}
 
 function routeSlug(pathname: string, prefix: string) {
   if (!pathname.startsWith(`${prefix}/`)) {
@@ -138,31 +136,12 @@ function getReadingProgress(targetId?: string) {
   return Math.round(Math.min(100, Math.max(0, ((window.scrollY - start) / (end - start)) * 100)));
 }
 
-function isSiteViewsResponse(value: unknown): value is { total: number } {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "total" in value &&
-    typeof value.total === "number" &&
-    Number.isSafeInteger(value.total) &&
-    value.total >= 0
-  );
-}
-
-function siteViewsOwnerTokenFromHash() {
-  if (!window.location.hash.startsWith(SITE_VIEWS_OWNER_HASH_PREFIX)) {
-    return null;
-  }
-
-  try {
-    return decodeURIComponent(window.location.hash.slice(SITE_VIEWS_OWNER_HASH_PREFIX.length));
-  } catch {
-    return null;
-  }
-}
-
 function clearSiteViewsOwnerHash() {
-  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  window.history.replaceState(
+    window.history.state,
+    "",
+    `${window.location.pathname}${window.location.search}`
+  );
 }
 
 function formatSiteViews(total: number, locale: string) {
@@ -206,42 +185,27 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
 
   useEffect(() => {
     const controller = new AbortController();
+    let disposed = false;
 
     async function loadSiteViews() {
-      const ownerToken = siteViewsOwnerTokenFromHash();
-      const response = ownerToken
-        ? await fetch("/api/site-views", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "exclude-owner", token: ownerToken }),
-            cache: "no-store",
-            credentials: "same-origin",
-            signal: controller.signal,
-          })
-        : await fetch("/api/site-views", {
-            method: isMainLandingPath(pathname) ? "POST" : "GET",
-            ...(isMainLandingPath(pathname)
-              ? {
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ action: "record", pathname }),
-                }
-              : {}),
-            cache: "no-store",
-            credentials: "same-origin",
-            signal: controller.signal,
-          });
+      const rawOwnerHash = window.location.hash;
+      const ownerHash = parseSiteViewsOwnerHash(rawOwnerHash);
 
-      if (!response.ok || controller.signal.aborted) {
-        return;
-      }
-
-      const data: unknown = await response.json().catch(() => null);
-      if (isSiteViewsResponse(data) && !controller.signal.aborted) {
-        setSiteViews(data.total);
-      }
-
-      if (ownerToken && !controller.signal.aborted) {
-        clearSiteViewsOwnerHash();
+      const total = await loadSiteViewsForPath({
+        pathname,
+        ownerHash,
+        signal: controller.signal,
+        onOwnerHashResolved(disposition) {
+          if (
+            disposition === "clear" &&
+            window.location.hash === rawOwnerHash
+          ) {
+            clearSiteViewsOwnerHash();
+          }
+        },
+      });
+      if (total !== null && !disposed) {
+        setSiteViews(total);
       }
     }
 
@@ -251,7 +215,10 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
       }
     });
 
-    return () => controller.abort();
+    return () => {
+      disposed = true;
+      controller.abort();
+    };
   }, [pathname]);
 
   useEffect(() => {

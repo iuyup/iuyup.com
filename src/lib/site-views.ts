@@ -6,7 +6,13 @@ import {
   randomUUID,
   timingSafeEqual,
 } from "node:crypto";
-import { Redis } from "@upstash/redis";
+import { Redis, errors as redisErrors } from "@upstash/redis";
+import {
+  getSiteViewsRedisCredentialCandidates,
+  isHomePagePath,
+  isSameSiteViewsRedisEndpoint,
+  type SiteViewsRedisCredentials,
+} from "@/lib/site-views-core";
 
 const TOTAL_KEY = "selfweb:site-views:v1:total";
 const DEDUPE_KEY_PREFIX = "selfweb:site-views:v1:dedupe:";
@@ -22,7 +28,8 @@ export const SITE_VIEWS_VISITOR_COOKIE = "site-views-visitor";
 export const SITE_VIEWS_OWNER_COOKIE_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;
 export const SITE_VIEWS_VISITOR_COOKIE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 
-const HOME_PAGE_PATHS = new Set(["/", "/en"]);
+const REDIS_REQUEST_TIMEOUT_MS = 2500;
+const REDIS_RETRY_ATTEMPTS = 2;
 
 const RECORD_SITE_VIEW_SCRIPT = `
 local claimed = redis.call("SET", KEYS[2], "1", "NX", "EX", ARGV[1])
@@ -32,7 +39,13 @@ end
 return { redis.call("GET", KEYS[1]) or "0", 0 }
 `;
 
-let redisClient: Redis | null | undefined;
+interface SiteViewsRedisCandidate {
+  credentials: SiteViewsRedisCredentials;
+  client?: Redis;
+}
+
+let redisCandidates: SiteViewsRedisCandidate[] | undefined;
+let preferredRedisCandidate = 0;
 
 export interface SiteViewsResult {
   available: boolean;
@@ -40,28 +53,93 @@ export interface SiteViewsResult {
   total: number | null;
 }
 
-function configuredRedisUrl() {
-  return process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-}
-
-function configuredRedisToken() {
-  return process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-}
-
-function getRedisClient() {
-  if (redisClient !== undefined) {
-    return redisClient;
+function getRedisCandidates() {
+  if (redisCandidates !== undefined) {
+    return redisCandidates;
   }
 
-  const url = configuredRedisUrl();
-  const token = configuredRedisToken();
-  if (!url || !token) {
-    redisClient = null;
-    return redisClient;
+  redisCandidates = getSiteViewsRedisCredentialCandidates({
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    KV_REST_API_URL: process.env.KV_REST_API_URL,
+    KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
+  }).map((credentials) => ({ credentials }));
+
+  return redisCandidates;
+}
+
+function getRedisClient(candidate: SiteViewsRedisCandidate) {
+  if (candidate.client) {
+    return candidate.client;
   }
 
-  redisClient = new Redis({ url, token, enableTelemetry: false });
-  return redisClient;
+  candidate.client = new Redis({
+    url: candidate.credentials.url,
+    token: candidate.credentials.token,
+    enableTelemetry: false,
+    retry: {
+      retries: REDIS_RETRY_ATTEMPTS,
+      backoff: (retryCount) => 50 * 2 ** retryCount,
+    },
+    signal: () => AbortSignal.timeout(REDIS_REQUEST_TIMEOUT_MS),
+  });
+  return candidate.client;
+}
+
+function shouldTryCredentialFallback(error: unknown) {
+  if (error instanceof redisErrors.UrlError || error instanceof TypeError) {
+    return false;
+  }
+
+  return !(
+    error instanceof DOMException &&
+    (error.name === "AbortError" || error.name === "TimeoutError")
+  );
+}
+
+async function runRedisCommand<Result>(
+  command: (redis: Redis) => Promise<Result>
+): Promise<Result> {
+  const candidates = getRedisCandidates();
+  const firstCandidate = candidates[preferredRedisCandidate] ?? candidates[0];
+  if (!firstCandidate) {
+    throw new Error("Site views Redis is not configured");
+  }
+
+  const compatibleFallbacks = candidates.filter(
+    (candidate) =>
+      candidate !== firstCandidate &&
+      isSameSiteViewsRedisEndpoint(
+        candidate.credentials.url,
+        firstCandidate.credentials.url
+      )
+  );
+  const attempts = [firstCandidate, ...compatibleFallbacks];
+  const failures: unknown[] = [];
+
+  for (const candidate of attempts) {
+    try {
+      const result = await command(getRedisClient(candidate));
+      preferredRedisCandidate = candidates.indexOf(candidate);
+      return result;
+    } catch (error) {
+      failures.push(error);
+      if (!shouldTryCredentialFallback(error)) {
+        throw error;
+      }
+    }
+  }
+
+  if (failures.length === 1) {
+    throw failures[0];
+  }
+
+  throw new AggregateError(
+    failures,
+    `Site views Redis request failed for ${attempts
+      .map((candidate) => candidate.credentials.source)
+      .join(" and ")}`
+  );
 }
 
 function dedupeWindowSeconds() {
@@ -108,9 +186,7 @@ function dedupeKey(visitorId: string) {
   return `${DEDUPE_KEY_PREFIX}${visitorHash}`;
 }
 
-export function isHomePagePath(pathname: string) {
-  return HOME_PAGE_PATHS.has(pathname);
-}
+export { isHomePagePath };
 
 export function isSiteViewsVisitorId(value: string | undefined): value is string {
   return Boolean(value && VISITOR_ID_PATTERN.test(value));
@@ -144,12 +220,11 @@ export function getSiteViewsOwnerCookieValue() {
 }
 
 export async function getSiteViewsTotal(): Promise<SiteViewsResult> {
-  const redis = getRedisClient();
-  if (!redis) {
+  if (getRedisCandidates().length === 0) {
     return { available: false, counted: false, total: null };
   }
 
-  const total = await redis.get<unknown>(TOTAL_KEY);
+  const total = await runRedisCommand((redis) => redis.get<unknown>(TOTAL_KEY));
   return { available: true, counted: false, total: asTotal(total) };
 }
 
@@ -157,23 +232,21 @@ export async function recordSiteView(
   visitorId: string,
   isExcluded: boolean
 ): Promise<SiteViewsResult> {
-  const redis = getRedisClient();
-  if (!redis) {
+  if (getRedisCandidates().length === 0) {
     return { available: false, counted: false, total: null };
   }
 
   if (isExcluded || process.env.NODE_ENV !== "production") {
-    const total = await redis.get<unknown>(TOTAL_KEY);
+    const total = await runRedisCommand((redis) => redis.get<unknown>(TOTAL_KEY));
     return { available: true, counted: false, total: asTotal(total) };
   }
 
-  const [total, counted] = await redis.eval<
-    [string],
-    [number | string, number | string]
-  >(
-    RECORD_SITE_VIEW_SCRIPT,
-    [TOTAL_KEY, dedupeKey(visitorId)],
-    [String(dedupeWindowSeconds())]
+  const [total, counted] = await runRedisCommand((redis) =>
+    redis.eval<[string], [number | string, number | string]>(
+      RECORD_SITE_VIEW_SCRIPT,
+      [TOTAL_KEY, dedupeKey(visitorId)],
+      [String(dedupeWindowSeconds())]
+    )
   );
 
   return { available: true, counted: asTotal(counted) === 1, total: asTotal(total) };

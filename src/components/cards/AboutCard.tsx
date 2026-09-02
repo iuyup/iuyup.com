@@ -88,7 +88,7 @@ export function AboutCard({ tag = 'default', locale = 'zh-CN' }: AboutCardProps)
           {copy.paragraphs.map((paragraph) => (
             <p
               key={paragraph}
-              className="text-base leading-[1.8] whitespace-normal text-left"
+              className="type-summary text-base whitespace-normal text-left"
               style={{ color: variant.textSecondary }}
             >
               {paragraph}
@@ -96,7 +96,7 @@ export function AboutCard({ tag = 'default', locale = 'zh-CN' }: AboutCardProps)
           ))}
         </div>
         <div className="mt-auto pt-6 w-full text-left">
-          <p className="text-xs" style={{ color: variant.textSecondary }}>Think in decades, act in days.</p>
+          <p className="font-interface text-xs" style={{ color: variant.textSecondary }}>Think in decades, act in days.</p>
         </div>
         </motion.div>
       </Link>

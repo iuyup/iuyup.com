@@ -63,10 +63,10 @@ export function ProjectCard({ index, project }: ProjectCardProps) {
             {resolved.tag}
           </motion.span>
         </motion.span>
-        <h3 className="mt-8 text-3xl lg:text-4xl leading-tight text-[#2C2C2C] font-serif text-center">
+        <h3 className="type-heading mt-8 text-3xl lg:text-4xl text-[#2C2C2C] text-center">
           {resolved.title}
         </h3>
-        <p className="my-auto text-sm leading-relaxed text-center" style={{ color: '#5a5a5a' }}>
+        <p className="type-summary my-auto text-sm text-center" style={{ color: '#5a5a5a' }}>
           {resolved.desc}
         </p>
         <span className="border border-[#2C2C2C]/30 text-[#2C2C2C] text-xs tracking-widest uppercase px-6 py-3 rounded-full hover:bg-white/20 transition-all self-center">

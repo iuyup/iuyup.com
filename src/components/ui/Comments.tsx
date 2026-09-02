@@ -11,7 +11,7 @@ export default function Comments({ locale = "zh-CN" }: CommentsProps) {
 
   return (
     <section className="border-t border-[#958C80] pt-8">
-      <h2 className="mb-6 font-serif text-2xl font-semibold tracking-tight text-[var(--article-ink)]">
+      <h2 className="type-heading mb-6 text-2xl font-semibold text-[var(--article-ink)]">
         {isEnglish ? "Discussion" : "讨论"}
       </h2>
       <div className="[&_iframe]:!w-full [&_iframe]:!max-w-full">

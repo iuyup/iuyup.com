@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500&family=Source+Serif+4:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @import "tailwindcss";
 @import "highlight.js/styles/github-dark.css";
 
@@ -11,20 +9,20 @@
    * 2. Locale stacks control Chinese and English fallback order independently.
    * 3. Components consume semantic roles only, never a concrete family name.
    */
-  --font-family-serif-latin: "Source Serif 4";
-  --font-family-serif-cjk: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", SimSun;
-  --font-family-sans-latin: Inter;
-  --font-family-sans-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei";
-  --font-family-mono-latin: "JetBrains Mono";
-  --font-family-brand-latin: Caveat;
+  --font-family-serif-latin: var(--font-source-serif-4), "Source Serif 4";
+  --font-family-serif-cjk: var(--font-noto-serif-sc), "Noto Serif SC", "Songti SC", "STSong", SimSun;
+  --font-family-sans-latin: var(--font-source-sans-3), "Source Sans 3";
+  --font-family-sans-cjk: var(--font-noto-sans-sc), "Noto Sans SC", "PingFang SC", "Microsoft YaHei";
+  --font-family-mono-latin: var(--font-jetbrains-mono), "JetBrains Mono";
+  --font-family-brand-latin: var(--font-caveat), Caveat;
 
-  --font-stack-body-zh: var(--font-family-serif-latin), var(--font-family-sans-cjk), ui-serif, Georgia, serif;
-  --font-stack-body-en: var(--font-family-serif-latin), var(--font-family-sans-cjk), ui-serif, Georgia, serif;
   --font-stack-reading-zh: var(--font-family-serif-cjk), var(--font-family-serif-latin), ui-serif, Georgia, serif;
   --font-stack-reading-en: var(--font-family-serif-latin), var(--font-family-serif-cjk), ui-serif, Georgia, serif;
   --font-stack-interface-zh: var(--font-family-sans-cjk), var(--font-family-sans-latin), system-ui, sans-serif;
   --font-stack-interface-en: var(--font-family-sans-latin), var(--font-family-sans-cjk), system-ui, sans-serif;
-  --font-stack-code: ui-monospace, "SFMono-Regular", Consolas, var(--font-family-mono-latin), var(--font-family-sans-cjk), monospace;
+  --font-stack-body-zh: var(--font-stack-interface-zh);
+  --font-stack-body-en: var(--font-stack-interface-en);
+  --font-stack-code: var(--font-family-mono-latin), ui-monospace, "SFMono-Regular", Consolas, var(--font-family-sans-cjk), monospace;
   --font-stack-brand: var(--font-family-brand-latin), "Segoe Print", cursive;
 
   --font-body: var(--font-stack-body-zh);
@@ -33,21 +31,45 @@
   --font-interface: var(--font-stack-interface-zh);
   --font-code: var(--font-stack-code);
   --font-brand: var(--font-stack-brand);
+
+  --type-display-line-height: 1.12;
+  --type-display-letter-spacing: -0.01em;
+  --type-heading-line-height: 1.35;
+  --type-heading-letter-spacing: -0.005em;
+  --type-summary-line-height: 1.78;
+  --type-reading-line-height: 1.9;
+  --type-interface-line-height: 1.55;
+  --type-code-line-height: 1.5;
+  --type-code-letter-spacing: 0.06em;
 }
 
-:where([lang^="zh"]) {
+[lang^="zh"] {
   --font-body: var(--font-stack-body-zh);
   --font-reading: var(--font-stack-reading-zh);
   --font-heading: var(--font-reading);
   --font-interface: var(--font-stack-interface-zh);
+  --type-display-line-height: 1.12;
+  --type-display-letter-spacing: -0.01em;
+  --type-heading-line-height: 1.35;
+  --type-heading-letter-spacing: -0.005em;
+  --type-summary-line-height: 1.78;
+  --type-reading-line-height: 1.9;
+  --type-code-letter-spacing: 0.06em;
   font-family: var(--font-body);
 }
 
-:where([lang^="en"]) {
+[lang^="en"] {
   --font-body: var(--font-stack-body-en);
   --font-reading: var(--font-stack-reading-en);
   --font-heading: var(--font-reading);
   --font-interface: var(--font-stack-interface-en);
+  --type-display-line-height: 1.06;
+  --type-display-letter-spacing: -0.035em;
+  --type-heading-line-height: 1.28;
+  --type-heading-letter-spacing: -0.02em;
+  --type-summary-line-height: 1.68;
+  --type-reading-line-height: 1.75;
+  --type-code-letter-spacing: 0.08em;
   font-family: var(--font-body);
 }
 
@@ -84,13 +106,63 @@
 
 body {
   font-family: var(--font-body);
+  line-height: var(--type-interface-line-height);
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
 
+.font-reading {
+  font-family: var(--font-reading);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-interface {
+  font-family: var(--font-interface);
+}
+
+.font-code {
+  font-family: var(--font-code);
+}
+
 .font-brand {
   font-family: var(--font-brand);
+}
+
+.type-display {
+  font-family: var(--font-heading);
+  letter-spacing: var(--type-display-letter-spacing);
+  line-height: var(--type-display-line-height);
+}
+
+.type-heading {
+  font-family: var(--font-heading);
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
+}
+
+.type-summary {
+  font-family: var(--font-reading);
+  line-height: var(--type-summary-line-height);
+}
+
+.type-reading {
+  font-family: var(--font-reading);
+  line-height: var(--type-reading-line-height);
+}
+
+.type-interface {
+  font-family: var(--font-interface);
+  line-height: var(--type-interface-line-height);
+}
+
+.type-code {
+  font-family: var(--font-code);
+  letter-spacing: var(--type-code-letter-spacing);
+  line-height: var(--type-code-line-height);
 }
 
 html {

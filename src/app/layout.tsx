@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import FloatingControls from "@/components/ui/FloatingControls";
 import Chat from "@/components/chat/Chat";
 import { DEFAULT_OG_IMAGE_PATH, RSS_URL, SITE_URL } from "@/lib/site";
+import { rootFontVariables } from "./fonts";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -51,7 +52,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      lang="zh-CN"
+      className={rootFontVariables}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head />
       <body>
         <ThemeProvider>

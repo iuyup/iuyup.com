@@ -64,9 +64,9 @@
 
 .brand {
   color: var(--about-ink);
-  font-family: var(--font-heading);
+  font-family: var(--font-brand);
   font-size: 1.25rem;
-  font-style: italic;
+  font-style: normal;
   line-height: 1;
   text-decoration: none;
 }
@@ -77,7 +77,7 @@
   color: var(--about-muted);
   font-family: var(--font-code);
   font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--type-code-letter-spacing);
   text-transform: uppercase;
 }
 
@@ -132,8 +132,8 @@
   color: var(--about-muted);
   font-family: var(--font-code);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  line-height: 1.55;
+  letter-spacing: var(--type-code-letter-spacing);
+  line-height: var(--type-code-line-height);
   text-transform: uppercase;
 }
 
@@ -163,8 +163,8 @@
   color: var(--about-ink);
   font-size: clamp(2.3rem, 5.2vw, 4.1rem);
   font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 1.12;
+  letter-spacing: var(--type-display-letter-spacing);
+  line-height: var(--type-display-line-height);
 }
 
 .lead {
@@ -172,7 +172,7 @@
   margin: 0;
   color: var(--about-muted);
   font-size: clamp(1.07rem, 1.7vw, 1.25rem);
-  line-height: 1.9;
+  line-height: var(--type-summary-line-height);
 }
 
 .section {
@@ -191,14 +191,15 @@
   color: var(--about-ink);
   font-size: clamp(1.45rem, 3vw, 1.85rem);
   font-weight: 700;
-  letter-spacing: -0.035em;
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
 }
 
 .prose p {
   margin: 0;
   color: var(--about-muted);
   font-size: 1.02rem;
-  line-height: 2;
+  line-height: var(--type-reading-line-height);
 }
 
 .prose p + p {
@@ -213,7 +214,7 @@
   padding: 0;
   color: var(--about-muted);
   font-size: 0.98rem;
-  line-height: 1.65;
+  line-height: var(--type-summary-line-height);
   list-style: none;
 }
 
@@ -261,6 +262,8 @@
   color: var(--about-ink);
   font-size: 1.05rem;
   font-weight: 700;
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
 }
 
 .feedDescription,
@@ -269,7 +272,7 @@
   margin-top: 0.25rem;
   color: var(--about-muted);
   font-size: 0.91rem;
-  line-height: 1.7;
+  line-height: var(--type-summary-line-height);
 }
 
 .feedUrl {
@@ -329,6 +332,8 @@
 .externalFeeds strong {
   font-size: 0.98rem;
   font-weight: 700;
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
 }
 
 .externalFeeds small {
@@ -340,7 +345,7 @@
   margin: 0;
   color: var(--about-muted);
   font-size: 1rem;
-  line-height: 1.8;
+  line-height: var(--type-summary-line-height);
 }
 
 .contactLinks {
@@ -388,7 +393,8 @@
   color: var(--about-ink);
   font-size: 1.32rem;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
 }
 
 .timelineList {
@@ -440,13 +446,15 @@
   color: var(--about-ink);
   font-size: 1.01rem;
   font-weight: 700;
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
 }
 
 .timelineList p {
   margin: 0.35rem 0 0;
   color: var(--about-muted);
   font-size: 0.87rem;
-  line-height: 1.7;
+  line-height: var(--type-summary-line-height);
 }
 
 .footer {
@@ -458,7 +466,7 @@
   color: var(--about-muted);
   font-family: var(--font-code);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--type-code-letter-spacing);
   text-transform: uppercase;
 }
 

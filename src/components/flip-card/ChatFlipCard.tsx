@@ -129,7 +129,7 @@ export function ChatFlipCard({ tag = 'default', locale = 'zh-CN' }: ChatFlipCard
               <circle cx="24" cy="24" r="8" fill="#6B8DAE" opacity="0.4" />
             </svg>
           </div>
-          <span className="text-xl font-serif text-[#2C2C2C]">Chat with T</span>
+          <span className="type-heading text-xl text-[#2C2C2C]">Chat with T</span>
           <span className="text-sm mt-1" style={{ color: variant.textSecondary }}>{copy.subtitle}</span>
         </div>
 

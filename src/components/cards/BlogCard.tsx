@@ -63,7 +63,7 @@ export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardPr
               Blog
             </motion.span>
           </motion.span>
-          <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words mt-4 text-center">
+          <h3 className="type-heading text-2xl md:text-3xl text-[#2C2C2C] break-words mt-4 text-center">
             {post.title}
           </h3>
           <img
@@ -79,7 +79,7 @@ export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardPr
             })}
           </time>
           {post.summary && (
-            <p className="text-sm mt-3 leading-relaxed text-center" style={{ color: variant.textSecondary }}>
+            <p className="type-summary text-sm mt-3 text-center" style={{ color: variant.textSecondary }}>
               {post.summary}
             </p>
           )}
@@ -138,10 +138,10 @@ function JournalLinkCard({ tag = 'default', href, label, title, description, act
             </motion.span>
           </motion.span>
           <div className="my-6">
-            <h3 className="text-2xl md:text-3xl leading-tight text-[#2C2C2C] font-serif break-words">
+            <h3 className="type-heading text-2xl md:text-3xl text-[#2C2C2C] break-words">
               {title}
             </h3>
-            <p className="text-sm mt-2" style={{ color: variant.textSecondary }}>
+            <p className="type-summary text-sm mt-2" style={{ color: variant.textSecondary }}>
               {description}
             </p>
           </div>

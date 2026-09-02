@@ -73,8 +73,8 @@
   color: var(--article-muted);
   font-family: var(--font-code);
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  line-height: 1.55;
+  letter-spacing: var(--type-code-letter-spacing);
+  line-height: var(--type-code-line-height);
 }
 
 .eyebrow {
@@ -88,11 +88,17 @@
   font-family: var(--font-heading);
   font-size: clamp(2.1rem, 3vw, 3.1rem);
   font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1.04;
+  letter-spacing: var(--type-display-letter-spacing);
+  line-height: var(--type-display-line-height);
   margin: 0;
   overflow-wrap: anywhere;
   text-wrap: balance;
+}
+
+@media (min-width: 821px) {
+  .page[lang="zh-CN"] .title {
+    font-size: clamp(1.9rem, 2.4vw, 2.55rem);
+  }
 }
 
 .tags {
@@ -123,7 +129,7 @@
   display: inline-flex;
   font-family: var(--font-code);
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--type-code-letter-spacing);
   margin: 0;
   padding: 0;
   text-decoration: none;
@@ -177,8 +183,8 @@
   color: var(--article-muted);
   font-family: var(--font-code);
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  line-height: 1.55;
+  letter-spacing: var(--type-code-letter-spacing);
+  line-height: var(--type-code-line-height);
   margin: 0;
   white-space: nowrap;
 }
@@ -187,7 +193,7 @@
   color: var(--article-muted);
   font-family: var(--font-reading);
   font-size: clamp(1rem, 1.15vw, 1.08rem);
-  line-height: 1.72;
+  line-height: var(--type-summary-line-height);
   margin: 1.45rem 0 0;
   max-width: 42rem;
 }
@@ -196,7 +202,7 @@
   color: #4b453f;
   font-family: var(--font-reading);
   font-size: clamp(1.04rem, 1.25vw, 1.15rem);
-  line-height: 2;
+  line-height: var(--type-reading-line-height);
   padding-top: 1.9rem;
   scroll-margin-top: 1.5rem;
 }
@@ -224,6 +230,8 @@
 .prose h4 {
   color: var(--article-ink);
   font-family: var(--font-heading);
+  letter-spacing: var(--type-heading-letter-spacing);
+  line-height: var(--type-heading-line-height);
   scroll-margin-top: 1.5rem;
 }
 
@@ -231,15 +239,12 @@
 .prose h2 {
   font-size: clamp(1.45rem, 1.8vw, 1.85rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.28;
   margin: 3.4rem 0 1.1rem;
 }
 
 .prose h3 {
   font-size: 1.28rem;
   font-weight: 700;
-  line-height: 1.45;
   margin: 3rem 0 1rem;
 }
 
@@ -371,7 +376,7 @@
   font-family: var(--font-code);
   font-size: 0.7rem;
   justify-content: space-between;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--type-code-letter-spacing);
   margin: 0 auto;
   max-width: 1080px;
   text-transform: uppercase;
@@ -379,9 +384,9 @@
 
 .footerBrand {
   color: var(--article-ink);
-  font-family: var(--font-heading);
+  font-family: var(--font-brand);
   font-size: 1rem;
-  font-style: italic;
+  font-style: normal;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -502,7 +507,6 @@
 
   .prose {
     font-size: 1.02rem;
-    line-height: 1.9;
   }
 
   .prose h1,

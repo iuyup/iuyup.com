@@ -10,7 +10,7 @@ import JsonLd from "@/components/JsonLd";
 import type { ContentDocument } from "@/lib/content";
 import type { HomeLocale } from "@/lib/home-content";
 import { DEFAULT_OG_IMAGE_PATH, SITE_URL, toAbsoluteSiteUrl } from "@/lib/site";
-import styles from "@/app/posts/[slug]/post.module.css";
+import styles from "@/app/(zh)/posts/[slug]/post.module.css";
 
 interface JournalEntryProps {
   entry: ContentDocument;

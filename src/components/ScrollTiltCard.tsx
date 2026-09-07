@@ -26,7 +26,7 @@ export default function ScrollTiltCard({
 
   return (
     <div
-      className={`scroll-tilt-perspective transition-all duration-700 ease-out ${className ?? ''}`}
+      className={`w-full scroll-tilt-perspective transition-all duration-700 ease-out ${className ?? ''}`}
       style={{ perspective: '800px' }}
     >
       <div

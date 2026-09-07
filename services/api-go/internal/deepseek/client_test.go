@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/iuyup/selfweb/services/api-go/internal/chat"
@@ -88,6 +89,27 @@ func TestOpenChatStreamUsesPromptBuilder(t *testing.T) {
 }
 
 type promptBuilderFunc func(basePrompt, query string) string
+
+func TestEnglishChatUsesEnglishSystemInstruction(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var payload completionRequest
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+		prompt := payload.Messages[0].Content
+		if !strings.Contains(prompt, "Reply in English") || strings.Contains(prompt, "用简洁友好的中文回答") {
+			t.Errorf("wrong language instruction: %s", prompt)
+		}
+		_, _ = w.Write([]byte("data: [DONE]\n"))
+	}))
+	defer server.Close()
+	client := NewClient(Config{APIKey: "test", BaseURL: server.URL, Model: "test"})
+	stream, err := client.OpenChatStream(chat.WithLocale(context.Background(), "en"), []chat.Message{{Role: "user", Content: "Hello"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	stream.Close()
+}
 
 func (builder promptBuilderFunc) BuildSystemPrompt(basePrompt, query string) string {
 	return builder(basePrompt, query)

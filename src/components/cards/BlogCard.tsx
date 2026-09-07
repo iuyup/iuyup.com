@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 import type { HomeLocale } from '@/lib/home-content';
 
@@ -66,11 +67,16 @@ export function BlogCard({ post, tag = 'default', locale = 'zh-CN' }: BlogCardPr
           <h3 className="type-heading text-2xl md:text-3xl text-[#2C2C2C] break-words mt-4 text-center">
             {post.title}
           </h3>
-          <img
-            src={post.image || "/blog-placeholder.svg"}
-            alt={isEnglish ? `Cover image for “${post.title}”` : `${post.title} 的封面图`}
-            className="w-full h-auto object-cover rounded-xl mt-4 shadow-md"
-          />
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl mt-4 shadow-md">
+            <Image
+              src={post.image || "/blog-placeholder.svg"}
+              alt={isEnglish ? `Cover image for “${post.title}”` : `${post.title} 的封面图`}
+              fill
+              sizes="(min-width: 1400px) 360px, (min-width: 1024px) 28vw, 85vw"
+              unoptimized={Boolean(post.image && !post.image.startsWith('/'))}
+              className="object-cover"
+            />
+          </div>
           <time className="text-base mt-4 text-center" style={{ color: variant.textSecondary }}>
             {new Date(post.date).toLocaleDateString(isEnglish ? 'en-US' : 'zh-CN', {
               month: isEnglish ? 'short' : '2-digit',

@@ -6,3 +6,6 @@
 !content/
 !content/posts/
 !content/posts/**
+!content/notes/
+!content/notes/**
+!content/local-publications.json

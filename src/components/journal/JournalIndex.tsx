@@ -3,7 +3,7 @@ import JsonLd from "@/components/JsonLd";
 import type { ContentItem } from "@/lib/content";
 import type { HomeLocale } from "@/lib/home-content";
 import { SITE_URL } from "@/lib/site";
-import styles from "@/app/posts/posts.module.css";
+import styles from "@/app/(zh)/posts/posts.module.css";
 
 interface JournalIndexProps {
   entries: ContentItem[];

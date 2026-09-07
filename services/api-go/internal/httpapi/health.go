@@ -95,13 +95,15 @@ func chatHandler(logger *slog.Logger, config Config) http.HandlerFunc {
 			return
 		}
 
-		messages, err := decodeMessages(writer, request, config.MaxRequestBodyBytes)
+		_ = http.NewResponseController(writer).SetReadDeadline(time.Now().Add(10 * time.Second))
+		messages, locale, err := decodeMessages(writer, request, config.MaxRequestBodyBytes)
 		if err != nil {
 			writeError(writer, http.StatusBadRequest, "invalid chat request")
 			return
 		}
+		_ = http.NewResponseController(writer).SetReadDeadline(time.Time{})
 
-		requestContext, cancel := context.WithTimeout(request.Context(), config.RequestTimeout)
+		requestContext, cancel := context.WithTimeout(chat.WithLocale(request.Context(), locale), config.RequestTimeout)
 		defer cancel()
 
 		stream, err := config.Chat.OpenChatStream(requestContext, messages)
@@ -130,13 +132,18 @@ func chatHandler(logger *slog.Logger, config Config) http.HandlerFunc {
 			flusher.Flush()
 			return nil
 		})
-		if err != nil && !errors.Is(err, context.Canceled) {
-			logger.Error("stream chat response", "error", err)
+		if err != nil {
+			if !errors.Is(err, context.Canceled) {
+				logger.Error("stream chat response", "error", err)
+			}
+			// Headers may already be sent: terminate the stream so clients do not
+			// mistake a partial provider response for a completed answer.
+			panic(http.ErrAbortHandler)
 		}
 	}
 }
 
-func decodeMessages(writer http.ResponseWriter, request *http.Request, maxBytes int64) ([]chat.Message, error) {
+func decodeMessages(writer http.ResponseWriter, request *http.Request, maxBytes int64) ([]chat.Message, string, error) {
 	request.Body = http.MaxBytesReader(writer, request.Body, maxBytes)
 	defer request.Body.Close()
 
@@ -145,13 +152,14 @@ func decodeMessages(writer http.ResponseWriter, request *http.Request, maxBytes 
 
 	var payload chat.Request
 	if err := decoder.Decode(&payload); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	if err := decoder.Decode(&struct{}{}); err != io.EOF {
-		return nil, errors.New("request body must contain one JSON object")
+		return nil, "", errors.New("request body must contain one JSON object")
 	}
 
-	return payload.ValidatedMessages()
+	messages, err := payload.ValidatedMessages()
+	return messages, payload.Locale, err
 }
 
 func clientAddress(request *http.Request, trustedProxyToken string) string {

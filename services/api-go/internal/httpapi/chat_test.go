@@ -20,9 +20,11 @@ type fakeChatProvider struct {
 	body     string
 	err      error
 	requests [][]chat.Message
+	locales  []string
 }
 
-func (provider *fakeChatProvider) OpenChatStream(_ context.Context, messages []chat.Message) (io.ReadCloser, error) {
+func (provider *fakeChatProvider) OpenChatStream(ctx context.Context, messages []chat.Message) (io.ReadCloser, error) {
+	provider.locales = append(provider.locales, chat.Locale(ctx))
 	provider.requests = append(provider.requests, append([]chat.Message(nil), messages...))
 	if provider.err != nil {
 		return nil, provider.err
@@ -79,6 +81,19 @@ func TestChatRateLimit(t *testing.T) {
 	second := performChatRequest(handler, `{"messages":[{"role":"user","content":"second"}]}`)
 	if second.Code != http.StatusTooManyRequests {
 		t.Fatalf("second status = %d, want %d", second.Code, http.StatusTooManyRequests)
+	}
+}
+
+func TestChatLocaleIsValidatedAndForwarded(t *testing.T) {
+	provider := &fakeChatProvider{body: "data: [DONE]\n"}
+	handler := newTestHandler(provider, 10)
+	response := performChatRequest(handler, `{"locale":"en","messages":[{"role":"user","content":"hello"}]}`)
+	if response.Code != http.StatusOK || len(provider.locales) != 1 || provider.locales[0] != "en" {
+		t.Fatalf("locale was not forwarded: %d %#v", response.Code, provider.locales)
+	}
+	response = performChatRequest(handler, `{"locale":"invented","messages":[{"role":"user","content":"hello"}]}`)
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("invalid locale status = %d", response.Code)
 	}
 }
 

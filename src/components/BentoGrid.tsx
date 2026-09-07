@@ -56,7 +56,7 @@ function stableOrder(value: string): number {
 
 export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
   const topPost = posts[0];
-  const restPosts = posts.slice(1);
+  const restPosts = posts.slice(1, 6);
   const projects = projectsByLocale[locale];
 
   const projectItems: UnifiedItem[] = projects.map((p) => ({ ...p, type: 'project', slug: p.href, date: '', summary: p.desc, tags: [p.tag], image: undefined }));
@@ -80,7 +80,7 @@ export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
   function renderItem(item: UnifiedItem) {
     if (item.type === 'project') {
       return (
-        <ScrollTiltCard key={item.slug}>
+        <ScrollTiltCard key={item.slug} className="order-10 lg:order-none">
           <ProjectCard
             project={{
               title: item.title,
@@ -95,13 +95,13 @@ export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
     }
     if (item.type === 'album') {
       return (
-        <ScrollTiltCard key={item.slug}>
+        <ScrollTiltCard key={item.slug} className="order-10 lg:order-none">
           <AlbumCard album={{ cover: item.cover!, url: item.slug, name: item.title, artist: item.artist! }} />
         </ScrollTiltCard>
       );
     }
     return (
-      <ScrollTiltCard key={item.slug}>
+      <ScrollTiltCard key={item.slug} className="order-10 lg:order-none">
         <BlogCard post={item as Post} tag="blog" locale={locale} />
       </ScrollTiltCard>
     );
@@ -111,12 +111,12 @@ export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
     <section className="relative z-10 max-w-[1400px] mx-auto px-6 py-12">
       <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
         {/* Column 1: About + topPost */}
-        <div className="flex-1 flex flex-col gap-8 w-full">
-          <ScrollTiltCard>
+        <div className="contents lg:flex lg:flex-1 lg:flex-col lg:gap-8 lg:w-full">
+          <ScrollTiltCard className="order-1 lg:order-none">
             <AboutCard locale={locale} />
           </ScrollTiltCard>
           {topPost && (
-            <ScrollTiltCard>
+            <ScrollTiltCard className="order-4 lg:order-none">
               <BlogCard post={topPost} tag="blog" locale={locale} />
             </ScrollTiltCard>
           )}
@@ -124,32 +124,32 @@ export default function BentoGrid({ posts, locale = 'zh-CN' }: BentoGridProps) {
         </div>
 
         {/* Column 2: Guestbook + ThemeToggle */}
-        <div className="flex-1 flex flex-col gap-8 w-full">
-          <ScrollTiltCard>
+        <div className="contents lg:flex lg:flex-1 lg:flex-col lg:gap-8 lg:w-full">
+          <ScrollTiltCard className="order-6 lg:order-none">
             <GuestbookFlipCard tag="Guestbook" />
           </ScrollTiltCard>
-          <ScrollTiltCard>
+          <ScrollTiltCard className="order-10 lg:order-none">
             <WeatherCard />
           </ScrollTiltCard>
           {col2Items.map(renderItem)}
         </div>
 
         {/* Column 3: Chat + BlogLinkCard */}
-        <div className="flex-1 flex flex-col gap-8 w-full">
-          <ScrollTiltCard>
+        <div className="contents lg:flex lg:flex-1 lg:flex-col lg:gap-8 lg:w-full">
+          <ScrollTiltCard className="order-5 lg:order-none">
             <ChatFlipCard tag="Chat" locale={locale} />
           </ScrollTiltCard>
-          <ScrollTiltCard>
+          <ScrollTiltCard className="order-2 lg:order-none">
             <BlogLinkCard tag="blog" locale={locale} />
           </ScrollTiltCard>
-          <ScrollTiltCard>
+          <ScrollTiltCard className="order-3 lg:order-none">
             <NoteLinkCard tag="blog" locale={locale} />
           </ScrollTiltCard>
-          <ScrollTiltCard>
+          <ScrollTiltCard className="order-10 lg:order-none">
             <SocialLinksCard locale={locale} />
           </ScrollTiltCard>
           {col3Items.map(renderItem)}
-          <ScrollTiltCard>
+          <ScrollTiltCard className="order-10 lg:order-none">
             <WeatherCard city={SECOND_WEATHER_CITY} />
           </ScrollTiltCard>
         </div>

@@ -7,6 +7,8 @@ RUN cd services/api-go && go mod download
 
 COPY services/api-go ./services/api-go
 COPY content/posts ./content/posts
+COPY content/notes ./content/notes
+COPY content/local-publications.json ./content/local-publications.json
 
 WORKDIR /src/services/api-go
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/selfweb-api ./cmd/api
@@ -17,8 +19,11 @@ WORKDIR /app
 
 COPY --from=build --chown=nonroot:nonroot /out/selfweb-api ./selfweb-api
 COPY --from=build --chown=nonroot:nonroot /src/content/posts /content/posts
+COPY --from=build --chown=nonroot:nonroot /src/content/notes /content/notes
+COPY --from=build --chown=nonroot:nonroot /src/content/local-publications.json /content/local-publications.json
 
 ENV POSTS_DIR=/content/posts
+ENV CONTENT_DIR=/content
 EXPOSE 8080
 USER nonroot:nonroot
 

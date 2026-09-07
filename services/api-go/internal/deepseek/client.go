@@ -72,8 +72,20 @@ type completionRequest struct {
 // OpenChatStream opens, but does not parse, the provider's SSE response.
 func (client *Client) OpenChatStream(ctx context.Context, messages []chat.Message) (io.ReadCloser, error) {
 	systemPrompt := personaPrompt
-	if client.prompt != nil {
+	if builder, ok := client.prompt.(interface {
+		BuildSystemPromptContext(context.Context, string, string) (string, error)
+	}); ok {
+		var err error
+		systemPrompt, err = builder.BuildSystemPromptContext(ctx, personaPrompt, messages[len(messages)-1].Content)
+		if err != nil {
+			return nil, fmt.Errorf("refresh published content: %w", err)
+		}
+	} else if client.prompt != nil {
 		systemPrompt = client.prompt.BuildSystemPrompt(personaPrompt, messages[len(messages)-1].Content)
+	}
+	if chat.Locale(ctx) == "en" {
+		systemPrompt = strings.ReplaceAll(systemPrompt, "用简洁友好的中文回答", "用简洁友好的英文回答")
+		systemPrompt += "\nThe visitor is using the English site. Reply in English, in plain text."
 	}
 
 	payload := completionRequest{

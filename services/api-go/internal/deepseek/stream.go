@@ -51,5 +51,5 @@ func ForEachContent(stream io.Reader, write func(string) error) error {
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("read stream: %w", err)
 	}
-	return nil
+	return io.ErrUnexpectedEOF
 }

@@ -1,3 +1,5 @@
+import { mergeLocalPublications, readFromContentSource } from "@/lib/content-source";
+import localPublications from "../../content/local-publications.json";
 import type { ContentCollection, ContentDocument, ContentFrontmatter, ContentItem } from "@/lib/content";
 import { getAllContent, getContentBySlug } from "@/lib/content";
 import { sanityClient } from "@/sanity/lib/client";
@@ -20,6 +22,8 @@ interface SanityJournalEntry {
   contentFormat?: "markdown" | "mdx";
 }
 
+const localPublicationSlugs: Record<ContentCollection, string[]> = localPublications;
+
 const queries = {
   posts: {
     all: ALL_POSTS_QUERY,
@@ -33,7 +37,6 @@ const queries = {
   },
 } as const;
 
-const warnedCollections = new Set<ContentCollection>();
 
 function getSanityCacheOptions(cacheTag: string, slug?: string) {
   // A developer often creates or publishes content while the local server is
@@ -103,16 +106,6 @@ function toContentDocument(entry: SanityJournalEntry): ContentDocument | null {
   };
 }
 
-function warnAndFallback(collection: ContentCollection, error: unknown) {
-  if (warnedCollections.has(collection)) {
-    return;
-  }
-
-  warnedCollections.add(collection);
-  const reason = error instanceof Error ? error.message : "unknown error";
-  console.warn(`[Sanity] ${collection} query failed; using local Markdown fallback: ${reason}`);
-}
-
 async function fetchAllSanityContent(collection: ContentCollection): Promise<ContentItem[]> {
   const { all, cacheTag } = queries[collection];
 
@@ -128,8 +121,7 @@ async function fetchAllSanityContent(collection: ContentCollection): Promise<Con
       .filter((entry): entry is ContentItem => entry !== null)
       .sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
   } catch (error) {
-    warnAndFallback(collection, error);
-    return [];
+    throw new Error(`Sanity ${collection} is unavailable`, { cause: error });
   }
 }
 
@@ -148,32 +140,23 @@ async function fetchSanityContentBySlug(
 
     return entry ? toContentDocument(entry) : null;
   } catch (error) {
-    warnAndFallback(collection, error);
-    return null;
+    throw new Error(`Sanity ${collection} is unavailable`, { cause: error });
   }
 }
 
 export async function getAllContentWithCms(collection: ContentCollection): Promise<ContentItem[]> {
-  const [sanityEntries, localEntries] = await Promise.all([
-    fetchAllSanityContent(collection),
-    Promise.resolve(getAllContent(collection)),
-  ]);
-  const remoteSlugs = new Set(sanityEntries.map((entry) => entry.slug));
-
-  return [...sanityEntries, ...localEntries.filter((entry) => !remoteSlugs.has(entry.slug))].sort(
-    (left, right) => new Date(right.date).getTime() - new Date(left.date).getTime()
-  );
+  return readFromContentSource(process.env.CONTENT_SOURCE,
+    async () => mergeLocalPublications(await fetchAllSanityContent(collection), getAllContent(collection), localPublicationSlugs[collection])
+      .sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime()),
+    () => getAllContent(collection));
 }
 
-export async function getContentBySlugWithCms(
-  collection: ContentCollection,
-  rawSlug: string
-): Promise<ContentDocument | null> {
+export async function getContentBySlugWithCms(collection: ContentCollection, rawSlug: string): Promise<ContentDocument | null> {
   const slug = normalizeSlug(rawSlug);
-  if (!slug) {
-    return null;
-  }
-
-  const sanityEntry = await fetchSanityContentBySlug(collection, slug);
-  return sanityEntry ?? getContentBySlug(collection, slug);
+  if (!slug) return null;
+  return readFromContentSource(process.env.CONTENT_SOURCE,
+    async () => {
+      const entry = await fetchSanityContentBySlug(collection, slug);
+      return entry ?? (localPublicationSlugs[collection].includes(slug) ? getContentBySlug(collection, slug) : null);
+    }, () => getContentBySlug(collection, slug));
 }

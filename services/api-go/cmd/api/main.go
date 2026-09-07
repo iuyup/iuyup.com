@@ -90,6 +90,19 @@ func newChatClient(logger *slog.Logger, promptBuilder deepseek.PromptBuilder) ch
 }
 
 func newPromptBuilder(logger *slog.Logger) deepseek.PromptBuilder {
+	if envOrDefault("CONTENT_SOURCE", "sanity") != "local" {
+		source, err := rag.NewSanitySource(envOrDefault("SANITY_PROJECT_ID", "rnbye9v9"), envOrDefault("SANITY_DATASET", "production"), logger)
+		if err != nil {
+			logger.Error("invalid published retrieval configuration", "error", err)
+			os.Exit(1)
+		}
+		if err := source.LoadLocalPublications(envOrDefault("CONTENT_DIR", "../../content")); err != nil {
+			logger.Error("load local publication allowlist", "error", err)
+			os.Exit(1)
+		}
+		logger.Info("RAG retrieval uses published Sanity content on each chat turn")
+		return source
+	}
 	postsDirectory := envOrDefault("POSTS_DIR", "../../content/posts")
 	index, err := rag.Load(postsDirectory)
 	if err != nil {

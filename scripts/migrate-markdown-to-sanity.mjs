@@ -124,4 +124,14 @@ const client = createClient({
 });
 
 await client.transaction(documents.map((document) => ({ createOrReplace: document }))).commit();
+// Successfully migrated entries now belong to CMS publication controls.
+const publicationsFile = path.join(process.cwd(), "content", "local-publications.json");
+if (fs.existsSync(publicationsFile)) {
+  const publications = JSON.parse(fs.readFileSync(publicationsFile, "utf8"));
+  for (const { directory, type } of collections) {
+    const migrated = new Set(documents.filter(document => document._type === type).map(document => document.slug.current));
+    publications[directory] = (publications[directory] || []).filter(slug => !migrated.has(slug));
+  }
+  fs.writeFileSync(publicationsFile, `${JSON.stringify(publications, null, 2)}\n`, "utf8");
+}
 console.log(`已将 ${documents.length} 篇内容写入 ${projectId}/${dataset}。`);

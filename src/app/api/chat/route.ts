@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       },
       body: requestBody.body,
       cache: "no-store",
-      signal: req.signal,
+      signal: AbortSignal.any([req.signal, AbortSignal.timeout(65_000)]),
     });
 
     const headers = new Headers();

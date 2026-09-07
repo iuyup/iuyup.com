@@ -14,9 +14,10 @@ JSON conversation, rejects client-supplied `system` roles, applies a per-process
 IP rate limit, injects the site's persona on the server, and translates the
 provider's SSE response into the plain-text stream consumed by the current UI.
 
-At startup, the service indexes Markdown and MDX posts with Chinese bigram and
-Latin-word tokenization. The best article excerpts are added to the server-side
-persona for each chat request.
+Each chat turn retrieves published Sanity content and combines it with explicitly
+allowlisted local articles. Chinese bigram and Latin-word tokenization select
+article excerpts for the server-side persona. Pure local indexing remains available
+through `CONTENT_SOURCE=local`.
 
 The current Next.js `POST /api/chat` route proxies browser requests to this
 service. Every `/v1/*` request must include the server-only
@@ -110,10 +111,9 @@ deploying multiple instances, replace them with a shared Redis-backed limiter.
 ## Railway RAG deployment
 
 The repository-root `Dockerfile` is the production build for this Go service.
-It compiles `services/api-go`, copies the canonical `content/posts` directory
-into the runtime image, and sets `POSTS_DIR=/content/posts`. This keeps the
-deployed RAG corpus aligned with the blog without maintaining a second copy of
-the articles in the Go module.
+It compiles `services/api-go` and copies local posts, notes, and their publication
+allowlist into `/content`. Published CMS content is refreshed during chat requests;
+only allowlisted local articles use files from the image.
 
 To use it on Railway, set this service's Root Directory to the repository root
 (remove `/services/api-go`), clear the custom build and start commands so
@@ -121,7 +121,7 @@ Railway uses the `Dockerfile` entrypoint, and retain `/healthz` as the health
 check path. The service still receives Railway's `PORT` variable at runtime.
 
 The Docker context deliberately includes only `services/api-go` and
-`content/posts`; browser code, local dependencies, and secret files are not
+`content/posts`, `content/notes`, and `content/local-publications.json`; browser code, local dependencies, and secret files are not
 sent to the image builder.
 
 To use another local port:
@@ -144,3 +144,13 @@ The Railway deployment now runs the MySQL guestbook and the article-backed
 DeepSeek chat gateway. Before running multiple Go instances, replace the
 in-memory limiters with a shared Redis-backed limiter and add production
 metrics for request rate, provider failures, and database latency.
+
+## Published content and language
+
+The default `CONTENT_SOURCE=sanity` refreshes published posts and notes from Sanity on every chat turn, with a six-second fetch timeout and an 8 MiB response limit. `SANITY_PROJECT_ID` (default `rnbye9v9`) and `SANITY_DATASET` (default `production`) must match the Next.js project. Failed refreshes fail the chat request instead of using a stale local snapshot. Logs include document and chunk counts and the refresh timestamp.
+
+Set `CONTENT_SOURCE=local` in both services only for a deliberately local Markdown site; in this mode `POSTS_DIR` retains its previous meaning and requires restarting the service after edits.
+
+Chat accepts an optional `locale` of `zh-CN` or `en`; other values return 400. Provider streams must finish with `[DONE]`; interrupted streams close the HTTP response with an error so the browser can offer retry.
+
+The same `content/local-publications.json` allowlist used by Next.js preserves articles that have not yet been migrated. `CONTENT_DIR` defaults to `../../content` locally and `/content` in Docker. These explicit local publications load at startup; CMS content overrides matching slugs. After migrating a local article, deploy the updated allowlist to both services. Missing allowlist files fail startup rather than silently losing published content.

@@ -1,207 +1,95 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 import type { HomeLocale } from '@/lib/home-content';
+import { MAX_CHAT_CHARACTERS } from '@/lib/chat-client';
+import { useChat } from '@/components/hooks/useChat';
 
-const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-3 px-3 min-h-[480px] flex flex-col justify-between cursor-pointer';
-
-const hoverSpring = { scale: 1.02 };
-const springTransition = { type: 'spring' as const, stiffness: 300, damping: 50, mass: 0.5 };
-// Keep one slot for the message currently being sent; the Go API accepts 12.
-const MAX_HISTORY_MESSAGES = 11;
-
-interface ChatFlipCardProps {
-  tag?: CardVariant;
-  locale?: HomeLocale;
-}
-
-const chatCopy: Record<HomeLocale, {
-  welcome: string;
-  error: string;
-  subtitle: string;
-  thinking: string;
-  placeholder: string;
-  send: string;
-}> = {
-  'zh-CN': {
-    welcome: '你好！有什么想了解的？',
-    error: '抱歉，出了点问题。',
-    subtitle: '和 AI 版的我聊聊',
-    thinking: '思考中...',
-    placeholder: '输入消息...',
-    send: '发送',
-  },
-  en: {
-    welcome: 'Hey! What would you like to know?',
-    error: 'Sorry—something went wrong.',
-    subtitle: 'Ask the AI version of me anything.',
-    thinking: 'Thinking…',
-    placeholder: 'Type a message…',
-    send: 'Send',
-  },
-};
-
-export function ChatFlipCard({ tag = 'default', locale = 'zh-CN' }: ChatFlipCardProps) {
+export function ChatFlipCard({ tag = 'default', locale = 'zh-CN' }: { tag?: CardVariant; locale?: HomeLocale }) {
   const variant = CARD_VARIANTS[tag] ?? CARD_VARIANTS.default;
-  const copy = chatCopy[locale];
+  const english = locale === 'en';
+  const reducedMotion = useReducedMotion();
   const [isFlipped, setIsFlipped] = useState(false);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([
-    { role: 'assistant', content: copy.welcome },
-  ]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesRef = useRef(messages);
+  const openButton = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messageList = useRef<HTMLDivElement>(null);
+  const chat = useChat(locale);
+  const { stop } = chat;
+
+  useEffect(() => { if (isFlipped && !chat.isLoading) inputRef.current?.focus(); }, [isFlipped, chat.isLoading]);
+  useEffect(() => {
+    const element = messageList.current;
+    if (element) element.scrollTop = element.scrollHeight;
+  }, [chat.messages, chat.isLoading]);
+
+  const close = useCallback(() => {
+    stop();
+    setIsFlipped(false);
+    requestAnimationFrame(() => openButton.current?.focus());
+  }, [stop]);
 
   useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
+    if (!isFlipped) return;
+    function onKeyDown(event: KeyboardEvent) { if (event.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isFlipped, close]);
 
-  const scrollToBottom = useCallback(() => {
-    const container = messagesEndRef.current?.parentElement;
-    if (!container) return;
-    container.scrollTop = container.scrollHeight;
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom, messages, isLoading]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!input.trim() || isLoading) return;
-
-    const userMsg = { role: 'user' as const, content: input.trim() };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messagesRef.current.slice(-MAX_HISTORY_MESSAGES), userMsg],
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      let assistantMsg = '';
-      setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
-      while (reader) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        assistantMsg += decoder.decode(value, { stream: true });
-        setMessages((prev) => {
-          const next = [...prev];
-          next[next.length - 1] = { role: 'assistant', content: assistantMsg };
-          return next;
-        });
-      }
-    } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: copy.error }]);
-    } finally {
-      setIsLoading(false);
-    }
+  const errors: Record<string, string> = english ? {
+    'invalid-input': 'Enter a message of up to 2,000 characters.',
+    'rate-limit': 'Too many messages. Please try again in a minute.',
+    'empty-reply': 'No reply was received. Please try again.',
+    timeout: 'The reply timed out. You can try again.', stopped: 'Generation stopped.',
+  } : {
+    'invalid-input': '请输入不超过 2,000 字的消息。',
+    'rate-limit': '发送有些频繁，请一分钟后重试。',
+    'empty-reply': '这次没有收到回复，可以重试。',
+    timeout: '回复超时了，可以重试。', stopped: '已停止生成。',
   };
 
   return (
     <motion.div
-      className={`${cardCls} flip-card flip-card-inner-base w-full h-[700px] card-hover`}
-      onClick={() => !isFlipped && setIsFlipped(true)}
-      whileHover={hoverSpring}
-      transition={springTransition}
+      className="backdrop-blur-2xl rounded-3xl border border-white/60 p-3 flip-card w-full h-[min(700px,85dvh)] min-h-[420px] card-hover"
+      whileHover={reducedMotion ? undefined : { scale: 1.02 }}
       style={{ background: variant.bg, isolation: 'isolate' }}
     >
-      <div
-        className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}
-        style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d', transition: 'transform 0.5s ease' }}
-      >
-        {/* Front */}
-        <div className="flip-card-front flip-card-face w-full h-full overflow-hidden">
-          <div className="w-14 h-14 rounded-full bg-[#6B8DAE]/20 flex items-center justify-center mb-4">
-            <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="20" stroke="#6B8DAE" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
-              <circle cx="24" cy="24" r="8" fill="#6B8DAE" opacity="0.4" />
-            </svg>
-          </div>
-          <span className="type-heading text-xl text-[#2C2C2C]">Chat with T</span>
-          <span className="text-sm mt-1" style={{ color: variant.textSecondary }}>{copy.subtitle}</span>
+      <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`} style={{ position: 'relative', height: '100%', transformStyle: 'preserve-3d', transition: reducedMotion ? 'none' : 'transform 0.5s ease' }}>
+        <div className="flip-card-front flip-card-face w-full h-full" inert={isFlipped} aria-hidden={isFlipped}>
+          <button ref={openButton} type="button" onClick={() => setIsFlipped(true)} aria-expanded={isFlipped} className="flex h-full w-full flex-col items-center justify-center rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#2C2C2C]">
+            <span className="type-heading text-xl text-[#2C2C2C]">Chat with T</span>
+            <span className="text-sm mt-2" style={{ color: variant.textSecondary }}>{english ? 'Ask the AI version of me anything.' : '和 AI 版的我聊聊'}</span>
+          </button>
         </div>
-
-        {/* Back — full chat UI */}
-        <div
-          className="flip-card-back flip-card-face flex flex-col w-full h-full overflow-hidden cursor-default"
-          onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-        >
-          {/* Header */}
-          <div
-            className="flex items-center gap-3 pt-5 pb-2 mb-3 border-b border-white/20 px-4 cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="font-brand text-2xl text-[#F5F0EB]">T&apos;s AI</span>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 w-full overflow-y-auto space-y-4 mb-4 cursor-default px-4 chat-messages">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  className={`max-w-[85%] px-4 py-3 text-base whitespace-pre-wrap ${
-                    msg.role === 'user'
-                      ? 'rounded-2xl rounded-tr-sm'
-                      : 'rounded-2xl rounded-tl-sm'
-                  }`}
-                  style={{
-                    background: msg.role === 'user' ? '#6B8DAE' : 'rgba(255,255,255,0.15)',
-                    color: '#F5F0EB',
-                  }}
-                >
-                  {msg.content}
-                </div>
+        <div className="flip-card-back flip-card-face flex flex-col w-full h-full overflow-hidden" inert={!isFlipped} aria-hidden={!isFlipped}>
+          <header className="flex items-center justify-between px-4 py-4 border-b border-white/20">
+            <span className="font-brand text-2xl">T&apos;s AI</span>
+            <button type="button" onClick={close} className="rounded-lg px-3 py-2 border border-white/40">{english ? 'Close' : '关闭'}</button>
+          </header>
+          <div ref={messageList} className="flex-1 min-h-0 overflow-y-auto space-y-4 p-4 chat-messages" role="log" aria-label={english ? 'Conversation' : '对话记录'} aria-live="polite" aria-busy={chat.isLoading}>
+            {chat.messages.length === 0 && <p>{english ? 'Hey! What would you like to know?' : '你好！有什么想了解的？'}</p>}
+            {chat.messages.map((message, index) => (
+              <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <p className="max-w-[90%] whitespace-pre-wrap break-words rounded-2xl bg-white/15 px-4 py-3 [overflow-wrap:anywhere]">{message.content}</p>
               </div>
             ))}
-            {isLoading && (
-              <div className="flex justify-start" onClick={(e) => e.stopPropagation()}>
-                <div className="px-4 py-3 rounded-2xl rounded-tl-sm text-base bg-white/10 text-[#F5F0EB]/60">
-                  {copy.thinking}
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+            {chat.isLoading && <p role="status">{english ? 'Replying…' : '正在回复…'}</p>}
           </div>
-
-          {/* Input */}
-          <form
-            onSubmit={handleSubmit}
-            className="flex gap-3 px-4 pb-5 pt-2 mt-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={copy.placeholder}
-              className="flex-1 px-4 py-4 rounded-lg text-base bg-white/20 text-[#F5F0EB] placeholder-[#F5F0EB]/40 outline-none border border-white/20 focus:border-white/50 transition-colors"
-              disabled={isLoading}
-              onClick={(e) => e.stopPropagation()}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className="px-5 py-4 rounded-lg text-sm font-medium bg-[#F5F0EB]/20 text-[#F5F0EB] hover:bg-[#F5F0EB]/30 border border-white/20 transition-colors disabled:opacity-50"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {copy.send}
-            </button>
+          {chat.error && <div className="px-4 pb-2" role="status">
+            <p className="text-sm">{errors[chat.error] ?? (english ? 'The service is temporarily unavailable. Please try again.' : '服务暂时不可用，请稍后重试。')}</p>
+            {chat.canRetry && <button type="button" onClick={() => void chat.retry()} className="underline mt-2">{english ? 'Retry' : '重试'}</button>}
+          </div>}
+          <form className="px-4 pb-4 flex flex-col gap-2" onSubmit={(event) => { event.preventDefault(); const prompt = input; setInput(''); void chat.send(prompt); }}>
+            <label className="text-sm" htmlFor="home-chat-input">{english ? 'Your message' : '你的消息'}</label>
+            <textarea id="home-chat-input" ref={inputRef} rows={2} value={input} onChange={(event) => setInput(event.target.value)} disabled={chat.isLoading} className="w-full min-w-0 resize-none rounded-lg bg-white/20 px-3 py-2 text-base border border-white/40" />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs">{Array.from(input).length.toLocaleString()} / {MAX_CHAT_CHARACTERS.toLocaleString()}</span>
+              {chat.isLoading
+                ? <button type="button" onClick={chat.stop} className="rounded-lg border border-white/40 px-4 py-2">{english ? 'Stop' : '停止'}</button>
+                : <button type="submit" disabled={!input.trim() || Array.from(input).length > MAX_CHAT_CHARACTERS} className="rounded-lg border border-white/40 px-4 py-2 disabled:opacity-50">{english ? 'Send' : '发送'}</button>}
+            </div>
           </form>
         </div>
       </div>

@@ -27,3 +27,10 @@ func TestForEachContentRejectsInvalidJSON(t *testing.T) {
 		t.Fatal("invalid JSON should return an error")
 	}
 }
+
+func TestForEachContentRejectsTruncatedStream(t *testing.T) {
+	err := ForEachContent(strings.NewReader("data: {\"choices\":[{\"delta\":{\"content\":\"partial\"}}]}\n"), func(string) error { return nil })
+	if err == nil {
+		t.Fatal("a stream without DONE must not be considered complete")
+	}
+}

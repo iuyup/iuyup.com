@@ -258,6 +258,16 @@ code:not([class*='language-']) {
   padding: inherit;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .scroll-tilt-target { transform: none !important; opacity: 1 !important; }
+}
+
 /* Chat messages scrollbar */
 .chat-messages::-webkit-scrollbar {
   width: 4px;

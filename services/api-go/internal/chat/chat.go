@@ -25,6 +25,7 @@ type Message struct {
 // Request is the public request contract for the chat endpoint.
 type Request struct {
 	Messages []Message `json:"messages"`
+	Locale   string    `json:"locale,omitempty"`
 }
 
 // StreamOpener creates the upstream model stream after input has been validated.
@@ -35,6 +36,9 @@ type StreamOpener interface {
 // ValidatedMessages rejects client-controlled system instructions and normalizes
 // accepted content before it can reach the model provider.
 func (request Request) ValidatedMessages() ([]Message, error) {
+	if request.Locale != "" && request.Locale != "zh-CN" && request.Locale != "en" {
+		return nil, ErrInvalidRequest
+	}
 	if len(request.Messages) == 0 || len(request.Messages) > maxMessages {
 		return nil, ErrInvalidRequest
 	}

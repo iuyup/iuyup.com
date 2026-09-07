@@ -33,6 +33,29 @@ type Index struct {
 	idf    map[string]float64
 }
 
+type Document struct {
+	Slug       string `json:"slug"`
+	Collection string `json:"collection"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+}
+
+func FromDocuments(documents []Document) *Index {
+	chunks := make([]indexedChunk, 0)
+	for _, document := range documents {
+		if strings.TrimSpace(document.Title) == "" {
+			continue
+		}
+		for _, content := range chunkText(document.Content) {
+			tokens := Tokenize(content)
+			if len(tokens) != 0 {
+				chunks = append(chunks, indexedChunk{title: document.Title, content: content, tokens: tokens})
+			}
+		}
+	}
+	return &Index{chunks: chunks, idf: computeIDF(chunks)}
+}
+
 // Load indexes every Markdown and MDX post in a directory.
 func Load(postsDirectory string) (*Index, error) {
 	entries, err := os.ReadDir(postsDirectory)

@@ -180,10 +180,6 @@ function FloatingControlsForPath({ pathname }: FloatingControlsForPathProps) {
   const suppressNextFocusOpen = useRef(false);
 
   useEffect(() => {
-    document.documentElement.lang = isEnglish ? "en" : "zh-CN";
-  }, [isEnglish]);
-
-  useEffect(() => {
     const controller = new AbortController();
     let disposed = false;
 

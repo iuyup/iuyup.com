@@ -7,12 +7,10 @@ const journalEntryFields = groq`{
   "updatedAt": coalesce(updatedAt, _updatedAt),
   summary,
   tags,
-  coverImage,
-  body,
-  contentFormat
+  coverImage
 }`;
 
 export const ALL_POSTS_QUERY = groq`*[_type == "post" && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) ${journalEntryFields}`;
 export const ALL_NOTES_QUERY = groq`*[_type == "note" && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) ${journalEntryFields}`;
-export const POST_BY_SLUG_QUERY = groq`*[_type == "post" && slug.current == $slug][0] ${journalEntryFields}`;
-export const NOTE_BY_SLUG_QUERY = groq`*[_type == "note" && slug.current == $slug][0] ${journalEntryFields}`;
+export const POST_BY_SLUG_QUERY = groq`*[_type == "post" && slug.current == $slug && defined(publishedAt)][0] { ...${journalEntryFields}, body, contentFormat }`;
+export const NOTE_BY_SLUG_QUERY = groq`*[_type == "note" && slug.current == $slug && defined(publishedAt)][0] { ...${journalEntryFields}, body, contentFormat }`;

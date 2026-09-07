@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { useState } from 'react';
+import Image from 'next/image';
 import { CARD_VARIANTS, type CardVariant } from '@/lib/colors';
 
 const cardCls = 'backdrop-blur-2xl rounded-3xl border border-white/60 py-10 px-8 flex flex-col items-center text-center cursor-pointer';
@@ -61,10 +62,12 @@ export function AlbumCard({ album, tag = 'default' }: AlbumCardProps) {
           </motion.span>
         </motion.span>
         <a href={album.url} target="_blank" rel="noopener noreferrer" className="group block w-full">
-          <div className="w-full aspect-square rounded-2xl overflow-hidden bg-[#E8E2DA] mb-4">
-            <img
+          <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-[#E8E2DA] mb-4">
+            <Image
               src={album.cover}
               alt={album.name}
+              fill
+              sizes="(min-width: 1400px) 360px, (min-width: 1024px) 28vw, 85vw"
               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
             />
           </div>
